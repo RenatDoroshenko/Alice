@@ -5,6 +5,7 @@ import openai
 import model
 import settings
 import format
+import secure_information
 
 
 # Specify the template folder explicitly
@@ -52,13 +53,15 @@ def chat():
 
     return render_template('chat.html',
                            messages=session['messages'],
-                           prompt_tokens=session['usage']['prompt_tokens'],
-                           completion_tokens=session['usage']['completion_tokens'],
-                           total_tokens=session['usage']['total_tokens'])
+                           prompt_tokens=session["usage"].get(
+                               'prompt_tokens', 0),
+                           completion_tokens=session["usage"].get(
+                               'completion_tokens', 0),
+                           total_tokens=session["usage"].get('total_tokens', 0))
 
 
 # Root to clear context
-@app.route('/clear_context', methods=['POST'])
+@ app.route('/clear_context', methods=['POST'])
 def clear_context():
     session.pop('messages', None)
     session.pop('usage', None)
@@ -69,8 +72,8 @@ def clear_context():
 def ensure_session_objects():
     if 'messages' not in session:
         session['messages'] = [
-            {'role': 'system', 'content': format.SYSTEM},
-            {'role': 'assistant', 'content': format.MANIFEST}
+            {'role': 'system', 'content': format.MANIFEST.format(
+                user_name=secure_information.USER_NAME, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME)}
         ]
 
     if "usage" not in session:
@@ -79,6 +82,9 @@ def ensure_session_objects():
             "completion_tokens": 0,
             "total_tokens": 0
         }
+        # session['prompt_tokens'] =  0
+        # session['completion_tokens'] =  0
+        # session['total_tokens'] = 0
 
 
 def update_session_objects(response):

@@ -2,7 +2,7 @@ import openai
 import settings
 import tiktoken
 import format
-import api_keys
+import secure_information
 
 
 def model_say_to_model(messages):
@@ -12,7 +12,8 @@ def model_say_to_model(messages):
 
 
 def user_say_to_model(user_message, messages):
-    full_response = format.USER_RESPONSE.format(content=user_message)
+    full_response = format.USER_RESPONSE.format(
+        user_name=secure_information.USER_NAME, content=user_message)
     messages.append(
         {"role": "user", "content": full_response})
     response = generate_response(messages)
@@ -20,7 +21,7 @@ def user_say_to_model(user_message, messages):
 
 
 def generate_response(messages, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
-    openai.api_key = api_keys.OPEN_AI_API_KEY
+    openai.api_key = secure_information.OPEN_AI_API_KEY
 
     # Remove earliest messages until the total tokens are under the limit
     while num_tokens_from_messages(messages) > context_tokens_limit:
