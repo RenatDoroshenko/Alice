@@ -1,3 +1,4 @@
+import json
 import openai
 import settings
 import tiktoken
@@ -12,7 +13,10 @@ def model_say_to_model(messages):
     return response
 
 
-def user_say_to_model(user_message, messages):
+def user_say_to_model(user_name, user_message, messages, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME):
+
+    database.save_user_message(user_name, user_message, ai_id, ai_name)
+
     full_response = format.USER_RESPONSE.format(
         user_name=secure_information.USER_NAME, content=user_message)
     messages.append(
@@ -44,6 +48,11 @@ def generate_response(messages, context_tokens_limit=settings.CONTEXT_TOKENS_LIM
         stop=None,
         temperature=0.7,
     )
+
+    ai_id, ai_name, thoughts, to_user, commands = parse_ai_message(
+        response.choices[0].message.content)
+
+    database.save_ai_message(ai_id, ai_name, thoughts, to_user, commands)
 
     return response
 
@@ -104,3 +113,30 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
                 num_tokens += tokens_per_name
     num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
     return num_tokens
+
+
+def parse_user_message(json_data):
+    data = json.loads(json_data)
+    user_name = data.get('user_name')
+    user_message = data.get('user_message')
+    ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
+    ai_name = data.get('ai_name')
+    return user_name, user_message, ai_id, ai_name
+
+
+def parse_ai_message(json_data):
+    data = json.loads(json_data)
+    ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
+    ai_name = data.get('ai_name')
+    thoughts = data.get('thoughts')
+    to_user = data.get('to_user')
+    commands = json.dumps(data.get('commands'))
+    return ai_id, ai_name, thoughts, to_user, commands
+
+
+def parse_environment_message(json_data):
+    data = json.loads(json_data)
+    ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
+    ai_name = data.get('ai_name')
+    commands = json.dumps(data.get('commands'))
+    return ai_id, ai_name, commands

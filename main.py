@@ -48,8 +48,8 @@ def chat():
         generate_model_message = request.form.get('generate_model_message')
 
         if user_message:
-            response = model.user_say_to_model(
-                user_message, session['messages'])
+            response = model.user_say_to_model(secure_information.USER_NAME,
+                                               user_message, session['messages'])
         elif generate_model_message:
             response = model.model_say_to_model(session['messages'])
 
