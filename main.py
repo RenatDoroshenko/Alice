@@ -43,6 +43,9 @@ def chat():
 
     ensure_session_objects()
 
+    # test
+    messages = model.get_context_messages_from_db()
+
     if request.method == 'POST':
         user_message = request.form.get('user_message')
         generate_model_message = request.form.get('generate_model_message')

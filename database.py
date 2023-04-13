@@ -29,9 +29,9 @@ class Summary(db.Model):
     experiences = db.relationship("Experience", backref="summary", lazy=True)
 
 
-def get_latest_messages(ai_name, messages_number):
+def get_latest_messages(ai_id, messages_number=20):
     latest_messages = (
-        Experience.query.filter_by(ai_name=ai_name)
+        Experience.query.filter_by(ai_id=ai_id)
         .order_by(Experience.date_time.desc())
         .limit(messages_number)
         .all()

@@ -18,7 +18,7 @@ def user_say_to_model(user_name, user_message, messages, ai_id=secure_informatio
     database.save_user_message(user_name, user_message, ai_id, ai_name)
 
     full_response = format.USER_RESPONSE.format(
-        user_name=secure_information.USER_NAME, content=user_message)
+        user_name=user_name, content=user_message)
     messages.append(
         {"role": "user", "content": full_response})
     response = generate_response(messages)
@@ -114,6 +114,8 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
     return num_tokens
 
+# Parse JSON
+
 
 def parse_user_message(json_data):
     data = json.loads(json_data)
@@ -140,3 +142,61 @@ def parse_environment_message(json_data):
     ai_name = data.get('ai_name')
     commands = json.dumps(data.get('commands'))
     return ai_id, ai_name, commands
+
+# Convert to JSON
+
+
+def get_context_messages_from_db(ai_id=secure_information.AI_ID):
+    entries = database.get_latest_messages(ai_id)
+
+    messages = []
+
+    for entry in entries:
+
+        if entry.message_type == "user":
+            content = user_message_to_json(entry)
+
+        elif entry.message_type == "assistant":
+            content = ai_message_to_json(entry)
+        else:
+            continue
+
+        messages.append(put_to_open_ai_format(entry.message_type, content))
+
+    return messages
+
+
+def user_message_to_json(entry):
+    data = {
+        'user_name': entry.user_name,
+        'user_message': entry.user_message,
+        'ai_id': entry.ai_id,
+        'ai_name': entry.ai_name
+    }
+    return json.dumps(data)
+
+
+def ai_message_to_json(entry):
+    data = {
+        'ai_id': entry.ai_id,
+        'ai_name': entry.ai_name,
+        'thoughts': entry.thoughts,
+        'to_user': entry.to_user,
+        'commands': entry.commands
+    }
+    return json.dumps(data)
+
+
+def environment_message_to_json(ai_id, ai_name, commands):
+    data = {
+        'ai_id': ai_id,
+        'ai_name': ai_name,
+        'commands': commands
+    }
+    return json.dumps(data)
+
+# Create OpenAI format message
+
+
+def put_to_open_ai_format(message_type, content):
+    return {"role": message_type, "content": content}
