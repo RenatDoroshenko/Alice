@@ -6,6 +6,10 @@ import model
 import settings
 import format
 import secure_information
+from datetime import datetime
+
+# Import your models and database instance
+import database
 
 
 # Specify the template folder explicitly
@@ -16,15 +20,17 @@ app.secret_key = settings.SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', 'sqlite:///mydb.sqlite3')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+
+# Initialize the database with the app
+database.db.init_app(app)
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+# class User(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(80), unique=True, nullable=False)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+#     def __repr__(self):
+#         return f'<User {self.username}>'
 
 
 with app.app_context():
@@ -34,8 +40,6 @@ with app.app_context():
 # Main Root
 @app.route('/', methods=['GET', 'POST'])
 def chat():
-    # may be delete
-    # messages = model.create_test_messages()
 
     ensure_session_objects()
 
@@ -82,9 +86,6 @@ def ensure_session_objects():
             "completion_tokens": 0,
             "total_tokens": 0
         }
-        # session['prompt_tokens'] =  0
-        # session['completion_tokens'] =  0
-        # session['total_tokens'] = 0
 
 
 def update_session_objects(response):
