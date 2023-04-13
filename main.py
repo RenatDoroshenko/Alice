@@ -6,6 +6,10 @@ import model
 import settings
 import format
 import secure_information
+from datetime import datetime
+
+# Import your models and database instance
+import database
 
 
 # Specify the template folder explicitly
@@ -16,42 +20,46 @@ app.secret_key = settings.SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', 'sqlite:///mydb.sqlite3')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+
+# Initialize the database with the app
+database.db.init_app(app)
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+# class User(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(80), unique=True, nullable=False)
 
-    def __repr__(self):
-        return f'<User {self.username}>'
+#     def __repr__(self):
+#         return f'<User {self.username}>'
 
 
 with app.app_context():
-    db.create_all()
+    database.db.create_all()
 
 
 # Main Root
 @app.route('/', methods=['GET', 'POST'])
 def chat():
-    # may be delete
-    # messages = model.create_test_messages()
 
     ensure_session_objects()
+
+    # test
+    messages = model.get_context_messages_from_db()
 
     if request.method == 'POST':
         user_message = request.form.get('user_message')
         generate_model_message = request.form.get('generate_model_message')
 
         if user_message:
-            response = model.user_say_to_model(
-                user_message, session['messages'])
+            response = model.user_say_to_model(secure_information.USER_NAME,
+                                               user_message, session['messages'])
         elif generate_model_message:
             response = model.model_say_to_model(session['messages'])
 
         update_session_objects(response)
 
     return render_template('chat.html',
+                           # here place messages - and values will be taken from db
                            messages=session['messages'],
                            prompt_tokens=session["usage"].get(
                                'prompt_tokens', 0),
@@ -82,9 +90,6 @@ def ensure_session_objects():
             "completion_tokens": 0,
             "total_tokens": 0
         }
-        # session['prompt_tokens'] =  0
-        # session['completion_tokens'] =  0
-        # session['total_tokens'] = 0
 
 
 def update_session_objects(response):
