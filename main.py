@@ -59,6 +59,7 @@ def chat():
         update_session_objects(response)
 
     return render_template('chat.html',
+                           # here place messages - and values will be taken from db
                            messages=session['messages'],
                            prompt_tokens=session["usage"].get(
                                'prompt_tokens', 0),
