@@ -3,6 +3,7 @@ import settings
 import tiktoken
 import format
 import secure_information
+import database
 
 
 def model_say_to_model(messages):
