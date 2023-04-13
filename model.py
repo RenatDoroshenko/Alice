@@ -23,9 +23,9 @@ def user_say_to_model(user_message, messages):
 def generate_response(messages, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
     openai.api_key = secure_information.OPEN_AI_API_KEY
 
-    # Remove earliest messages until the total tokens are under the limit
+    # Remove earliest messages until the total tokens are under the limit (except 'system' message)
     while num_tokens_from_messages(messages) > context_tokens_limit:
-        messages.pop(0)
+        messages.pop(1)
 
     # Combine messages into a single string
     # prompt = "\n\n".join(
