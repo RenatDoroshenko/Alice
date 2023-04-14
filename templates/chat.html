@@ -11,7 +11,7 @@
 
     <div id="messages">
         {% for message in messages %}
-            <pre><strong>{{ message.role.title() }}:</strong> {{ message.content }}</pre>
+            <pre><strong>{{ message.role.title() }}:</strong> {{ message.content |tojson(indent=4) }}</pre>
         {% endfor %}
     </div>
 

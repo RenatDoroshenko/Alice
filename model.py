@@ -196,7 +196,7 @@ def user_message_to_json(entry):
         'ai_id': entry.ai_id,
         'ai_name': entry.ai_name
     }
-    return json.dumps(data)
+    return data
 
 
 def ai_message_to_json(entry):
@@ -207,7 +207,7 @@ def ai_message_to_json(entry):
         'to_user': entry.to_user,
         'commands': entry.commands
     }
-    return json.dumps(data)
+    return data
 
 
 def environment_message_to_json(ai_id, ai_name, commands):
@@ -216,13 +216,14 @@ def environment_message_to_json(ai_id, ai_name, commands):
         'ai_name': ai_name,
         'commands': commands
     }
-    return json.dumps(data)
+    return data
 
 # Create OpenAI format message
 
 
 def put_to_open_ai_format(message_type, content):
-    return {"role": message_type, "content": content}
+    data = {"role": message_type, "content": content}
+    return data
 
 
 # Detect when AI forget to add brackets to json
