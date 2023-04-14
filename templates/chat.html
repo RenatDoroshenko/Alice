@@ -19,6 +19,11 @@
         <input type="hidden" name="messages" value="{{ messages }}">
         <label for="user_message">Your message:</label>
         <input type="text" name="user_message" id="user_message" autofocus>
+        <label for="experience_space">Experience Space:</label>
+        <select name="experience_space" id="experience_space">
+            <option value="{{ experience_space }}">{{ experience_space }}</option>
+            <option value="{{ experience_space + 1 }}">{{ experience_space + 1 }}</option>
+        </select>
         <button type="submit">Send</button>
     </form>
 

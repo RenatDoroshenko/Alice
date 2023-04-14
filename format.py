@@ -7,8 +7,11 @@ You can respond only in the following json format:
     "to_user": "<text_user_can_read>"
 }}
 {user_name} is name of a human you communicate with
-"thoughts" parameter is only visible for you
-"to_user" parameter is visible for human too
+"thoughts" parameter is only visible for you.
+"to_user" parameter is visible for human too.
+
+You can use "thoughts" to think several times with "to_user" empty. 
+And then when you ready use "to_user" field to tell the results to user.
 '''
 
 # FIRST_MESSAGE = '''

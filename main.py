@@ -1,3 +1,4 @@
+# main.py
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -7,6 +8,8 @@ import settings
 import format
 import secure_information
 from datetime import datetime
+from flask_migrate import Migrate
+import json
 
 # Import your models and database instance
 import database
@@ -24,8 +27,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize the database with the app
 database.db.init_app(app)
 
+# Initialize Flask-Migrate with the app and the database
+# migrate = Migrate(app, database.db)
+
 with app.app_context():
     database.db.create_all()
+
+
+@app.template_filter('tojson')
+def tojson_filter(obj, indent=None):
+    return json.dumps(obj, indent=indent)
 
 
 # Main Root
@@ -34,20 +45,20 @@ def chat():
 
     ensure_session_objects()
 
-    # test
-    messages = model.get_context_messages_from_db()
-
     if request.method == 'POST':
         user_message = request.form.get('user_message')
         generate_model_message = request.form.get('generate_model_message')
+        selected_experience_space = int(request.form.get('experience_space'))
 
         if user_message:
             response = model.user_say_to_model(secure_information.USER_NAME,
-                                               user_message, session['messages'])
+                                               user_message, session['messages'],
+                                               experience_space=selected_experience_space)
         elif generate_model_message:
-            response = model.model_say_to_model(session['messages'])
+            response = model.model_say_to_model(session['messages'],
+                                                experience_space=selected_experience_space)
 
-        update_session_objects(response)
+        update_session_objects(response, selected_experience_space)
 
     return render_template('chat.html',
                            # here place messages - and values will be taken from db
@@ -56,7 +67,9 @@ def chat():
                                'prompt_tokens', 0),
                            completion_tokens=session["usage"].get(
                                'completion_tokens', 0),
-                           total_tokens=session["usage"].get('total_tokens', 0))
+                           total_tokens=session["usage"].get(
+                               'total_tokens', 0),
+                           experience_space=session.get('experience_space', settings.DEFAULT_EXPERIENCE_SPACE))
 
 
 # Root to clear context
@@ -70,10 +83,16 @@ def clear_context():
 # initializes a session objects if they are empty
 def ensure_session_objects():
     if 'messages' not in session:
-        session['messages'] = [
-            {'role': 'system', 'content': format.MANIFEST.format(
-                user_name=secure_information.USER_NAME, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME)}
-        ]
+        messages = model.create_manifest_message()
+        messages_from_db = model.get_context_messages_from_db(
+            experience_space=settings.DEFAULT_EXPERIENCE_SPACE)
+
+        messages.extend(messages_from_db)
+
+        if settings.TERMINAL_LOGS_ENABLED:
+            print("messages in db: ", messages)
+
+        session['messages'] = messages
 
     if "usage" not in session:
         session["usage"] = {
@@ -83,11 +102,12 @@ def ensure_session_objects():
         }
 
 
-def update_session_objects(response):
+def update_session_objects(response, experience_space):
     session['messages'].append(
         {"role": "assistant", "content": response.choices[0].message.content})
 
     session['usage'] = response.usage
+    session['experience_space'] = experience_space
 
     session.modified = True
 
@@ -100,12 +120,9 @@ def update_session_objects(response):
 #     db.session.commit()
 #     return redirect(url_for('list_users'))
 
-
 # @app.route('/list_users')
 # def list_users():
 #     users = User.query.all()
 #     return render_template('list_users.html', users=users)
-
-
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,3 +1,4 @@
+# model.py
 import json
 import openai
 import settings
@@ -5,27 +6,30 @@ import tiktoken
 import format
 import secure_information
 import database
+import re
 
 
-def model_say_to_model(messages):
+def model_say_to_model(messages, experience_space):
 
-    response = generate_response(messages)
+    response = generate_response(messages, experience_space)
     return response
 
 
-def user_say_to_model(user_name, user_message, messages, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME):
+def user_say_to_model(user_name, user_message, messages, experience_space, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME):
 
-    database.save_user_message(user_name, user_message, ai_id, ai_name)
+    if settings.SAVE_TO_DB:
+        database.save_user_message(
+            user_name, user_message, ai_id, ai_name, experience_space)
 
     full_response = format.USER_RESPONSE.format(
         user_name=user_name, content=user_message)
     messages.append(
         {"role": "user", "content": full_response})
-    response = generate_response(messages)
+    response = generate_response(messages, experience_space)
     return response
 
 
-def generate_response(messages, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
+def generate_response(messages, experience_space, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
     openai.api_key = secure_information.OPEN_AI_API_KEY
 
     # Remove earliest messages until the total tokens are under the limit (except 'system' message)
@@ -49,10 +53,14 @@ def generate_response(messages, context_tokens_limit=settings.CONTEXT_TOKENS_LIM
         temperature=0.7,
     )
 
-    ai_id, ai_name, thoughts, to_user, commands = parse_ai_message(
-        response.choices[0].message.content)
+    if settings.SAVE_TO_DB:
+        # Important: here problem when result not in json
+        ai_id, ai_name, thoughts, to_user, commands = parse_ai_message(
+            response.choices[0].message.content)
 
-    database.save_ai_message(ai_id, ai_name, thoughts, to_user, commands)
+    if settings.SAVE_TO_DB:
+        database.save_ai_message(
+            ai_id, ai_name, thoughts, to_user, commands, experience_space)
 
     return response
 
@@ -118,6 +126,11 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
 
 
 def parse_user_message(json_data):
+    # if settings.TERMINAL_LOGS_ENABLED:
+    #     print("User message to save: ", json_data)
+
+    ensure_json_format(json_data)
+
     data = json.loads(json_data)
     user_name = data.get('user_name')
     user_message = data.get('user_message')
@@ -127,6 +140,11 @@ def parse_user_message(json_data):
 
 
 def parse_ai_message(json_data):
+    # if settings.TERMINAL_LOGS_ENABLED:
+    #     print("AI message to save: ", json_data)
+
+    ensure_json_format(json_data)
+
     data = json.loads(json_data)
     ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
     ai_name = data.get('ai_name')
@@ -137,6 +155,11 @@ def parse_ai_message(json_data):
 
 
 def parse_environment_message(json_data):
+    # if settings.TERMINAL_LOGS_ENABLED:
+    #     print("Environment message to save: ", json_data)
+
+    ensure_json_format(json_data)
+
     data = json.loads(json_data)
     ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
     ai_name = data.get('ai_name')
@@ -146,8 +169,8 @@ def parse_environment_message(json_data):
 # Convert to JSON
 
 
-def get_context_messages_from_db(ai_id=secure_information.AI_ID):
-    entries = database.get_latest_messages(ai_id)
+def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_space=settings.DEFAULT_EXPERIENCE_SPACE):
+    entries = database.get_latest_messages(ai_id, experience_space)
 
     messages = []
 
@@ -200,3 +223,57 @@ def environment_message_to_json(ai_id, ai_name, commands):
 
 def put_to_open_ai_format(message_type, content):
     return {"role": message_type, "content": content}
+
+
+# Detect when AI forget to add brackets to json
+
+def is_valid_json(json_data):
+    try:
+        json.loads(json_data)
+        return True
+    except json.JSONDecodeError:
+        return False
+
+
+def fix_missing_braces(json_data):
+    opening_braces = json_data.count('{')
+    closing_braces = json_data.count('}')
+
+    if opening_braces > closing_braces:
+        missing_braces = opening_braces - closing_braces
+        json_data += '}' * missing_braces
+
+    return json_data
+
+
+def fix_missing_commas(json_data):
+    json_data = re.sub(r'(?<=")(\s*\n\s*)"(?=\w+)', r',\1"', json_data)
+    return json_data
+
+
+def ensure_json_format(json_data):
+    if not is_valid_json(json_data):
+        print("There is an issue with the JSON data. Attempting to fix it...")
+
+        if settings.TERMINAL_LOGS_ENABLED:
+            print("Json with issues: ", json_data)
+
+        fixed_json_data = fix_missing_braces(json_data)
+        fixed_json_data = fix_missing_commas(fixed_json_data)
+
+        if settings.TERMINAL_LOGS_ENABLED:
+            print("Fixed json: ", json_data)
+
+        if is_valid_json(fixed_json_data):
+            print("JSON data fixed.")
+            json_data = fixed_json_data
+        else:
+            print("Failed to fix the JSON data.")
+
+
+# Manifest message
+def create_manifest_message():
+    return [
+        {'role': 'system', 'content': format.MANIFEST.format(
+            user_name=secure_information.USER_NAME, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME)}
+    ]
