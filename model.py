@@ -21,11 +21,16 @@ def user_say_to_model(user_name, user_message, messages, experience_space, ai_id
         database.save_user_message(
             user_name, user_message, ai_id, ai_name, experience_space)
 
-    full_response = format.USER_RESPONSE.format(
-        user_name=user_name, content=user_message)
+    # Combine user name and user message into a single string
+    full_response = {'user_message': user_message, 'user_name': user_name}
+    # format.USER_RESPONSE.format(
+    #     user_name=user_name, content=user_message)
     messages.append(
         {"role": "user", "content": full_response})
-    response = generate_response(messages, experience_space)
+
+    messages_with_format = convert_content_to_string(messages)
+
+    response = generate_response(messages_with_format, experience_space)
     return response
 
 
@@ -116,11 +121,34 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     for message in messages:
         num_tokens += tokens_per_message
         for key, value in message.items():
-            num_tokens += len(encoding.encode(value))
+            # Skip counting tokens for ai_id and ai_name keys
+            # if key in ["ai_id", "ai_name"]:
+            #     continue
+
+            if isinstance(value, dict):
+                for sub_value in value.values():
+                    if sub_value is not None:
+                        num_tokens += len(encoding.encode(sub_value))
+            else:
+                num_tokens += len(encoding.encode(value))
+
             if key == "name":
                 num_tokens += tokens_per_name
     num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
     return num_tokens
+
+
+# Convert messages 'content' to string:
+def convert_content_to_string(messages):
+    for i, message in enumerate(messages):
+        if i == 0 and message['role'] == 'system':
+            continue
+
+        content = message['content']
+        if isinstance(content, dict):
+            message['content'] = json.dumps(content)
+    return messages
+
 
 # Parse JSON
 
@@ -173,6 +201,7 @@ def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_spac
     entries = database.get_latest_messages(ai_id, experience_space)
 
     messages = []
+    ai_name = ""
 
     for entry in entries:
 
@@ -180,22 +209,29 @@ def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_spac
             content = user_message_to_json(entry)
 
         elif entry.message_type == "assistant":
+            if not ai_name:
+                ai_name = entry.ai_name
             content = ai_message_to_json(entry)
         else:
             continue
 
         messages.append(put_to_open_ai_format(entry.message_type, content))
 
-    return messages
+    if not ai_name:
+        ai_name = secure_information.AI_NAME
+
+    return messages, ai_id, ai_name
 
 
 def user_message_to_json(entry):
     data = {
         'user_name': entry.user_name,
-        'user_message': entry.user_message,
-        'ai_id': entry.ai_id,
-        'ai_name': entry.ai_name
+        'user_message': entry.user_message
     }
+
+    # 'ai_id': entry.ai_id,
+    # 'ai_name': entry.ai_name
+
     return data
 
 
@@ -204,18 +240,24 @@ def ai_message_to_json(entry):
         'ai_id': entry.ai_id,
         'ai_name': entry.ai_name,
         'thoughts': entry.thoughts,
-        'to_user': entry.to_user,
-        'commands': entry.commands
+        'to_user': entry.to_user
     }
+
+    if entry.commands is not None and entry.commands != 'null':
+        data['commands'] = entry.commands
+
     return data
 
 
-def environment_message_to_json(ai_id, ai_name, commands):
+def environment_message_to_json(entry):
     data = {
-        'ai_id': ai_id,
-        'ai_name': ai_name,
-        'commands': commands
+        'ai_id': entry.ai_id,
+        'ai_name': entry.ai_name
     }
+
+    if entry.commands is not None and entry.commands != 'null':
+        data['commands'] = entry.commands
+
     return data
 
 # Create OpenAI format message

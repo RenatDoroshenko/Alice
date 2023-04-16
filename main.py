@@ -14,10 +14,24 @@ import json
 # Import your models and database instance
 import database
 
+# Custom filter function
+
+
+def from_json_filter(value):
+    if isinstance(value, str):
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError:
+            return value
+    else:
+        return value
+
 
 # Specify the template folder explicitly
 template_dir = os.path.abspath('templates')
 app = Flask(__name__, template_folder=template_dir)
+# Register custom filter
+app.jinja_env.filters['from_json'] = from_json_filter
 app.secret_key = settings.SECRET_KEY
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -69,7 +83,11 @@ def chat():
                                'completion_tokens', 0),
                            total_tokens=session["usage"].get(
                                'total_tokens', 0),
-                           experience_space=session.get('experience_space', settings.DEFAULT_EXPERIENCE_SPACE))
+                           experience_space=session.get(
+                               'experience_space', settings.DEFAULT_EXPERIENCE_SPACE),
+                           ai_id=session.get(
+                               'ai_id', secure_information.AI_ID),
+                           ai_name=session.get('ai_name', secure_information.AI_NAME))
 
 
 # Root to clear context
@@ -84,10 +102,13 @@ def clear_context():
 def ensure_session_objects():
     if 'messages' not in session:
         messages = model.create_manifest_message()
-        messages_from_db = model.get_context_messages_from_db(
+        messages_from_db, ai_id, ai_name = model.get_context_messages_from_db(
             experience_space=settings.DEFAULT_EXPERIENCE_SPACE)
 
         messages.extend(messages_from_db)
+
+        session['ai_id'] = ai_id
+        session['ai_name'] = ai_name
 
         if settings.TERMINAL_LOGS_ENABLED:
             print("messages in db: ", messages)
