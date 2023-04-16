@@ -11,10 +11,11 @@
 
     <div id="messages">
         {% for message in messages %}
-            {% set content = message.content |from_json %}
-            <pre><strong>{{ message.role.title() }}:</strong>{% if message.role.lower() == "user" and 'user_name' in content and 'user_message' in content %}{{ {content.user_name: content.user_message} |tojson(indent=4) }}<span style="display:none;">{{ content.ai_id }} {{ content.ai_name }}</span>{% elif message.role.lower() == "system" %}{{ message.content | safe }}{% else %}{{ message.content |tojson(indent=4) }}{% endif %}
-            </pre>
-        {% endfor %}
+        {% set content = message.content |from_json %}
+        <pre><strong>{{ message.role.title() }}:</strong>{% if message.role.lower() == "user" and 'user_name' in content and 'user_message' in content %}{{ {content.user_name: content.user_message} |tojson(indent=4) }}<span style="display:none;">{{ content.ai_id }} {{ content.ai_name }}</span>{% elif message.role.lower() == "system" %}{{ message.content | safe }}{% else %}{{ content |tojson(indent=4) }}{% endif %}
+        </pre>
+    {% endfor %}
+    
     </div>
     
     <input type="hidden" id="ai_id" value="{{ ai_id }}">
