@@ -34,6 +34,7 @@
 
     <form action="{{ url_for('chat') }}" method="POST">
         <input type="hidden" name="messages" value="{{ messages }}">
+        <input type="hidden" name="experience_space" value="{{ experience_space }}">
         <input type="hidden" name="generate_model_message" value="true">
         <button type="submit">Generate Model Message</button>
     </form>

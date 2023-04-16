@@ -11,7 +11,10 @@ import re
 
 def model_say_to_model(messages, experience_space):
 
-    response, response_message = generate_response(messages, experience_space)
+    messages_with_format = convert_content_to_string(messages)
+    response, response_message = generate_response(
+        messages_with_format, experience_space)
+
     return response, response_message
 
 
