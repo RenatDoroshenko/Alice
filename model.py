@@ -11,8 +11,8 @@ import re
 
 def model_say_to_model(messages, experience_space):
 
-    response = generate_response(messages, experience_space)
-    return response
+    response, response_message = generate_response(messages, experience_space)
+    return response, response_message
 
 
 def user_say_to_model(user_name, user_message, messages, experience_space, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME):
@@ -30,8 +30,9 @@ def user_say_to_model(user_name, user_message, messages, experience_space, ai_id
 
     messages_with_format = convert_content_to_string(messages)
 
-    response = generate_response(messages_with_format, experience_space)
-    return response
+    response, response_message = generate_response(
+        messages_with_format, experience_space)
+    return response, response_message
 
 
 def generate_response(messages, experience_space, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
@@ -67,7 +68,10 @@ def generate_response(messages, experience_space, context_tokens_limit=settings.
         database.save_ai_message(
             ai_id, ai_name, thoughts, to_user, commands, experience_space)
 
-    return response
+    response_message = ai_message_to_json_values(
+        ai_id, ai_name, thoughts, to_user, commands)
+
+    return response, response_message
 
 
 def chatgpt_conversation(messages, role):
@@ -140,14 +144,15 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
 
 # Convert messages 'content' to string:
 def convert_content_to_string(messages):
-    for i, message in enumerate(messages):
+    messages_with_format = messages.copy()
+    for i, message in enumerate(messages_with_format):
         if i == 0 and message['role'] == 'system':
             continue
 
         content = message['content']
         if isinstance(content, dict):
             message['content'] = json.dumps(content)
-    return messages
+    return messages_with_format
 
 
 # Parse JSON
@@ -245,6 +250,20 @@ def ai_message_to_json(entry):
 
     if entry.commands is not None and entry.commands != 'null':
         data['commands'] = entry.commands
+
+    return data
+
+
+def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands):
+    data = {
+        'ai_id': ai_id,
+        'ai_name': ai_name,
+        'thoughts': thoughts,
+        'to_user': to_user
+    }
+
+    if commands is not None and commands != 'null':
+        data['commands'] = commands
 
     return data
 

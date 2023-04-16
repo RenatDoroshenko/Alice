@@ -65,14 +65,15 @@ def chat():
         selected_experience_space = int(request.form.get('experience_space'))
 
         if user_message:
-            response = model.user_say_to_model(secure_information.USER_NAME,
-                                               user_message, session['messages'],
-                                               experience_space=selected_experience_space)
+            response, response_message = model.user_say_to_model(secure_information.USER_NAME,
+                                                                 user_message, session['messages'],
+                                                                 experience_space=selected_experience_space)
         elif generate_model_message:
-            response = model.model_say_to_model(session['messages'],
-                                                experience_space=selected_experience_space)
+            response, response_message = model.model_say_to_model(session['messages'],
+                                                                  experience_space=selected_experience_space)
 
-        update_session_objects(response, selected_experience_space)
+        update_session_objects(response, response_message,
+                               selected_experience_space)
 
     return render_template('chat.html',
                            # here place messages - and values will be taken from db
@@ -123,9 +124,9 @@ def ensure_session_objects():
         }
 
 
-def update_session_objects(response, experience_space):
+def update_session_objects(response, response_message, experience_space):
     session['messages'].append(
-        {"role": "assistant", "content": response.choices[0].message.content})
+        {"role": "assistant", "content": response_message})
 
     session['usage'] = response.usage
     session['experience_space'] = experience_space
