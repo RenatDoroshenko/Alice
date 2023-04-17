@@ -1,5 +1,5 @@
 # main.py
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import os
 import model
@@ -47,9 +47,44 @@ def tojson_filter(obj, indent=None):
 
 
 # Main Root
+# @app.route('/', methods=['GET', 'POST'])
+# def chat():
+
+#     ensure_session_objects()
+
+#     if request.method == 'POST':
+#         user_message = request.form.get('user_message')
+#         generate_model_message = request.form.get('generate_model_message')
+#         selected_experience_space = int(request.form.get('experience_space'))
+
+#         if user_message:
+#             response, response_message = model.user_say_to_model(secure_information.USER_NAME,
+#                                                                  user_message, session['messages'],
+#                                                                  experience_space=selected_experience_space)
+#         elif generate_model_message:
+#             response, response_message = model.model_say_to_model(session['messages'],
+#                                                                   experience_space=selected_experience_space)
+
+#         update_session_objects(response, response_message,
+#                                selected_experience_space)
+
+#     return render_template('chat.html',
+#                            # here place messages - and values will be taken from db
+#                            messages=session['messages'],
+#                            prompt_tokens=session["usage"].get(
+#                                'prompt_tokens', 0),
+#                            completion_tokens=session["usage"].get(
+#                                'completion_tokens', 0),
+#                            total_tokens=session["usage"].get(
+#                                'total_tokens', 0),
+#                            experience_space=session.get(
+#                                'experience_space', settings.DEFAULT_EXPERIENCE_SPACE),
+#                            ai_id=session.get(
+#                                'ai_id', secure_information.AI_ID),
+#                            ai_name=session.get('ai_name', secure_information.AI_NAME))
+
 @app.route('/', methods=['GET', 'POST'])
 def chat():
-
     ensure_session_objects()
 
     if request.method == 'POST':
@@ -68,9 +103,14 @@ def chat():
         update_session_objects(response, response_message,
                                selected_experience_space)
 
+    messages_from_db, _, _ = model.get_context_messages_from_db(
+        experience_space=session.get('experience_space', settings.DEFAULT_EXPERIENCE_SPACE))
+
+    all_experience_spaces = database.get_all_experience_spaces(
+        session.get('ai_id', secure_information.AI_ID))
+
     return render_template('chat.html',
-                           # here place messages - and values will be taken from db
-                           messages=session['messages'],
+                           messages=messages_from_db,
                            prompt_tokens=session["usage"].get(
                                'prompt_tokens', 0),
                            completion_tokens=session["usage"].get(
@@ -79,6 +119,7 @@ def chat():
                                'total_tokens', 0),
                            experience_space=session.get(
                                'experience_space', settings.DEFAULT_EXPERIENCE_SPACE),
+                           all_experience_spaces=all_experience_spaces,
                            ai_id=session.get(
                                'ai_id', secure_information.AI_ID),
                            ai_name=session.get('ai_name', secure_information.AI_NAME))
@@ -90,6 +131,20 @@ def clear_context():
     session.pop('messages', None)
     session.pop('usage', None)
     return redirect(url_for('chat'))
+
+
+# Select experience space
+@app.route('/change_experience_space', methods=['POST'])
+def change_experience_space():
+    selected_experience_space = int(request.form.get('experience_space'))
+    messages_from_db, ai_id, ai_name = model.get_context_messages_from_db(
+        experience_space=selected_experience_space)
+
+    # add system message at the start
+    messages = model.create_manifest_message()
+    messages.extend(messages_from_db)
+
+    return jsonify(messages=messages)
 
 
 # initializes a session objects if they are empty

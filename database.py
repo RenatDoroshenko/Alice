@@ -81,3 +81,15 @@ def save_environment_message(ai_id, ai_name, commands, experience_space):
     )
     db.session.add(environment_entry)
     db.session.commit()
+
+
+def get_all_experience_spaces(ai_id):
+    all_experience_spaces = (
+        db.session.query(Experience.experience_space)
+        .filter(Experience.ai_id == ai_id)
+        .distinct()
+        .all()
+    )
+    all_experience_spaces = [experience_space[0]
+                             for experience_space in all_experience_spaces if experience_space[0] is not None]
+    return sorted(all_experience_spaces)
