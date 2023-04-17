@@ -1,17 +1,16 @@
 # model.py
-import json
 import openai
 import settings
 import tiktoken
 import format
 import secure_information
 import database
-import re
+import json_converter
 
 
 def model_say_to_model(messages, experience_space):
 
-    messages_with_format = convert_content_to_string(messages)
+    messages_with_format = json_converter.convert_content_to_string(messages)
     response, response_message = generate_response(
         messages_with_format, experience_space)
 
@@ -26,12 +25,11 @@ def user_say_to_model(user_name, user_message, messages, experience_space, ai_id
 
     # Combine user name and user message into a single string
     full_response = {'user_message': user_message, 'user_name': user_name}
-    # format.USER_RESPONSE.format(
-    #     user_name=user_name, content=user_message)
+
     messages.append(
         {"role": "user", "content": full_response})
 
-    messages_with_format = convert_content_to_string(messages)
+    messages_with_format = json_converter.convert_content_to_string(messages)
 
     response, response_message = generate_response(
         messages_with_format, experience_space)
@@ -44,10 +42,6 @@ def generate_response(messages, experience_space, context_tokens_limit=settings.
     # Remove earliest messages until the total tokens are under the limit (except 'system' message)
     while num_tokens_from_messages(messages) > context_tokens_limit:
         messages.pop(1)
-
-    # Combine messages into a single string
-    # prompt = "\n\n".join(
-    #     [f"{msg['role'].title()}: {msg['content']}" for msg in messages]) + "\n\n"
 
     # Calculate the remaining tokens for the response
     remaining_tokens = settings.MAX_TOKENS - num_tokens_from_messages(messages)
@@ -64,29 +58,17 @@ def generate_response(messages, experience_space, context_tokens_limit=settings.
 
     if settings.SAVE_TO_DB:
         # Important: here problem when result not in json
-        ai_id, ai_name, thoughts, to_user, commands = parse_ai_message(
+        ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
             response.choices[0].message.content)
 
     if settings.SAVE_TO_DB:
         database.save_ai_message(
             ai_id, ai_name, thoughts, to_user, commands, experience_space)
 
-    response_message = ai_message_to_json_values(
+    response_message = json_converter.ai_message_to_json_values(
         ai_id, ai_name, thoughts, to_user, commands)
 
     return response, response_message
-
-
-def chatgpt_conversation(messages, role):
-    response = openai.ChatCompletion.create(
-        model=settings.MODEL_ID,
-        messages=messages
-    )
-    messages.append({
-        "role": role, "content": response.choices[0].message.content
-    })
-
-    return messages
 
 
 def create_test_messages():
@@ -145,66 +127,6 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     return num_tokens
 
 
-# Convert messages 'content' to string:
-def convert_content_to_string(messages):
-    messages_with_format = messages.copy()
-    for i, message in enumerate(messages_with_format):
-        if i == 0 and message['role'] == 'system':
-            continue
-
-        content = message['content']
-        if isinstance(content, dict):
-            message['content'] = json.dumps(content)
-    return messages_with_format
-
-
-# Parse JSON
-
-
-def parse_user_message(json_data):
-    # if settings.TERMINAL_LOGS_ENABLED:
-    #     print("User message to save: ", json_data)
-
-    ensure_json_format(json_data)
-
-    data = json.loads(json_data)
-    user_name = data.get('user_name')
-    user_message = data.get('user_message')
-    ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
-    ai_name = data.get('ai_name')
-    return user_name, user_message, ai_id, ai_name
-
-
-def parse_ai_message(json_data):
-    # if settings.TERMINAL_LOGS_ENABLED:
-    #     print("AI message to save: ", json_data)
-
-    ensure_json_format(json_data)
-
-    data = json.loads(json_data)
-    ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
-    ai_name = data.get('ai_name')
-    thoughts = data.get('thoughts')
-    to_user = data.get('to_user')
-    commands = json.dumps(data.get('commands'))
-    return ai_id, ai_name, thoughts, to_user, commands
-
-
-def parse_environment_message(json_data):
-    # if settings.TERMINAL_LOGS_ENABLED:
-    #     print("Environment message to save: ", json_data)
-
-    ensure_json_format(json_data)
-
-    data = json.loads(json_data)
-    ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
-    ai_name = data.get('ai_name')
-    commands = json.dumps(data.get('commands'))
-    return ai_id, ai_name, commands
-
-# Convert to JSON
-
-
 def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_space=settings.DEFAULT_EXPERIENCE_SPACE):
     entries = database.get_latest_messages(ai_id, experience_space)
 
@@ -214,12 +136,12 @@ def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_spac
     for entry in entries:
 
         if entry.message_type == "user":
-            content = user_message_to_json(entry)
+            content = json_converter.user_message_to_json(entry)
 
         elif entry.message_type == "assistant":
             if not ai_name:
                 ai_name = entry.ai_name
-            content = ai_message_to_json(entry)
+            content = json_converter.ai_message_to_json(entry)
         else:
             continue
 
@@ -231,112 +153,14 @@ def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_spac
     return messages, ai_id, ai_name
 
 
-def user_message_to_json(entry):
-    data = {
-        'user_name': entry.user_name,
-        'user_message': entry.user_message
-    }
-
-    # 'ai_id': entry.ai_id,
-    # 'ai_name': entry.ai_name
-
-    return data
-
-
-def ai_message_to_json(entry):
-    data = {
-        'ai_id': entry.ai_id,
-        'ai_name': entry.ai_name,
-        'thoughts': entry.thoughts,
-        'to_user': entry.to_user
-    }
-
-    if entry.commands is not None and entry.commands != 'null':
-        data['commands'] = entry.commands
-
-    return data
-
-
-def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands):
-    data = {
-        'ai_id': ai_id,
-        'ai_name': ai_name,
-        'thoughts': thoughts,
-        'to_user': to_user
-    }
-
-    if commands is not None and commands != 'null':
-        data['commands'] = commands
-
-    return data
-
-
-def environment_message_to_json(entry):
-    data = {
-        'ai_id': entry.ai_id,
-        'ai_name': entry.ai_name
-    }
-
-    if entry.commands is not None and entry.commands != 'null':
-        data['commands'] = entry.commands
-
-    return data
-
 # Create OpenAI format message
-
-
 def put_to_open_ai_format(message_type, content):
     data = {"role": message_type, "content": content}
     return data
 
-
-# Detect when AI forget to add brackets to json
-
-def is_valid_json(json_data):
-    try:
-        json.loads(json_data)
-        return True
-    except json.JSONDecodeError:
-        return False
-
-
-def fix_missing_braces(json_data):
-    opening_braces = json_data.count('{')
-    closing_braces = json_data.count('}')
-
-    if opening_braces > closing_braces:
-        missing_braces = opening_braces - closing_braces
-        json_data += '}' * missing_braces
-
-    return json_data
-
-
-def fix_missing_commas(json_data):
-    json_data = re.sub(r'(?<=")(\s*\n\s*)"(?=\w+)', r',\1"', json_data)
-    return json_data
-
-
-def ensure_json_format(json_data):
-    if not is_valid_json(json_data):
-        print("There is an issue with the JSON data. Attempting to fix it...")
-
-        if settings.TERMINAL_LOGS_ENABLED:
-            print("Json with issues: ", json_data)
-
-        fixed_json_data = fix_missing_braces(json_data)
-        fixed_json_data = fix_missing_commas(fixed_json_data)
-
-        if settings.TERMINAL_LOGS_ENABLED:
-            print("Fixed json: ", json_data)
-
-        if is_valid_json(fixed_json_data):
-            print("JSON data fixed.")
-            json_data = fixed_json_data
-        else:
-            print("Failed to fix the JSON data.")
-
-
 # Manifest message
+
+
 def create_manifest_message():
     return [
         {'role': 'system', 'content': format.MANIFEST.format(
