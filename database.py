@@ -30,7 +30,7 @@ class Summary(db.Model):
     experiences = db.relationship("Experience", backref="summary", lazy=True)
 
 
-def get_latest_messages(ai_id, experience_space, messages_number=20):
+def get_latest_messages(ai_id, experience_space, messages_number=50):
     latest_messages = (
         Experience.query.filter_by(
             ai_id=ai_id, experience_space=experience_space)

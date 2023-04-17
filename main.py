@@ -46,46 +46,15 @@ def tojson_filter(obj, indent=None):
     return json.dumps(obj, indent=indent)
 
 
-# Main Root
-# @app.route('/', methods=['GET', 'POST'])
-# def chat():
-
-#     ensure_session_objects()
-
-#     if request.method == 'POST':
-#         user_message = request.form.get('user_message')
-#         generate_model_message = request.form.get('generate_model_message')
-#         selected_experience_space = int(request.form.get('experience_space'))
-
-#         if user_message:
-#             response, response_message = model.user_say_to_model(secure_information.USER_NAME,
-#                                                                  user_message, session['messages'],
-#                                                                  experience_space=selected_experience_space)
-#         elif generate_model_message:
-#             response, response_message = model.model_say_to_model(session['messages'],
-#                                                                   experience_space=selected_experience_space)
-
-#         update_session_objects(response, response_message,
-#                                selected_experience_space)
-
-#     return render_template('chat.html',
-#                            # here place messages - and values will be taken from db
-#                            messages=session['messages'],
-#                            prompt_tokens=session["usage"].get(
-#                                'prompt_tokens', 0),
-#                            completion_tokens=session["usage"].get(
-#                                'completion_tokens', 0),
-#                            total_tokens=session["usage"].get(
-#                                'total_tokens', 0),
-#                            experience_space=session.get(
-#                                'experience_space', settings.DEFAULT_EXPERIENCE_SPACE),
-#                            ai_id=session.get(
-#                                'ai_id', secure_information.AI_ID),
-#                            ai_name=session.get('ai_name', secure_information.AI_NAME))
-
 @app.route('/', methods=['GET', 'POST'])
 def chat():
-    ensure_session_objects()
+
+    ai_id = secure_information.AI_ID
+    selected_experience_space = request.form.get(
+        'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
+
+    messages, ai_id, ai_name = model.get_context_messages_with_manifest(
+        ai_id=ai_id, experience_space=selected_experience_space)
 
     if request.method == 'POST':
         user_message = request.form.get('user_message')
@@ -94,23 +63,22 @@ def chat():
 
         if user_message:
             response, response_message = model.user_say_to_model(secure_information.USER_NAME,
-                                                                 user_message, session['messages'],
+                                                                 user_message, messages,
                                                                  experience_space=selected_experience_space)
         elif generate_model_message:
-            response, response_message = model.model_say_to_model(session['messages'],
+            response, response_message = model.model_say_to_model(messages,
                                                                   experience_space=selected_experience_space)
 
-        update_session_objects(response, response_message,
-                               selected_experience_space)
+        update_session_objects(response, selected_experience_space)
 
-    messages_from_db, _, _ = model.get_context_messages_from_db(
-        experience_space=session.get('experience_space', settings.DEFAULT_EXPERIENCE_SPACE))
+        messages.append(
+            {"role": "assistant", "content": response_message})
 
     all_experience_spaces = database.get_all_experience_spaces(
-        session.get('ai_id', secure_information.AI_ID))
+        session.get('ai_id', ai_id))
 
     return render_template('chat.html',
-                           messages=messages_from_db,
+                           messages=messages,
                            prompt_tokens=session["usage"].get(
                                'prompt_tokens', 0),
                            completion_tokens=session["usage"].get(
@@ -125,56 +93,32 @@ def chat():
                            ai_name=session.get('ai_name', secure_information.AI_NAME))
 
 
-# Root to clear context
-@ app.route('/clear_context', methods=['POST'])
-def clear_context():
-    session.pop('messages', None)
-    session.pop('usage', None)
-    return redirect(url_for('chat'))
-
-
 # Select experience space
 @app.route('/change_experience_space', methods=['POST'])
 def change_experience_space():
+
+    # reset the usage
+    # set_default_usage(prompt_tokens=0, completion_tokens=0, total_tokens=0)
+
+    ai_id = secure_information.AI_ID
     selected_experience_space = int(request.form.get('experience_space'))
-    messages_from_db, ai_id, ai_name = model.get_context_messages_from_db(
-        experience_space=selected_experience_space)
+    messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
+                                                                        experience_space=selected_experience_space)
 
-    # add system message at the start
-    messages = model.create_manifest_message()
-    messages.extend(messages_from_db)
+    usage = session['usage']
 
-    return jsonify(messages=messages)
+    return jsonify(messages=messages, usage=usage)
 
 
-# initializes a session objects if they are empty
-def ensure_session_objects():
-    if 'messages' not in session:
-        messages = model.create_manifest_message()
-        messages_from_db, ai_id, ai_name = model.get_context_messages_from_db(
-            experience_space=settings.DEFAULT_EXPERIENCE_SPACE)
-
-        messages.extend(messages_from_db)
-
-        session['ai_id'] = ai_id
-        session['ai_name'] = ai_name
-
-        if settings.TERMINAL_LOGS_ENABLED:
-            print("messages in db: ", messages)
-
-        session['messages'] = messages
-
-    if "usage" not in session:
-        session["usage"] = {
-            "prompt_tokens": 0,
-            "completion_tokens": 0,
-            "total_tokens": 0
-        }
+def set_default_usage(prompt_tokens, completion_tokens, total_tokens):
+    session["usage"] = {
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total_tokens
+    }
 
 
-def update_session_objects(response, response_message, experience_space):
-    session['messages'].append(
-        {"role": "assistant", "content": response_message})
+def update_session_objects(response, experience_space):
 
     session['usage'] = response.usage
     session['experience_space'] = experience_space

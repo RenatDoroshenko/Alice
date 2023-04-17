@@ -1,4 +1,5 @@
 # json_converter.py
+import json.decoder
 import json
 import re
 import settings
@@ -82,6 +83,10 @@ def fix_missing_commas(json_data):
     return json_data
 
 
+def remove_invalid_control_characters(json_data):
+    return ''.join(c for c in json_data if c not in '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0b\x0c\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f')
+
+
 def ensure_json_format(json_data):
     if not is_valid_json(json_data):
         print("There is an issue with the JSON data. Attempting to fix it...")
@@ -89,6 +94,8 @@ def ensure_json_format(json_data):
         if settings.TERMINAL_LOGS_ENABLED:
             print("Json with issues: ", json_data)
 
+        fixed_json_data = fix_missing_braces(json_data)
+        fixed_json_data = fix_missing_commas(fixed_json_data)
         fixed_json_data = fix_missing_braces(json_data)
         fixed_json_data = fix_missing_commas(fixed_json_data)
 
@@ -100,6 +107,10 @@ def ensure_json_format(json_data):
             json_data = fixed_json_data
         else:
             print("Failed to fix the JSON data.")
+
+
+def replace_newlines_with_html_br(text):
+    return text.replace('\n', '<br>')
 
 # Parse JSON
 
@@ -124,6 +135,7 @@ def parse_ai_message(json_data):
 
     ensure_json_format(json_data)
 
+    # json_data = remove_invalid_control_characters(json_data)
     data = json.loads(json_data)
     ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
     ai_name = data.get('ai_name')
