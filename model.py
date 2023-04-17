@@ -127,7 +127,7 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     return num_tokens
 
 
-def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_space=settings.DEFAULT_EXPERIENCE_SPACE):
+def get_context_messages_from_db(ai_id, experience_space):
     entries = database.get_latest_messages(ai_id, experience_space)
 
     messages = []
@@ -149,6 +149,15 @@ def get_context_messages_from_db(ai_id=secure_information.AI_ID, experience_spac
 
     if not ai_name:
         ai_name = secure_information.AI_NAME
+
+    return messages, ai_id, ai_name
+
+
+def get_context_messages_with_manifest(ai_id, experience_space):
+    messages = create_manifest_message()
+    messages_from_db, ai_id, ai_name = get_context_messages_from_db(
+        ai_id, experience_space)
+    messages.extend(messages_from_db)
 
     return messages, ai_id, ai_name
 

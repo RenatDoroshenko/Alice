@@ -42,14 +42,11 @@
     <br />
     <div>
         <h3>Token Information:</h3>
-        <p><strong>Prompt tokens:</strong> {{ prompt_tokens }}</p>
-        <p><strong>Completion tokens:</strong> {{ completion_tokens }}</p>
-        <p><strong>Total tokens:</strong> {{ total_tokens }}</p>
+        <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
+        <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>
+        <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
     </div>
-
-    <form action="{{ url_for('clear_context') }}" method="POST">
-        <button type="submit">Clear Context</button>
-    </form>          
+            
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -86,6 +83,12 @@
         }
         
 
+        function updateTokenInformation(usage) {
+            document.getElementById("prompt_tokens").innerText = usage.prompt_tokens;
+            document.getElementById("completion_tokens").innerText = usage.completion_tokens;
+            document.getElementById("total_tokens").innerText = usage.total_tokens;
+        }
+        
         function fetchAndUpdateMessages(experienceSpace) {
             const xhr = new XMLHttpRequest();
         
@@ -94,6 +97,7 @@
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
                         updateMessages(response.messages);
+                        updateTokenInformation(response.usage);
                     } else {
                         console.error("An error occurred while fetching messages.");
                     }
@@ -104,6 +108,7 @@
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.send("experience_space=" + experienceSpace);
         }
+        
         
     </script>
     
