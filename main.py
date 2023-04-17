@@ -2,13 +2,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import os
-import openai
 import model
 import settings
-import format
 import secure_information
-from datetime import datetime
-from flask_migrate import Migrate
 import json
 
 # Import your models and database instance
@@ -40,9 +36,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database with the app
 database.db.init_app(app)
-
-# Initialize Flask-Migrate with the app and the database
-# migrate = Migrate(app, database.db)
 
 with app.app_context():
     database.db.create_all()
@@ -134,17 +127,5 @@ def update_session_objects(response, response_message, experience_space):
     session.modified = True
 
 
-# @app.route('/add_user', methods=['POST'])
-# def add_user():
-#     username = request.form['username']
-#     user = User(username=username)
-#     db.session.add(user)
-#     db.session.commit()
-#     return redirect(url_for('list_users'))
-
-# @app.route('/list_users')
-# def list_users():
-#     users = User.query.all()
-#     return render_template('list_users.html', users=users)
 if __name__ == '__main__':
     app.run(debug=True)
