@@ -10,11 +10,6 @@
     <h1>Chat with GPT-3.5-turbo</h1>
 
     <div id="messages">
-        {% for message in messages %}
-        {% set content = message.content |from_json %}
-        <pre><strong>{{ message.role.title() }}:</strong>{% if message.role.lower() == "user" and 'user_name' in content and 'user_message' in content %}{{ {content.user_name: content.user_message} |tojson(indent=4) }}<span style="display:none;">{{ content.ai_id }} {{ content.ai_name }}</span>{% elif message.role.lower() == "system" %}{{ message.content | safe }}{% else %}{{ content |tojson(indent=4) }}{% endif %}
-        </pre>
-    {% endfor %}
     
     </div>
     
@@ -27,9 +22,12 @@
         <input type="text" name="user_message" id="user_message" autofocus>
         <label for="experience_space">Experience Space:</label>
         <select name="experience_space" id="experience_space">
-            <option value="{{ experience_space }}">{{ experience_space }}</option>
-            <option value="{{ experience_space + 1 }}">{{ experience_space + 1 }}</option>
+            {% for es in all_experience_spaces %}
+                <option value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</option>
+            {% endfor %}
+            <option value="{{ experience_space + 1 }}">Create New Experience Space ({{ experience_space + 1 }})</option>
         </select>
+        
         <button type="submit">Send</button>
     </form>
 
@@ -53,5 +51,61 @@
         <button type="submit">Clear Context</button>
     </form>          
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const initialExperienceSpace = document.getElementById("experience_space").value;
+            fetchAndUpdateMessages(initialExperienceSpace);
+        });
+        
+        document.getElementById("experience_space").addEventListener("change", function () {
+            fetchAndUpdateMessages(this.value);
+        });
+        
+        
+    
+        function updateMessages(newMessages) {
+            const messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML = "";
+        
+            newMessages.forEach(function(message) {
+                const content = message.content;
+                const role = message.role.charAt(0).toUpperCase() + message.role.slice(1);
+        
+                let messageContent = "";
+                if (message.role.toLowerCase() === "user" && 'user_name' in content && 'user_message' in content) {
+                    messageContent = JSON.stringify({[content.user_name]: content.user_message}, null, 4);
+                } else if (message.role.toLowerCase() === "system") {
+                    messageContent = message.content;
+                } else {
+                    messageContent = JSON.stringify(content, null, 4);
+                }
+        
+                const messageHtml = `<pre><strong>${role}:</strong>${messageContent}</pre>`;
+                messagesDiv.innerHTML += messageHtml;
+            });
+        }
+        
+
+        function fetchAndUpdateMessages(experienceSpace) {
+            const xhr = new XMLHttpRequest();
+        
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        updateMessages(response.messages);
+                    } else {
+                        console.error("An error occurred while fetching messages.");
+                    }
+                }
+            };
+        
+            xhr.open("POST", "{{ url_for('change_experience_space') }}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send("experience_space=" + experienceSpace);
+        }
+        
+    </script>
+    
 </body>
 </html>
