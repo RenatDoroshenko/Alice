@@ -33,7 +33,7 @@
 
     <form action="{{ url_for('chat') }}" method="POST">
         <input type="hidden" name="messages" value="{{ messages }}">
-        <input type="hidden" name="experience_space" value="{{ experience_space }}">
+        <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
         <input type="hidden" name="generate_model_message" value="true">
         <button type="submit">Generate Model Message</button>
     </form>
@@ -56,10 +56,10 @@
         
         document.getElementById("experience_space").addEventListener("change", function () {
             const experienceSpace = this.options[this.selectedIndex].value;
-            console.log('experience space passed to fetchAndUpdateMessages: ' + experienceSpace)
+            console.log('experience space passed to fetchAndUpdateMessages:', experienceSpace);
             fetchAndUpdateMessages(experienceSpace);
-        });
-                                                
+            document.getElementById("generate_experience_space").value = experienceSpace;
+        });                                                
     
         function updateMessages(newMessages) {
             const messagesDiv = document.getElementById("messages");
