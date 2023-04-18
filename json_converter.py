@@ -116,12 +116,13 @@ def ensure_json_format(json_data):
         if settings.TERMINAL_LOGS_ENABLED:
             print("Json with issues: ", json_data)
 
-        fixed_json_data = fix_unclosed_double_quotes(json_data)
-        fixed_json_data = fix_missing_braces(fixed_json_data)
+        fixed_json_data = fix_missing_braces(json_data)
+        fixed_json_data = fix_missing_commas(fixed_json_data)
+        fixed_json_data = fix_missing_braces(json_data)
         fixed_json_data = fix_missing_commas(fixed_json_data)
 
         if settings.TERMINAL_LOGS_ENABLED:
-            print("Fixed json: ", fixed_json_data)
+            print("Fixed json: ", json_data)
 
         if is_valid_json(fixed_json_data):
             print("JSON data fixed.")
