@@ -5,3 +5,6 @@ SECRET_KEY = "tehoskrlachkisnateuhsanoeuh"
 SAVE_TO_DB = True
 DEFAULT_EXPERIENCE_SPACE = 1
 TERMINAL_LOGS_ENABLED = True
+VECTOR_INDEX_DIMENSION = 1536
+FAISS_INDEX_FOLDER = "memory"
+EMBEDDING_MODEL = "text-embedding-ada-002"
