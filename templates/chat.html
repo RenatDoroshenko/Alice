@@ -25,7 +25,7 @@
             {% for es in all_experience_spaces %}
                 <option value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</option>
             {% endfor %}
-            <option value="{{ experience_space + 1 }}">Create New Experience Space ({{ experience_space + 1 }})</option>
+            <option value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</option>
         </select>
         
         <button type="submit">Send</button>
@@ -33,7 +33,7 @@
 
     <form action="{{ url_for('chat') }}" method="POST">
         <input type="hidden" name="messages" value="{{ messages }}">
-        <input type="hidden" name="experience_space" value="{{ experience_space }}">
+        <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
         <input type="hidden" name="generate_model_message" value="true">
         <button type="submit">Generate Model Message</button>
     </form>
@@ -55,10 +55,11 @@
         });
         
         document.getElementById("experience_space").addEventListener("change", function () {
-            fetchAndUpdateMessages(this.value);
-        });
-        
-        
+            const experienceSpace = this.options[this.selectedIndex].value;
+            console.log('experience space passed to fetchAndUpdateMessages:', experienceSpace);
+            fetchAndUpdateMessages(experienceSpace);
+            document.getElementById("generate_experience_space").value = experienceSpace;
+        });                                                
     
         function updateMessages(newMessages) {
             const messagesDiv = document.getElementById("messages");
@@ -88,8 +89,27 @@
             document.getElementById("completion_tokens").innerText = usage.completion_tokens;
             document.getElementById("total_tokens").innerText = usage.total_tokens;
         }
+
+        function updateSelectOptions(newOptions) {
+            const select = document.getElementById("experience_space");
+            select.innerHTML = "";
+            
+            newOptions.forEach(function(optionValue) {
+                const option = document.createElement("option");
+                option.value = optionValue;
+                option.text = optionValue;
+                select.add(option);
+            });
+        
+            // Add "Create New Experience Space" option
+            const createNewOption = document.createElement("option");
+            createNewOption.value = newOptions[newOptions.length - 1] + 1;
+            createNewOption.text = "Create New Experience Space (" + createNewOption.value + ")";
+            select.add(createNewOption);
+        }
         
         function fetchAndUpdateMessages(experienceSpace) {
+            console.log("fetchAndUpdateMessages called with experienceSpace:", experienceSpace);  // Add this line
             const xhr = new XMLHttpRequest();
         
             xhr.onreadystatechange = function () {
@@ -98,6 +118,8 @@
                         const response = JSON.parse(xhr.responseText);
                         updateMessages(response.messages);
                         updateTokenInformation(response.usage);
+                        updateSelectOptions(response.all_experience_spaces);
+                        document.getElementById("experience_space").value = experienceSpace;
                     } else {
                         console.error("An error occurred while fetching messages.");
                     }
@@ -106,7 +128,8 @@
         
             xhr.open("POST", "{{ url_for('change_experience_space') }}", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.send("experience_space=" + experienceSpace);
+            xhr.send("experience_space=" + encodeURIComponent(experienceSpace));
+
         }
         
         
