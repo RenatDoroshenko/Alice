@@ -56,6 +56,9 @@ def chat():
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(
         ai_id=ai_id, experience_space=selected_experience_space)
 
+    if 'usage' not in session:
+        set_default_usage(0, 0, 0)
+
     if request.method == 'POST':
         user_message = request.form.get('user_message')
         generate_model_message = request.form.get('generate_model_message')
@@ -76,6 +79,7 @@ def chat():
 
     all_experience_spaces = database.get_all_experience_spaces(
         session.get('ai_id', ai_id))
+    highest_experience_space = max(all_experience_spaces)
 
     return render_template('chat.html',
                            messages=messages,
@@ -88,6 +92,7 @@ def chat():
                            experience_space=session.get(
                                'experience_space', settings.DEFAULT_EXPERIENCE_SPACE),
                            all_experience_spaces=all_experience_spaces,
+                           highest_experience_space=highest_experience_space,
                            ai_id=session.get(
                                'ai_id', secure_information.AI_ID),
                            ai_name=session.get('ai_name', secure_information.AI_NAME))
@@ -102,12 +107,20 @@ def change_experience_space():
 
     ai_id = secure_information.AI_ID
     selected_experience_space = int(request.form.get('experience_space'))
+    print("Selected experience space:",
+          selected_experience_space)  # Add this line
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space)
 
     usage = session['usage']
 
-    return jsonify(messages=messages, usage=usage)
+    all_experience_spaces = database.get_all_experience_spaces(
+        session.get('ai_id', ai_id))
+    highest_experience_space = max(all_experience_spaces)
+
+    all_experience_spaces.sort()
+
+    return jsonify(messages=messages, usage=usage, all_experience_spaces=all_experience_spaces)
 
 
 def set_default_usage(prompt_tokens, completion_tokens, total_tokens):
