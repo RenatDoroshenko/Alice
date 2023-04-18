@@ -83,6 +83,28 @@ def fix_missing_commas(json_data):
     return json_data
 
 
+def fix_unclosed_double_quotes(json_data):
+    stack = []
+    fixed_json_data = ""
+
+    for c in json_data:
+        if c == '"':
+            if len(stack) > 0 and stack[-1] == '"':
+                stack.pop()
+            else:
+                stack.append(c)
+        fixed_json_data += c
+
+        if len(stack) == 1 and (c == ',' or c == ':'):
+            fixed_json_data = fixed_json_data[:-1] + '"' + c
+            stack.pop()
+
+    if len(stack) == 1:
+        fixed_json_data += '"'
+
+    return fixed_json_data
+
+
 def remove_invalid_control_characters(json_data):
     return ''.join(c for c in json_data if c not in '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0b\x0c\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f')
 
