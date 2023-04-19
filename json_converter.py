@@ -5,6 +5,25 @@ import re
 import settings
 
 
+# For memory entries only
+
+
+def convert_db_memories_messages_to_json(entries):
+    messages = []
+    for entry in entries:
+        if entry.message_type == "user":
+            content = user_message_to_json(entry)
+
+        elif entry.message_type == "assistant":
+            content = ai_message_to_json(entry, withMemory=False)
+        else:
+            continue
+
+        messages.append(content)
+
+    return messages
+
+
 def user_message_to_json(entry):
     data = {
         'user_name': entry.user_name,
@@ -17,7 +36,7 @@ def user_message_to_json(entry):
     return data
 
 
-def ai_message_to_json(entry):
+def ai_message_to_json(entry, withMemory=True):
     data = {
         'ai_id': entry.ai_id,
         'ai_name': entry.ai_name,
@@ -26,12 +45,81 @@ def ai_message_to_json(entry):
     }
 
     if entry.commands is not None and entry.commands != 'null':
-        data['commands'] = entry.commands
+        data['commands'] = json.loads(entry.commands)
+
+    if withMemory:
+        if entry.memories is not None and entry.memories != 'null':
+            # Here is format of messages from db
+            memories = json.loads(entry.memories)
+            if len(memories) != 0:
+                # Check if the 'memories' is a list of dictionaries or list of objects
+                is_dict = isinstance(memories[0], dict)
+                if is_dict:
+                    formatted_memories = convert_db_memories_messages_to_json_from_dict(
+                        memories)
+                else:
+                    formatted_memories = convert_db_memories_messages_to_json(
+                        memories)
+
+                data['memories'] = formatted_memories
 
     return data
 
 
-def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands):
+def convert_db_memories_messages_to_json_from_dict(entries):
+    messages = []
+    for entry in entries:
+        if entry['message_type'] == "user":
+            content = user_message_to_json_from_dict(entry)
+
+        elif entry['message_type'] == "assistant":
+            content = ai_message_to_json_from_dict(entry, withMemory=False)
+        else:
+            continue
+
+        messages.append(content)
+
+    return messages
+
+
+def user_message_to_json_from_dict(entry):
+    print('user_message_to_json_from_dict - entry', entry)
+    data = {
+        'user_name': entry['user_name'],
+        'user_message': entry['user_message']
+    }
+
+    # 'ai_id': entry.ai_id,
+    # 'ai_name': entry.ai_name
+
+    return data
+
+
+def ai_message_to_json_from_dict(entry, withMemory=True):
+    data = {
+        'ai_id': entry['ai_id'],
+        'ai_name': entry['ai_name'],
+        'thoughts': entry['thoughts'],
+        'to_user': entry['to_user']
+    }
+
+    if entry['commands'] is not None and entry['commands'] != 'null':
+        data['commands'] = json.loads(entry['commands'])
+
+    if withMemory:
+        if entry['memories'] is not None and entry['memories'] != 'null':
+            # Here is format of messages from db
+            memories = json.loads(entry['memories'])
+            if len(memories) != 0:
+                formatted_memories = convert_db_memories_messages_to_json_from_dict(
+                    memories)
+                data['memories'] = formatted_memories
+
+    return data
+
+
+# Used when model responded
+def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands, memories):
     data = {
         'ai_id': ai_id,
         'ai_name': ai_name,
@@ -41,6 +129,10 @@ def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands):
 
     if commands is not None and commands != 'null':
         data['commands'] = commands
+
+    if memories:
+        formatted_memories = convert_db_memories_messages_to_json(memories)
+        data['memories'] = formatted_memories
 
     return data
 

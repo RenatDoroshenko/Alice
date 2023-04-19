@@ -71,22 +71,34 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
     ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
         response.choices[0].message.content)
 
-    response_message = json_converter.ai_message_to_json_values(
-        ai_id, ai_name, thoughts, to_user, commands)
+    # Get relevant memories from DB
+    memories = get_full_memories_from_db(thoughts=thoughts,
+                                         index=memory_index,
+                                         metadata=metadata)
 
-    memories = memory.retrieve_relevant_memories(thoughts=thoughts,
-                                                 index=memory_index,
-                                                 metadata=metadata)
+    response_message = json_converter.ai_message_to_json_values(
+        ai_id, ai_name, thoughts, to_user, commands, memories)
 
     # Save AI message to db
     ai_message_id = database.save_ai_message(
-        ai_id, ai_name, thoughts, to_user, commands, experience_space)
+        ai_id, ai_name, thoughts, to_user, commands, memories, experience_space)
 
     # Save to Long-term memory
     memory.add_ai_message_to_memory(response_message,
                                     memory_index, metadata, ai_message_id)
 
     return response, response_message
+
+
+def get_full_memories_from_db(thoughts, index, metadata):
+    memories = memory.retrieve_relevant_memories(thoughts=thoughts,
+                                                 index=index,
+                                                 metadata=metadata)
+
+    memory_message_ids = [memory['message_id'] for memory in memories]
+    memories = database.get_messages_by_ids(memory_message_ids)
+
+    return memories
 
 
 def create_test_messages():

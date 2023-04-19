@@ -1,6 +1,7 @@
 # database.py
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import json
 
 db = SQLAlchemy()
 
@@ -19,8 +20,26 @@ class Experience(db.Model):
     user_name = db.Column(db.String(100), nullable=True)
     user_message = db.Column(db.Text, nullable=True)
     commands = db.Column(db.Text, nullable=True)
+    memories = db.Column(db.Text, nullable=True)
     experience_space = db.Column(db.Integer, nullable=True)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'message_type': self.message_type,
+            'author': self.author,
+            'ai_id': self.ai_id,
+            'ai_name': self.ai_name,
+            'thoughts': self.thoughts,
+            'to_user': self.to_user,
+            'user_name': self.user_name,
+            'user_message': self.user_message,
+            'commands': self.commands,
+            'memories': self.memories,
+            'experience_space': self.experience_space,
+            'date_time': self.date_time.isoformat()
+        }
 
 
 class Summary(db.Model):
@@ -28,6 +47,16 @@ class Summary(db.Model):
     summary = db.Column(db.Text, nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     experiences = db.relationship("Experience", backref="summary", lazy=True)
+
+
+def get_messages_by_ids(ids):
+    """
+    Retrieve a list of Experience entries based on the provided list of ids.
+
+    :param ids: List of ids of the entries to retrieve
+    :return: List of Experience entries
+    """
+    return Experience.query.filter(Experience.id.in_(ids)).all()
 
 
 def get_latest_messages(ai_id, experience_space, messages_number=50):
@@ -57,7 +86,10 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space)
     return user_entry.id
 
 
-def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, experience_space):
+def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, experience_space):
+    commands_string = json.dumps(commands)
+    memories_string = json.dumps([memory.to_dict() for memory in memories])
+
     ai_entry = Experience(
         message_type="assistant",
         author="AI",
@@ -65,7 +97,8 @@ def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, experience_spac
         ai_name=ai_name,
         thoughts=thoughts,
         to_user=to_user,
-        commands=commands,
+        commands=commands_string,
+        memories=memories_string,
         experience_space=experience_space
     )
     db.session.add(ai_entry)
