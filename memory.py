@@ -7,6 +7,7 @@ import os
 import settings
 import secure_information
 import nltk
+from datetime import datetime
 
 try:
     nltk.data.find("tokenizers/punkt")
@@ -53,9 +54,10 @@ def add_user_message_to_memory(full_response, index, metadata, message_id):
         raise ValueError("User name and message must be provided.")
 
     user_sentences = nltk.sent_tokenize(user_message)
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     for sentence in user_sentences:
-        text = f"{user_name}: {sentence}"
+        text = f"{current_datetime}, {user_name}: {sentence}"
         add_response_to_memory(sentence=text,
                                index=index,
                                metadata=metadata,
@@ -73,10 +75,12 @@ def add_ai_message_to_memory(data, index, metadata, message_id):
         print('add_ai_message_to_memory - data: ' + data)
         raise ValueError("AI id and name must be provided.")
 
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
     if thoughts:
         thoughts_sentences = nltk.sent_tokenize(thoughts)
         for sentence in thoughts_sentences:
-            text = f"{ai_name}-{ai_id} thoughts: {sentence}"
+            text = f"{current_datetime}, {ai_name}-{ai_id} thoughts: {sentence}"
             add_response_to_memory(sentence=text,
                                    index=index,
                                    metadata=metadata,
@@ -85,7 +89,7 @@ def add_ai_message_to_memory(data, index, metadata, message_id):
     if to_user:
         to_user_sentences = nltk.sent_tokenize(to_user)
         for sentence in to_user_sentences:
-            text = f"{ai_name}-{ai_id} says to user: {sentence}"
+            text = f"{current_datetime}, {ai_name}-{ai_id} says to user: {sentence}"
             add_response_to_memory(sentence=text,
                                    index=index,
                                    metadata=metadata,
@@ -93,7 +97,7 @@ def add_ai_message_to_memory(data, index, metadata, message_id):
     if commands:
         commands_sentences = nltk.sent_tokenize(commands)
         for sentence in commands_sentences:
-            text = f"{ai_name}-{ai_id} commands: {sentence}"
+            text = f"{current_datetime}, {ai_name}-{ai_id} commands: {sentence}"
             add_response_to_memory(sentence=text,
                                    index=index,
                                    metadata=metadata,

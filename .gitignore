@@ -1,6 +1,7 @@
 # my own
 secure_information.py
 instance/mydb.sqlite3
+/memory/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
