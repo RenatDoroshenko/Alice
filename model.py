@@ -6,25 +6,33 @@ import format
 import secure_information
 import database
 import json_converter
+import memory
 
 
-def model_say_to_model(messages, experience_space):
+def model_say_to_model(messages, experience_space, memory_index, metadata):
 
     messages_with_format = json_converter.convert_content_to_string(messages)
     response, response_message = generate_response(
-        messages_with_format, experience_space)
+        messages=messages_with_format,
+        experience_space=experience_space,
+        memory_index=memory_index,
+        metadata=metadata)
 
     return response, response_message
 
 
-def user_say_to_model(user_name, user_message, messages, experience_space, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME):
-
-    if settings.SAVE_TO_DB:
-        database.save_user_message(
-            user_name, user_message, ai_id, ai_name, experience_space)
+def user_say_to_model(user_name, user_message, messages, experience_space, memory_index, metadata, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME):
 
     # Combine user name and user message into a single string
     full_response = {'user_message': user_message, 'user_name': user_name}
+
+    # Save to DB
+    user_message_id = database.save_user_message(
+        user_name, user_message, ai_id, ai_name, experience_space)
+
+    # Save to Long-term memory
+    memory.add_user_message_to_memory(full_response,
+                                      memory_index, metadata, user_message_id)
 
     messages.append(
         {"role": "user", "content": full_response})
@@ -32,11 +40,14 @@ def user_say_to_model(user_name, user_message, messages, experience_space, ai_id
     messages_with_format = json_converter.convert_content_to_string(messages)
 
     response, response_message = generate_response(
-        messages_with_format, experience_space)
+        messages=messages_with_format,
+        experience_space=experience_space,
+        memory_index=memory_index,
+        metadata=metadata)
     return response, response_message
 
 
-def generate_response(messages, experience_space, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
+def generate_response(messages, experience_space, memory_index, metadata, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
     openai.api_key = secure_information.OPEN_AI_API_KEY
 
     # Remove earliest messages until the total tokens are under the limit (except 'system' message)
@@ -56,17 +67,20 @@ def generate_response(messages, experience_space, context_tokens_limit=settings.
         temperature=0.7,
     )
 
-    if settings.SAVE_TO_DB:
-        # Important: here problem when result not in json
-        ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
-            response.choices[0].message.content)
-
-    if settings.SAVE_TO_DB:
-        database.save_ai_message(
-            ai_id, ai_name, thoughts, to_user, commands, experience_space)
+    # Important: here problem when result not in json
+    ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
+        response.choices[0].message.content)
 
     response_message = json_converter.ai_message_to_json_values(
         ai_id, ai_name, thoughts, to_user, commands)
+
+    # Save AI message to db
+    ai_message_id = database.save_ai_message(
+        ai_id, ai_name, thoughts, to_user, commands, experience_space)
+
+    # Save to Long-term memory
+    memory.add_ai_message_to_memory(response_message,
+                                    memory_index, metadata, ai_message_id)
 
     return response, response_message
 

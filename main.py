@@ -6,6 +6,7 @@ import model
 import settings
 import secure_information
 import json
+import memory
 
 # Import your models and database instance
 import database
@@ -40,6 +41,9 @@ database.db.init_app(app)
 with app.app_context():
     database.db.create_all()
 
+# Load memory index
+memory_index, metadata = memory.load_memory_index()
+
 
 @app.template_filter('tojson')
 def tojson_filter(obj, indent=None):
@@ -65,12 +69,20 @@ def chat():
         selected_experience_space = int(request.form.get('experience_space'))
 
         if user_message:
-            response, response_message = model.user_say_to_model(secure_information.USER_NAME,
-                                                                 user_message, messages,
-                                                                 experience_space=selected_experience_space)
+            response, response_message = model.user_say_to_model(user_name=secure_information.USER_NAME,
+                                                                 user_message=user_message,
+                                                                 messages=messages,
+                                                                 experience_space=selected_experience_space,
+                                                                 memory_index=memory_index,
+                                                                 metadata=metadata)
         elif generate_model_message:
-            response, response_message = model.model_say_to_model(messages,
-                                                                  experience_space=selected_experience_space)
+            response, response_message = model.model_say_to_model(messages=messages,
+                                                                  experience_space=selected_experience_space,
+                                                                  memory_index=memory_index,
+                                                                  metadata=metadata)
+
+        # Save changes made to memory index
+        memory.save_memory_index(memory_index, metadata)
 
         update_session_objects(response, selected_experience_space)
 

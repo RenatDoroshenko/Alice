@@ -54,6 +54,8 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space)
     db.session.add(user_entry)
     db.session.commit()
 
+    return user_entry.id
+
 
 def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, experience_space):
     ai_entry = Experience(
@@ -69,6 +71,8 @@ def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, experience_spac
     db.session.add(ai_entry)
     db.session.commit()
 
+    return ai_entry.id
+
 
 def save_environment_message(ai_id, ai_name, commands, experience_space):
     environment_entry = Experience(
@@ -81,6 +85,8 @@ def save_environment_message(ai_id, ai_name, commands, experience_space):
     )
     db.session.add(environment_entry)
     db.session.commit()
+
+    return environment_entry.id
 
 
 def get_all_experience_spaces(ai_id):
