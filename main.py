@@ -91,7 +91,7 @@ def chat():
 
     all_experience_spaces = database.get_all_experience_spaces(
         session.get('ai_id', ai_id))
-    highest_experience_space = max(all_experience_spaces)
+    highest_experience_space = max(all_experience_spaces, default=1)
 
     return render_template('chat.html',
                            messages=messages,
@@ -128,9 +128,11 @@ def change_experience_space():
 
     all_experience_spaces = database.get_all_experience_spaces(
         session.get('ai_id', ai_id))
-    highest_experience_space = max(all_experience_spaces)
 
-    all_experience_spaces.sort()
+    if len(all_experience_spaces) == 0:
+        all_experience_spaces = [1]
+    else:
+        all_experience_spaces.sort()
 
     return jsonify(messages=messages, usage=usage, all_experience_spaces=all_experience_spaces)
 
