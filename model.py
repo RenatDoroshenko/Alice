@@ -74,6 +74,11 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
     response_message = json_converter.ai_message_to_json_values(
         ai_id, ai_name, thoughts, to_user, commands)
 
+    if metadata:
+        memories = memory.retrieve_relevant_memories(thoughts=thoughts,
+                                                     index=memory_index,
+                                                     metadata=metadata)
+
     # Save AI message to db
     ai_message_id = database.save_ai_message(
         ai_id, ai_name, thoughts, to_user, commands, experience_space)

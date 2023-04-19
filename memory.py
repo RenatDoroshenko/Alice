@@ -106,21 +106,35 @@ def add_ai_message_to_memory(data, index, metadata, message_id):
 
 def add_response_to_memory(sentence, index, metadata, message_id):
     embedding = get_embeddings(sentence)
-    print('embedding: ', embedding)
-    print('embedding after reshape: ', embedding.reshape(1, -1))
-    print('message_id: ', message_id)
-    index.add_with_ids(embedding.reshape(1, -1), np.array([message_id]))
-    metadata.append({"message_id": message_id, "sentence": sentence})
+    # print('embedding: ', embedding)
+    # print('embedding after reshape: ', embedding.reshape(1, -1))
+
+    # Get the last index from the metadata and increment it by 1
+    if metadata:
+        new_index = metadata[-1]["index"] + 1
+    else:
+        new_index = 0
+
+    index.add_with_ids(embedding.reshape(1, -1), np.array([new_index]))
+    metadata.append(
+        {"index": new_index, "message_id": message_id, "sentence": sentence})
 
 
-def retrieve_relevant_memories(index, metadata, thoughts, k=3):
+def retrieve_relevant_memories(index, metadata, thoughts, k=settings.RELEVANT_MEMORIES_TO_RETRIEVE):
     # k - Number of closest embeddings to return - associative memory
+
+    print('thoughts to retrieve a memory: ', thoughts)
+
     thought_embeddings = get_embeddings([thoughts])
     distances, indices = index.search(thought_embeddings.reshape(1, -1), k)
 
     relevant_memories = []
     for idx in indices[0]:
         relevant_memories.append(metadata[idx])
+
+    print('retrieved memories: ')
+    for memory in relevant_memories:
+        print(memory)
 
     return relevant_memories
 
