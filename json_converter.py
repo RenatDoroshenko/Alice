@@ -40,7 +40,7 @@ def user_message_to_json(entry):
     return data
 
 
-def ai_message_to_json(entry, withMemory=True):
+def ai_message_to_json(entry, withMemory=True, processed_ids=set()):
     data = {
         'message_id': entry.id,
         'ai_id': entry.ai_id,
@@ -55,17 +55,18 @@ def ai_message_to_json(entry, withMemory=True):
 
     if withMemory:
         if entry.memories is not None and entry.memories != 'null':
-            # Here is format of messages from db
+            # Here is the format of messages from the db
             memories = json.loads(entry.memories)
             if len(memories) != 0:
                 formatted_memories = convert_db_memories_messages_to_json_from_dict(
-                    memories)
+                    memories, processed_ids)
+                print('formatted memories: ', formatted_memories)
                 data['memories'] = formatted_memories
 
     return data
 
 
-def convert_db_memories_messages_to_json_from_dict(entries):
+def convert_db_memories_messages_to_json_from_dict(entries, processed_ids=set()):
     messages = []
     for entry in entries:
         if entry['message_type'] == "user":
@@ -76,6 +77,10 @@ def convert_db_memories_messages_to_json_from_dict(entries):
         else:
             continue
 
+        # adds unique memories than is not present in context
+        # if entry['id'] not in processed_ids:
+        #     messages.append(content)
+        #     processed_ids.add(entry['id'])
         messages.append(content)
 
     return messages
@@ -128,7 +133,7 @@ def ai_message_to_json_from_dict(entry, withMemory=True):
 
 
 # Used when model responded
-def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands, memories):
+def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands, memories, existing_message_ids):
     data = {
         'ai_id': ai_id,
         'ai_name': ai_name,
@@ -140,8 +145,18 @@ def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands, memor
         data['commands'] = commands
 
     if memories:
-        formatted_memories = convert_db_memories_messages_to_json(memories)
-        data['memories'] = formatted_memories
+        # Convert the memories to JSON format and remove duplicates based on entry.id
+        # Can be duplicates from the same memori retrieving?
+        processed_ids = set()
+        unique_memories = []
+        for memory in convert_db_memories_messages_to_json(memories):
+            memory_id = memory['message_id']
+
+            if memory_id not in processed_ids and memory_id not in existing_message_ids:
+                unique_memories.append(memory)
+                processed_ids.add(memory_id)
+
+        data['memories'] = unique_memories
 
     return data
 

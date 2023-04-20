@@ -59,7 +59,7 @@ def get_messages_by_ids(ids):
     return Experience.query.filter(Experience.id.in_(ids)).all()
 
 
-def get_latest_messages(ai_id, experience_space, messages_number=50):
+def get_latest_messages(ai_id, experience_space, messages_number=30):
     latest_messages = (
         Experience.query.filter_by(
             ai_id=ai_id, experience_space=experience_space)

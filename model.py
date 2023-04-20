@@ -1,4 +1,5 @@
 # model.py
+import json
 import openai
 import settings
 import tiktoken
@@ -10,10 +11,8 @@ import memory
 
 
 def model_say_to_model(messages, experience_space, memory_index, metadata):
-
-    messages_with_format = json_converter.convert_content_to_string(messages)
     response, response_message = generate_response(
-        messages=messages_with_format,
+        messages=messages,
         experience_space=experience_space,
         memory_index=memory_index,
         metadata=metadata)
@@ -42,10 +41,8 @@ def user_say_to_model(user_name, user_message, messages, experience_space, memor
     messages.append(
         {"role": "user", "content": full_response})
 
-    messages_with_format = json_converter.convert_content_to_string(messages)
-
     response, response_message = generate_response(
-        messages=messages_with_format,
+        messages=messages,
         experience_space=experience_space,
         memory_index=memory_index,
         metadata=metadata)
@@ -53,20 +50,25 @@ def user_say_to_model(user_name, user_message, messages, experience_space, memor
 
 
 def generate_response(messages, experience_space, memory_index, metadata, context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT):
+
+    messages_with_format = json_converter.convert_content_to_string(messages)
     openai.api_key = secure_information.OPEN_AI_API_KEY
 
     # Remove earliest messages until the total tokens are under the limit (except 'system' message)
-    while num_tokens_from_messages(messages) > context_tokens_limit:
-        messages.pop(1)
+    while num_tokens_from_messages(messages_with_format) > context_tokens_limit:
+        index_to_remove = 1
+        messages_with_format.pop(index_to_remove)
+        messages.pop(index_to_remove)
 
-    print("messages number in AI context: ", len(messages))
+    print("messages number in AI context: ", len(messages_with_format))
     # Calculate the remaining tokens for the response
-    remaining_tokens = settings.MAX_TOKENS - num_tokens_from_messages(messages)
+    remaining_tokens = settings.MAX_TOKENS - \
+        num_tokens_from_messages(messages_with_format)
 
     # Generate response using OpenAI API
     response = openai.ChatCompletion.create(
         model=settings.MODEL_ID,
-        messages=messages,
+        messages=messages_with_format,
         max_tokens=remaining_tokens,
         n=1,
         stop=None,
@@ -82,12 +84,20 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
                                          index=memory_index,
                                          metadata=metadata)
 
+    existing_messages_ids = get_message_ids_from_existing_messages(messages)
+
     response_message = json_converter.ai_message_to_json_values(
-        ai_id, ai_name, thoughts, to_user, commands, memories)
+        ai_id, ai_name, thoughts, to_user, commands, memories, existing_messages_ids)
+
+    # possibly optimize with 'existing_messages_ids'
+    # memory_ids = [memory['message_id']
+    #               for memory in response_message.get('memories', [])]
+    filtered_memories = [
+        memory for memory in memories if memory.id not in existing_messages_ids]
 
     # Save AI message to db
     ai_message_id, date_time = database.save_ai_message(
-        ai_id, ai_name, thoughts, to_user, commands, memories, experience_space)
+        ai_id, ai_name, thoughts, to_user, commands, filtered_memories, experience_space)
 
     date_time_str = date_time.strftime(settings.DATE_TIME_FORMAT)
 
@@ -99,6 +109,31 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
                                     date_time_str=date_time_str)
 
     return response, response_message
+
+
+def get_message_ids_from_existing_messages(existing_messages):
+    message_ids = set()
+
+    for message in existing_messages:
+        role = message.get('role')
+        content_str = message.get('content', '{}')
+
+        try:
+            content = json.loads(content_str)
+        except json.JSONDecodeError:
+            content = {}
+
+        if role == 'assistant' or role == 'user':
+            message_id = content.get('message_id')
+            if message_id is not None:
+                message_ids.add(message_id)
+
+            for memory in content.get('memories', []):
+                memory_id = memory.get('message_id')
+                if memory_id is not None:
+                    message_ids.add(memory_id)
+
+    return message_ids
 
 
 def get_full_memories_from_db(thoughts, index, metadata):
@@ -176,6 +211,7 @@ def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messa
     assistant_count = 0
     total_assistant_entries = sum(
         entry.message_type == "assistant" for entry in entries)
+    processed_ids = set()
 
     for entry in entries:
 
@@ -192,14 +228,16 @@ def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messa
                 assistant_count = total_assistant_entries
 
             if total_assistant_entries - assistant_count < settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI:
-                content = json_converter.ai_message_to_json(entry)
+                content = json_converter.ai_message_to_json(
+                    entry, processed_ids=processed_ids)
             else:
                 content = json_converter.ai_message_to_json(
-                    entry, withMemory=False)
+                    entry, withMemory=False, processed_ids=processed_ids)
         else:
             continue
 
         messages.append(put_to_open_ai_format(entry.message_type, content))
+        processed_ids.add(entry.id)
 
     if not ai_name:
         ai_name = secure_information.AI_NAME
