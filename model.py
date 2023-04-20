@@ -168,7 +168,7 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     return num_tokens
 
 
-def get_context_messages_from_db(ai_id, experience_space):
+def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messages=False):
     entries = database.get_latest_messages(ai_id, experience_space)
 
     messages = []
@@ -186,7 +186,11 @@ def get_context_messages_from_db(ai_id, experience_space):
             if not ai_name:
                 ai_name = entry.ai_name
 
-            assistant_count += 1
+            if not memories_for_all_messages:
+                assistant_count += 1
+            else:
+                assistant_count = total_assistant_entries
+
             if total_assistant_entries - assistant_count < settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI:
                 content = json_converter.ai_message_to_json(entry)
             else:
@@ -203,10 +207,10 @@ def get_context_messages_from_db(ai_id, experience_space):
     return messages, ai_id, ai_name
 
 
-def get_context_messages_with_manifest(ai_id, experience_space):
+def get_context_messages_with_manifest(ai_id, experience_space, memories_for_all_messages=False):
     messages = create_manifest_message()
     messages_from_db, ai_id, ai_name = get_context_messages_from_db(
-        ai_id, experience_space)
+        ai_id, experience_space, memories_for_all_messages)
     messages.extend(messages_from_db)
 
     return messages, ai_id, ai_name

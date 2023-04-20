@@ -122,7 +122,8 @@ def change_experience_space():
     print("Selected experience space:",
           selected_experience_space)  # Add this line
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
-                                                                        experience_space=selected_experience_space)
+                                                                        experience_space=selected_experience_space,
+                                                                        memories_for_all_messages=True)
 
     usage = session['usage']
 
