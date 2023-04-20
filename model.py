@@ -59,6 +59,7 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
     while num_tokens_from_messages(messages) > context_tokens_limit:
         messages.pop(1)
 
+    print("messages number in AI context: ", len(messages))
     # Calculate the remaining tokens for the response
     remaining_tokens = settings.MAX_TOKENS - num_tokens_from_messages(messages)
 
@@ -172,6 +173,9 @@ def get_context_messages_from_db(ai_id, experience_space):
 
     messages = []
     ai_name = ""
+    assistant_count = 0
+    total_assistant_entries = sum(
+        entry.message_type == "assistant" for entry in entries)
 
     for entry in entries:
 
@@ -181,7 +185,13 @@ def get_context_messages_from_db(ai_id, experience_space):
         elif entry.message_type == "assistant":
             if not ai_name:
                 ai_name = entry.ai_name
-            content = json_converter.ai_message_to_json(entry)
+
+            assistant_count += 1
+            if total_assistant_entries - assistant_count < settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI:
+                content = json_converter.ai_message_to_json(entry)
+            else:
+                content = json_converter.ai_message_to_json(
+                    entry, withMemory=False)
         else:
             continue
 

@@ -11,6 +11,7 @@ from datetime import datetime
 
 def convert_db_memories_messages_to_json(entries):
     messages = []
+
     for entry in entries:
         if entry.message_type == "user":
             content = user_message_to_json(entry)
@@ -57,15 +58,8 @@ def ai_message_to_json(entry, withMemory=True):
             # Here is format of messages from db
             memories = json.loads(entry.memories)
             if len(memories) != 0:
-                # Check if the 'memories' is a list of dictionaries or list of objects
-                is_dict = isinstance(memories[0], dict)
-                if is_dict:
-                    formatted_memories = convert_db_memories_messages_to_json_from_dict(
-                        memories)
-                else:
-                    formatted_memories = convert_db_memories_messages_to_json(
-                        memories)
-
+                formatted_memories = convert_db_memories_messages_to_json_from_dict(
+                    memories)
                 data['memories'] = formatted_memories
 
     return data
