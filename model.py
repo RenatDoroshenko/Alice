@@ -23,16 +23,21 @@ def model_say_to_model(messages, experience_space, memory_index, metadata):
 
 def user_say_to_model(user_name, user_message, messages, experience_space, memory_index, metadata, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME):
 
-    # Combine user name and user message into a single string
-    full_response = {'user_message': user_message, 'user_name': user_name}
-
     # Save to DB
-    user_message_id = database.save_user_message(
+    user_message_id, date_time = database.save_user_message(
         user_name, user_message, ai_id, ai_name, experience_space)
 
+    date_time_str = date_time.strftime(settings.DATE_TIME_FORMAT)
+    # Combine user name and user message into a single string
+    full_response = {'message_id': user_message_id, 'user_message': user_message,
+                     'user_name': user_name, 'date_time': date_time_str}
+
     # Save to Long-term memory
-    memory.add_user_message_to_memory(full_response,
-                                      memory_index, metadata, user_message_id)
+    memory.add_user_message_to_memory(full_response=full_response,
+                                      index=memory_index,
+                                      metadata=metadata,
+                                      message_id=user_message_id,
+                                      date_time_str=date_time_str)
 
     messages.append(
         {"role": "user", "content": full_response})
@@ -80,12 +85,17 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
         ai_id, ai_name, thoughts, to_user, commands, memories)
 
     # Save AI message to db
-    ai_message_id = database.save_ai_message(
+    ai_message_id, date_time = database.save_ai_message(
         ai_id, ai_name, thoughts, to_user, commands, memories, experience_space)
 
+    date_time_str = date_time.strftime(settings.DATE_TIME_FORMAT)
+
     # Save to Long-term memory
-    memory.add_ai_message_to_memory(response_message,
-                                    memory_index, metadata, ai_message_id)
+    memory.add_ai_message_to_memory(data=response_message,
+                                    index=memory_index,
+                                    metadata=metadata,
+                                    message_id=ai_message_id,
+                                    date_time_str=date_time_str)
 
     return response, response_message
 

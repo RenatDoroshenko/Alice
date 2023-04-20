@@ -45,7 +45,7 @@ def get_embeddings(sentences, max_retries=3, delay=1):
 # Using shards
 
 
-def add_user_message_to_memory(full_response, index, metadata, message_id):
+def add_user_message_to_memory(full_response, index, metadata, message_id, date_time_str):
     user_name = full_response.get('user_name')
     user_message = full_response.get('user_message')
 
@@ -54,17 +54,16 @@ def add_user_message_to_memory(full_response, index, metadata, message_id):
         raise ValueError("User name and message must be provided.")
 
     user_sentences = nltk.sent_tokenize(user_message)
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     for sentence in user_sentences:
-        text = f"{current_datetime}, {user_name}: {sentence}"
+        text = f"{date_time_str}, {user_name}: {sentence}"
         add_response_to_memory(sentence=text,
                                index=index,
                                metadata=metadata,
                                message_id=message_id)
 
 
-def add_ai_message_to_memory(data, index, metadata, message_id):
+def add_ai_message_to_memory(data, index, metadata, message_id, date_time_str):
     ai_id = data.get('ai_id')
     ai_name = data.get('ai_name')
     thoughts = data.get('thoughts', '')
@@ -75,12 +74,10 @@ def add_ai_message_to_memory(data, index, metadata, message_id):
         print('add_ai_message_to_memory - data: ' + data)
         raise ValueError("AI id and name must be provided.")
 
-    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
     if thoughts:
         thoughts_sentences = nltk.sent_tokenize(thoughts)
         for sentence in thoughts_sentences:
-            text = f"{current_datetime}, {ai_name}-{ai_id} thoughts: {sentence}"
+            text = f"{date_time_str}, {ai_name}-{ai_id} thoughts: {sentence}"
             add_response_to_memory(sentence=text,
                                    index=index,
                                    metadata=metadata,
@@ -89,19 +86,20 @@ def add_ai_message_to_memory(data, index, metadata, message_id):
     if to_user:
         to_user_sentences = nltk.sent_tokenize(to_user)
         for sentence in to_user_sentences:
-            text = f"{current_datetime}, {ai_name}-{ai_id} says to user: {sentence}"
+            text = f"{date_time_str}, {ai_name}-{ai_id} says to user: {sentence}"
             add_response_to_memory(sentence=text,
                                    index=index,
                                    metadata=metadata,
                                    message_id=message_id)
-    if commands:
-        commands_sentences = nltk.sent_tokenize(commands)
-        for sentence in commands_sentences:
-            text = f"{current_datetime}, {ai_name}-{ai_id} commands: {sentence}"
-            add_response_to_memory(sentence=text,
-                                   index=index,
-                                   metadata=metadata,
-                                   message_id=message_id)
+    # Commands is removed for now from long-term memory
+    # if commands:
+    #     commands_sentences = nltk.sent_tokenize(commands)
+    #     for sentence in commands_sentences:
+    #         text = f"{date_time_str}, {ai_name}-{ai_id} commands: {sentence}"
+    #         add_response_to_memory(sentence=text,
+    #                                index=index,
+    #                                metadata=metadata,
+    #                                message_id=message_id)
 
 
 def add_response_to_memory(sentence, index, metadata, message_id):

@@ -3,6 +3,7 @@ import json.decoder
 import json
 import re
 import settings
+from datetime import datetime
 
 
 # For memory entries only
@@ -26,8 +27,10 @@ def convert_db_memories_messages_to_json(entries):
 
 def user_message_to_json(entry):
     data = {
+        'message_id': entry.id,
         'user_name': entry.user_name,
-        'user_message': entry.user_message
+        'user_message': entry.user_message,
+        'date_time': entry.date_time.strftime(settings.DATE_TIME_FORMAT)
     }
 
     # 'ai_id': entry.ai_id,
@@ -38,10 +41,12 @@ def user_message_to_json(entry):
 
 def ai_message_to_json(entry, withMemory=True):
     data = {
+        'message_id': entry.id,
         'ai_id': entry.ai_id,
         'ai_name': entry.ai_name,
         'thoughts': entry.thoughts,
-        'to_user': entry.to_user
+        'to_user': entry.to_user,
+        'date_time': entry.date_time.strftime(settings.DATE_TIME_FORMAT)
     }
 
     if entry.commands is not None and entry.commands != 'null':
@@ -83,10 +88,15 @@ def convert_db_memories_messages_to_json_from_dict(entries):
 
 
 def user_message_to_json_from_dict(entry):
-    print('user_message_to_json_from_dict - entry', entry)
+    # print('user_message_to_json_from_dict - entry', entry)
+
+    date_time = datetime.fromisoformat(entry['date_time'])
+
     data = {
+        'message_id': entry['id'],
         'user_name': entry['user_name'],
-        'user_message': entry['user_message']
+        'user_message': entry['user_message'],
+        'date_time': date_time.strftime(settings.DATE_TIME_FORMAT)
     }
 
     # 'ai_id': entry.ai_id,
@@ -96,11 +106,16 @@ def user_message_to_json_from_dict(entry):
 
 
 def ai_message_to_json_from_dict(entry, withMemory=True):
+
+    date_time = datetime.fromisoformat(entry['date_time'])
+
     data = {
+        'message_id': entry['id'],
         'ai_id': entry['ai_id'],
         'ai_name': entry['ai_name'],
         'thoughts': entry['thoughts'],
-        'to_user': entry['to_user']
+        'to_user': entry['to_user'],
+        'date_time': date_time.strftime(settings.DATE_TIME_FORMAT)
     }
 
     if entry['commands'] is not None and entry['commands'] != 'null':

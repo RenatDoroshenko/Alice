@@ -83,7 +83,7 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space)
     db.session.add(user_entry)
     db.session.commit()
 
-    return user_entry.id
+    return user_entry.id, user_entry.date_time
 
 
 def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, experience_space):
@@ -104,7 +104,7 @@ def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, exper
     db.session.add(ai_entry)
     db.session.commit()
 
-    return ai_entry.id
+    return ai_entry.id, ai_entry.date_time
 
 
 def save_environment_message(ai_id, ai_name, commands, experience_space):
