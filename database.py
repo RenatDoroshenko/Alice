@@ -52,11 +52,42 @@ class Summary(db.Model):
 def get_messages_by_ids(ids):
     """
     Retrieve a list of Experience entries based on the provided list of ids.
+    Also retrieves the previous and next entries with the same experience_space.
 
     :param ids: List of ids of the entries to retrieve
     :return: List of Experience entries
     """
-    return Experience.query.filter(Experience.id.in_(ids)).all()
+    all_experiences = []
+
+    for id in ids:
+        experience = Experience.query.filter(Experience.id == id).first()
+        if experience:
+            all_experiences.append(experience)
+            prev_experience = Experience.query.filter(
+                Experience.id < id,
+                Experience.experience_space == experience.experience_space
+            ).order_by(Experience.id.desc()).first()
+            if prev_experience:
+                all_experiences.append(prev_experience)
+            next_experience = Experience.query.filter(
+                Experience.id > id,
+                Experience.experience_space == experience.experience_space
+            ).order_by(Experience.id.asc()).first()
+            if next_experience:
+                all_experiences.append(next_experience)
+
+    # Remove duplicates
+    added_ids = set()
+    experiences = []
+    for exp in all_experiences:
+        if exp.id not in added_ids:
+            experiences.append(exp)
+            added_ids.add(exp.id)
+
+    # Sort experiences by id
+    experiences = sorted(experiences, key=lambda x: x.id)
+
+    return experiences
 
 
 def get_latest_messages(ai_id, experience_space, messages_number=30):

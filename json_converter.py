@@ -67,8 +67,11 @@ def ai_message_to_json(entry, withMemory=True, processed_ids=set()):
 
 
 def convert_db_memories_messages_to_json_from_dict(entries, processed_ids=set()):
+    # Sort entries by message_id
+    sorted_entries = sorted(entries, key=lambda x: x['id'])
+
     messages = []
-    for entry in entries:
+    for entry in sorted_entries:
         if entry['message_type'] == "user":
             content = user_message_to_json_from_dict(entry)
 

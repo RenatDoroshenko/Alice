@@ -141,7 +141,8 @@ def get_full_memories_from_db(thoughts, index, metadata, existing_messages_ids):
         memory for memory in all_memories if memory['message_id'] not in existing_messages_ids]
 
     memory_message_ids = [memory['message_id'] for memory in filtered_memories]
-    memories = database.get_messages_by_ids(memory_message_ids)
+    memories = database.get_messages_by_ids(
+        memory_message_ids)
 
     return memories
 
