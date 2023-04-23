@@ -79,21 +79,16 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
     ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
         response.choices[0].message.content)
 
-    # Get relevant memories from DB
-    memories = get_full_memories_from_db(thoughts=thoughts,
-                                         index=memory_index,
-                                         metadata=metadata)
-
     existing_messages_ids = get_message_ids_from_existing_messages(messages)
 
-    response_message = json_converter.ai_message_to_json_values(
-        ai_id, ai_name, thoughts, to_user, commands, memories, existing_messages_ids)
+    # Get relevant memories from DB
+    filtered_memories = get_full_memories_from_db(thoughts=thoughts,
+                                                  index=memory_index,
+                                                  metadata=metadata,
+                                                  existing_messages_ids=existing_messages_ids)
 
-    # possibly optimize with 'existing_messages_ids'
-    # memory_ids = [memory['message_id']
-    #               for memory in response_message.get('memories', [])]
-    filtered_memories = [
-        memory for memory in memories if memory.id not in existing_messages_ids]
+    response_message = json_converter.ai_message_to_json_values(
+        ai_id, ai_name, thoughts, to_user, commands, filtered_memories, existing_messages_ids)
 
     # Save AI message to db
     ai_message_id, date_time = database.save_ai_message(
@@ -136,12 +131,16 @@ def get_message_ids_from_existing_messages(existing_messages):
     return message_ids
 
 
-def get_full_memories_from_db(thoughts, index, metadata):
-    memories = memory.retrieve_relevant_memories(thoughts=thoughts,
-                                                 index=index,
-                                                 metadata=metadata)
+def get_full_memories_from_db(thoughts, index, metadata, existing_messages_ids):
+    all_memories = memory.retrieve_relevant_memories(thoughts=thoughts,
+                                                     index=index,
+                                                     metadata=metadata)
 
-    memory_message_ids = [memory['message_id'] for memory in memories]
+    # Filter out memories with IDs that already exist in existing_message_ids
+    filtered_memories = [
+        memory for memory in all_memories if memory['message_id'] not in existing_messages_ids]
+
+    memory_message_ids = [memory['message_id'] for memory in filtered_memories]
     memories = database.get_messages_by_ids(memory_message_ids)
 
     return memories
