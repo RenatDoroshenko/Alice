@@ -57,8 +57,9 @@ def chat():
     selected_experience_space = request.form.get(
         'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
 
-    messages, ai_id, ai_name = model.get_context_messages_with_manifest(
-        ai_id=ai_id, experience_space=selected_experience_space)
+    messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
+                                                                        experience_space=selected_experience_space,
+                                                                        memories_only_for_context=True)
 
     if 'usage' not in session:
         set_default_usage(0, 0, 0)

@@ -118,13 +118,13 @@ def add_response_to_memory(sentence, index, metadata, message_id):
         {"index": new_index, "message_id": message_id, "sentence": sentence})
 
 
-def retrieve_relevant_memories(index, metadata, thoughts, k=settings.RELEVANT_MEMORIES_TO_RETRIEVE):
+def retrieve_relevant_memories(index, metadata, get_memory_text, k=settings.RELEVANT_MEMORIES_TO_RETRIEVE):
     # k - Number of closest embeddings to return - associative memory
 
-    print('thoughts to retrieve a memory: ', thoughts)
+    print('text to retrieve a memory from: ', get_memory_text)
 
-    thought_embeddings = get_embeddings([thoughts])
-    distances, indices = index.search(thought_embeddings.reshape(1, -1), k)
+    embeddings = get_embeddings([get_memory_text])
+    distances, indices = index.search(embeddings.reshape(1, -1), k)
 
     relevant_memories = []
     for idx in indices[0]:

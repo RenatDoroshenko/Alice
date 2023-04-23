@@ -101,7 +101,9 @@ def get_latest_messages(ai_id, experience_space, messages_number=30):
     return latest_messages[::-1]
 
 
-def save_user_message(user_name, user_message, ai_id, ai_name, experience_space):
+def save_user_message(user_name, user_message, ai_id, ai_name, experience_space, memories):
+    memories_string = json.dumps([memory.to_dict() for memory in memories])
+
     user_entry = Experience(
         message_type="user",
         author="user",
@@ -109,6 +111,7 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space)
         ai_name=ai_name,
         user_name=user_name,
         user_message=user_message,
+        memories=memories_string,
         experience_space=experience_space
     )
     db.session.add(user_entry)

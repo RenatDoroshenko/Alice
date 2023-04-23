@@ -14,10 +14,10 @@ def convert_db_memories_messages_to_json(entries):
 
     for entry in entries:
         if entry.message_type == "user":
-            content = user_message_to_json(entry)
+            content = user_message_to_json(entry, with_memory=False)
 
         elif entry.message_type == "assistant":
-            content = ai_message_to_json(entry, withMemory=False)
+            content = ai_message_to_json(entry, with_memory=False)
         else:
             continue
 
@@ -26,21 +26,28 @@ def convert_db_memories_messages_to_json(entries):
     return messages
 
 
-def user_message_to_json(entry):
+def user_message_to_json(entry, with_memory=True):
     data = {
         'message_id': entry.id,
         'user_name': entry.user_name,
         'user_message': entry.user_message,
         'date_time': entry.date_time.strftime(settings.DATE_TIME_FORMAT)
     }
-
     # 'ai_id': entry.ai_id,
     # 'ai_name': entry.ai_name
+
+    if with_memory:
+        if entry.memories is not None and entry.memories != 'null':
+            memories = json.loads(entry.memories)
+            if len(memories) != 0:
+                formatted_memories = convert_db_memories_messages_to_json_from_dict(
+                    memories)
+                data['memories'] = formatted_memories
 
     return data
 
 
-def ai_message_to_json(entry, withMemory=True, processed_ids=set()):
+def ai_message_to_json(entry, with_memory=True):
     data = {
         'message_id': entry.id,
         'ai_id': entry.ai_id,
@@ -53,20 +60,20 @@ def ai_message_to_json(entry, withMemory=True, processed_ids=set()):
     if entry.commands is not None and entry.commands != 'null':
         data['commands'] = json.loads(entry.commands)
 
-    if withMemory:
+    if with_memory:
         if entry.memories is not None and entry.memories != 'null':
             # Here is the format of messages from the db
             memories = json.loads(entry.memories)
             if len(memories) != 0:
                 formatted_memories = convert_db_memories_messages_to_json_from_dict(
-                    memories, processed_ids)
+                    memories)
                 print('formatted memories: ', formatted_memories)
                 data['memories'] = formatted_memories
 
     return data
 
 
-def convert_db_memories_messages_to_json_from_dict(entries, processed_ids=set()):
+def convert_db_memories_messages_to_json_from_dict(entries):
     # Sort entries by message_id
     sorted_entries = sorted(entries, key=lambda x: x['id'])
 
