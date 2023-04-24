@@ -104,6 +104,9 @@ def get_latest_messages(ai_id, experience_space, messages_number=30):
 def save_user_message(user_name, user_message, ai_id, ai_name, experience_space, memories):
     memories_string = json.dumps([memory.to_dict() for memory in memories])
 
+    print('user memories to save: ')
+    print(memories)
+
     user_entry = Experience(
         message_type="user",
         author="user",
@@ -123,6 +126,9 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space,
 def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, experience_space):
     commands_string = json.dumps(commands)
     memories_string = json.dumps([memory.to_dict() for memory in memories])
+
+    print('ai memories to save: ')
+    print(memories)
 
     ai_entry = Experience(
         message_type="assistant",
