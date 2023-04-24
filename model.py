@@ -251,8 +251,9 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     return num_tokens
 
 
-def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messages=False):
-    entries = database.get_latest_messages(ai_id, experience_space)
+def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messages=False, messages_number=settings.MESSAGES_LIMIT_FROM_DB):
+    entries = database.get_latest_messages(
+        ai_id, experience_space, messages_number)
 
     messages = []
     ai_name = ""

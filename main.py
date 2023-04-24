@@ -64,38 +64,12 @@ def chat():
     if 'usage' not in session:
         set_default_usage(0, 0, 0)
 
-    if request.method == 'POST':
-        user_message = request.form.get('user_message')
-        generate_model_message = request.form.get('generate_model_message')
-        selected_experience_space = int(request.form.get('experience_space'))
-
-        if user_message:
-            response, response_message = model.user_say_to_model(user_name=secure_information.USER_NAME,
-                                                                 user_message=user_message,
-                                                                 messages=messages,
-                                                                 experience_space=selected_experience_space,
-                                                                 memory_index=memory_index,
-                                                                 metadata=metadata)
-        elif generate_model_message:
-            response, response_message = model.model_say_to_model(messages=messages,
-                                                                  experience_space=selected_experience_space,
-                                                                  memory_index=memory_index,
-                                                                  metadata=metadata)
-
-        # Save changes made to memory index
-        memory.save_memory_index(memory_index, metadata)
-
-        update_session_objects(response, selected_experience_space)
-
-        messages.append(
-            {"role": "assistant", "content": response_message})
-
     all_experience_spaces = database.get_all_experience_spaces(
         session.get('ai_id', ai_id))
     highest_experience_space = max(all_experience_spaces, default=1)
 
     return render_template('chat.html',
-                           messages=messages,
+                           initial_messages=messages,
                            prompt_tokens=session["usage"].get(
                                'prompt_tokens', 0),
                            completion_tokens=session["usage"].get(
@@ -137,6 +111,69 @@ def change_experience_space():
         all_experience_spaces.sort()
 
     return jsonify(messages=messages, usage=usage, all_experience_spaces=all_experience_spaces)
+
+
+@app.route('/send_user_message', methods=['POST'])
+def send_user_message():
+    ai_id = secure_information.AI_ID
+    selected_experience_space = request.form.get(
+        'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
+    user_message = request.form.get('user_message')
+
+    messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
+                                                                        experience_space=selected_experience_space,
+                                                                        memories_only_for_context=True)
+
+    # Process the user message and generate the model's response
+    response, response_message = model.user_say_to_model(user_name=secure_information.USER_NAME,
+                                                         user_message=user_message,
+                                                         messages=messages,
+                                                         experience_space=selected_experience_space,
+                                                         memory_index=memory_index,
+                                                         metadata=metadata)
+
+    # Save changes made to memory index
+    memory.save_memory_index(memory_index, metadata)
+
+    update_session_objects(response, selected_experience_space)
+
+    usage = session['usage']
+
+    messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
+                                                        experience_space=selected_experience_space,
+                                                        messages_number=2)
+
+    return jsonify(user_message=messages[0], assistant_message=messages[1], usage=usage)
+
+
+@app.route('/generate_model_message', methods=['POST'])
+def generate_model_message():
+    ai_id = secure_information.AI_ID
+    selected_experience_space = request.form.get(
+        'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
+
+    messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
+                                                                        experience_space=selected_experience_space,
+                                                                        memories_only_for_context=True)
+
+    # Generate the model's response
+    response, response_message = model.model_say_to_model(messages=messages,
+                                                          experience_space=selected_experience_space,
+                                                          memory_index=memory_index,
+                                                          metadata=metadata)
+
+    # Save changes made to memory index
+    memory.save_memory_index(memory_index, metadata)
+
+    update_session_objects(response, selected_experience_space)
+
+    usage = session['usage']
+
+    messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
+                                                        experience_space=selected_experience_space,
+                                                        messages_number=1)
+
+    return jsonify(assistant_message=messages[0], usage=usage)
 
 
 def set_default_usage(prompt_tokens, completion_tokens, total_tokens):

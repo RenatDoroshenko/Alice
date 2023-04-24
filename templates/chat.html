@@ -16,7 +16,7 @@
     <input type="hidden" id="ai_id" value="{{ ai_id }}">
     <input type="hidden" id="ai_name" value="{{ ai_name }}">
 
-    <form action="{{ url_for('chat') }}" method="POST">
+    <form id="user_message_form" method="POST">
         <input type="hidden" name="messages" value="{{ messages }}">
         <label for="user_message">Your message:</label>
         <input type="text" name="user_message" id="user_message" autofocus>
@@ -47,27 +47,82 @@
         <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
     </div>
             
+    <input type="hidden" id="initial_messages" value="{{ initial_messages | tojson }}">
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        /*document.addEventListener("DOMContentLoaded", function () {
             const initialExperienceSpace = document.getElementById("experience_space").value;
             fetchAndUpdateMessages(initialExperienceSpace);
-        });
+        }); */
         
         document.getElementById("experience_space").addEventListener("change", function () {
             const experienceSpace = this.options[this.selectedIndex].value;
             console.log('experience space passed to fetchAndUpdateMessages:', experienceSpace);
             fetchAndUpdateMessages(experienceSpace);
             document.getElementById("generate_experience_space").value = experienceSpace;
-        });                                                
+        });   
+
+        document.getElementById("user_message_form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const userMessageInput = document.getElementById("user_message");
+            const userMessage = userMessageInput.value;
+            const experienceSpace = document.getElementById("experience_space").value;
+        
+            // Send the user message to the server using an AJAX request
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        updateMessages([response.user_message, response.assistant_message], true);
+                        userMessageInput.value = ""; // Clear the input field
+                        updateTokenInformation(response.usage); // Update the usage values
+                    } else {
+                        console.error("An error occurred while sending the user message.");
+                    }
+                }
+            };
+            xhr.open("POST", "{{ url_for('send_user_message') }}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(`user_message=${encodeURIComponent(userMessage)}&experience_space=${encodeURIComponent(experienceSpace)}`);
+        });      
+        
+        document.querySelector("form[action='{{ url_for('chat') }}']").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const experienceSpace = document.getElementById("experience_space").value;
+        
+            // Send the request to generate a model message using an AJAX request
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        updateMessages([response.assistant_message], true);
+                        updateTokenInformation(response.usage); // Update the usage values
+                    } else {
+                        console.error("An error occurred while generating the model message.");
+                    }
+                }
+            };
+            xhr.open("POST", "{{ url_for('generate_model_message') }}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(`experience_space=${encodeURIComponent(experienceSpace)}`);
+        });        
+        
+                                             
     
-        function updateMessages(newMessages) {
+        function updateMessages(newMessages, append = false) {
             const messagesDiv = document.getElementById("messages");
-            messagesDiv.innerHTML = "";
+            if (!append) {
+                messagesDiv.innerHTML = "";
+            }
         
             newMessages.forEach(function(message) {
-                const content = message.content;
+                content = message.content
                 const role = message.role.charAt(0).toUpperCase() + message.role.slice(1);
+                if(message.role.toLowerCase() !== "system"){
+                    content = typeof message.content === "string" ? JSON.parse(message.content) : message.content;
+                }
         
                 let messageContent = "";
                 if (message.role.toLowerCase() === "user" && 'user_name' in content && 'user_message' in content) {
@@ -141,6 +196,14 @@
         }
         
         
+        (function () {
+            const initialMessagesJson = document.getElementById("initial_messages").value;
+            const initialMessages = JSON.parse(initialMessagesJson);
+            updateMessages(initialMessages);
+        })();        
+        
+               
+
     </script>
     
 </body>
