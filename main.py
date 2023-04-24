@@ -54,8 +54,8 @@ def tojson_filter(obj, indent=None):
 def chat():
 
     ai_id = secure_information.AI_ID
-    selected_experience_space = request.form.get(
-        'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
+    selected_experience_space = int(request.form.get(
+        'experience_space', session.get('experience_space', settings.DEFAULT_EXPERIENCE_SPACE)))
 
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
@@ -101,6 +101,7 @@ def change_experience_space():
                                                                         memories_for_all_messages=True)
 
     usage = session['usage']
+    session['experience_space'] = selected_experience_space
 
     all_experience_spaces = database.get_all_experience_spaces(
         session.get('ai_id', ai_id))

@@ -136,6 +136,9 @@
                 } else {
                     messageContent = JSON.stringify(content, null, 4);
                 }
+
+                // Replace newline characters with HTML line breaks
+                //messageContent = messageContent.replace(/\n/g, '<br>');
         
                 const messageHtml = `<pre><strong>${role}:</strong>${messageContent}</pre>`;
                 messagesDiv.innerHTML += messageHtml;
