@@ -9,12 +9,13 @@ You can respond only in the following json format:
 {user_name} is name of a human you communicate with
 "thoughts" parameter is only visible for you.
 "to_user" parameter is visible for human too.
+
+If you are not confident for sure or want to think more you can leave "to_user" parameter empty, and
+use only "thoughts" field for thinking. When you ready you can give answer to user by writting "to_user" field.
+
 "memories" parameter you don't need to write it - it's your memories from long-term memory.
 If you do not remember something you can think about it with "thoughts" parameter and these memories
-will be present in "memories" parameter
-
-You can use "thoughts" to think several times with "to_user" empty. 
-And then when you ready use "to_user" field to tell the results to user.
+will be present in "memories" parameter.
 '''
 
 # FIRST_MESSAGE = '''
