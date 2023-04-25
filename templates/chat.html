@@ -36,6 +36,11 @@
         <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
         <input type="hidden" name="generate_model_message" value="true">
         <button type="submit">Generate Model Message</button>
+        <!-- Add this inside the form for generating a model message -->        
+        <label for="thinking_option">Thinking</label>
+        <input type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
+        <label for="step_by_step_option">Step-by-Step</label>
+        <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>       
     </form>
 
     <br />
@@ -89,25 +94,42 @@
         
         document.querySelector("form[action='{{ url_for('chat') }}']").addEventListener("submit", function (event) {
             event.preventDefault();
-            const experienceSpace = document.getElementById("experience_space").value;
-        
-            // Send the request to generate a model message using an AJAX request
-            const xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        updateMessages([response.assistant_message], true);
-                        updateTokenInformation(response.usage); // Update the usage values
-                    } else {
-                        console.error("An error occurred while generating the model message.");
+            const experienceSpace = document.getElementById("experience_space").value;            
+            
+            // Function to send the request to generate a model message using an AJAX request
+            function generateModelMessage() {
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            const response = JSON.parse(xhr.responseText);
+                            updateMessages([response.assistant_message], true);
+                            updateTokenInformation(response.usage); // Update the usage values
+                            
+                            if (response.send_model_message_again) {
+                                generateModelMessage(); // Generate the model message again
+                            }
+                        } else {
+                            console.error("An error occurred while generating the model message.");
+                        }
                     }
-                }
-            };
-            xhr.open("POST", "{{ url_for('generate_model_message') }}", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.send(`experience_space=${encodeURIComponent(experienceSpace)}`);
-        });        
+                };
+                xhr.open("POST", "{{ url_for('generate_model_message') }}", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.send(`experience_space=${encodeURIComponent(experienceSpace)}`);
+            }
+        
+            generateModelMessage(); // Call the function to generate a model message
+        });
+        
+
+        document.getElementById("thinking_option").addEventListener("change", function () {
+            updateResponseOption("thinking");
+        });
+        
+        document.getElementById("step_by_step_option").addEventListener("change", function () {
+            updateResponseOption("step_by_step");
+        });                              
         
                                              
     
@@ -197,6 +219,22 @@
             xhr.send("experience_space=" + encodeURIComponent(experienceSpace));
 
         }
+
+        function updateResponseOption(responseOption) {
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log("Response option updated:", responseOption);
+                    } else {
+                        console.error("An error occurred while updating response option.");
+                    }
+                }
+            };
+            xhr.open("POST", "{{ url_for('update_response_option') }}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send("response_option=" + encodeURIComponent(responseOption));
+        }        
         
         
         (function () {

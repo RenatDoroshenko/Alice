@@ -5,4 +5,4 @@ gunicorn==20.1.0
 tiktoken==0.3.3
 faiss-cpu
 nltk
-
+Flask-Session==0.4.0

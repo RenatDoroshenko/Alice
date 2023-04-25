@@ -7,6 +7,7 @@ import settings
 import secure_information
 import json
 import memory
+# from flask_session import Session
 
 # Import your models and database instance
 import database
@@ -35,6 +36,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', 'sqlite:///mydb.sqlite3')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Session configuration
+# app.config['SESSION_TYPE'] = 'filesystem'
+# app.config['SESSION_FILE_DIR'] = os.path.abspath('flask_session')
+# app.config['SESSION_PERMANENT'] = False
+# Session(app)
+
 # Initialize the database with the app
 database.db.init_app(app)
 
@@ -44,6 +51,8 @@ with app.app_context():
 # Load memory index
 memory_index, metadata = memory.load_memory_index()
 
+response_option_global = settings.DEFAULT_COMMUNICATION_MODE
+
 
 @app.template_filter('tojson')
 def tojson_filter(obj, indent=None):
@@ -52,6 +61,8 @@ def tojson_filter(obj, indent=None):
 
 @app.route('/', methods=['GET', 'POST'])
 def chat():
+
+    global response_option_global
 
     ai_id = secure_information.AI_ID
     selected_experience_space = int(request.form.get(
@@ -82,7 +93,9 @@ def chat():
                            highest_experience_space=highest_experience_space,
                            ai_id=session.get(
                                'ai_id', secure_information.AI_ID),
-                           ai_name=session.get('ai_name', secure_information.AI_NAME))
+                           ai_name=session.get(
+                               'ai_name', secure_information.AI_NAME),
+                           response_option=response_option_global)
 
 
 # Select experience space
@@ -150,6 +163,8 @@ def send_user_message():
 
 @app.route('/generate_model_message', methods=['POST'])
 def generate_model_message():
+    global response_option_global
+
     ai_id = secure_information.AI_ID
     selected_experience_space = request.form.get(
         'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
@@ -174,8 +189,24 @@ def generate_model_message():
     messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
                                                         experience_space=selected_experience_space,
                                                         messages_number=1)
+    # Check if the response_option is set to "thinking" and to_user is empty
+    response_option = response_option_global
+    print("Retrieved response_option from session:",
+          response_option)  # Add this line
 
-    return jsonify(assistant_message=messages[0], usage=usage)
+    send_model_message_again = False
+    if response_option == 'thinking' and not bool(messages[0]['content']['to_user']):
+        send_model_message_again = True
+
+    return jsonify(assistant_message=messages[0], usage=usage, send_model_message_again=send_model_message_again)
+
+
+@app.route('/update_response_option', methods=['POST'])
+def update_response_option():
+    global response_option_global
+    response_option = request.form.get('response_option')
+    response_option_global = response_option
+    return jsonify(success=True)
 
 
 def set_default_usage(prompt_tokens, completion_tokens, total_tokens):
