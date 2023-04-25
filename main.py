@@ -218,8 +218,13 @@ def check_thinking_mode(message):
 
     # Check if the response_option is set to "thinking" and to_user is empty
     send_model_message_again = False
-    if response_option_global == 'thinking' and not bool(message['content']['to_user']):
+    to_user = message['content']['to_user']
+    if response_option_global == 'thinking' and not bool(to_user):
         send_model_message_again = True
+
+    print('response_option_global: ', response_option_global)
+    print('to_user: ', to_user)
+    print('send_model_message_again: ', send_model_message_again)
 
     return send_model_message_again
 
