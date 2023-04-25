@@ -123,7 +123,8 @@ def send_user_message():
 
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
-                                                                        memories_only_for_context=True)
+                                                                        memories_only_for_context=True,
+                                                                        messages_with_memory_showed_to_ai=settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI-1)
 
     # Process the user message and generate the model's response
     response, response_message = model.user_say_to_model(user_name=secure_information.USER_NAME,

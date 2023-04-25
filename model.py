@@ -251,7 +251,7 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     return num_tokens
 
 
-def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messages=False, messages_number=settings.MESSAGES_LIMIT_FROM_DB):
+def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messages=False, messages_number=settings.MESSAGES_LIMIT_FROM_DB, messages_with_memory_showed_to_ai=settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI):
     entries = database.get_latest_messages(
         ai_id, experience_space, messages_number)
 
@@ -269,7 +269,7 @@ def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messa
         else:
             entry_count = total_entries
 
-        with_memory = total_entries - entry_count < settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI
+        with_memory = total_entries - entry_count < messages_with_memory_showed_to_ai
 
         if entry.message_type == "user":
             content = json_converter.user_message_to_json(entry, with_memory)
@@ -286,10 +286,14 @@ def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messa
     return messages, ai_id, ai_name
 
 
-def get_context_messages_with_manifest(ai_id, experience_space, memories_for_all_messages=False, memories_only_for_context=False):
+def get_context_messages_with_manifest(ai_id, experience_space, memories_for_all_messages=False, memories_only_for_context=False, messages_with_memory_showed_to_ai=settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI):
     messages = create_manifest_message()
     messages_from_db, ai_id, ai_name = get_context_messages_from_db(
-        ai_id, experience_space, memories_for_all_messages)
+        ai_id=ai_id,
+        experience_space=experience_space,
+        memories_for_all_messages=memories_for_all_messages,
+        messages_with_memory_showed_to_ai=messages_with_memory_showed_to_ai)
+
     messages.extend(messages_from_db)
 
     if memories_only_for_context:
