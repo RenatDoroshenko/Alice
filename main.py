@@ -157,13 +157,19 @@ def send_user_message():
     messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
                                                         experience_space=selected_experience_space,
                                                         messages_number=2)
+    user_message = messages[0]
+    assistant_message = messages[1]
 
-    return jsonify(user_message=messages[0], assistant_message=messages[1], usage=usage)
+    send_model_message_again = check_thinking_mode(assistant_message)
+
+    return jsonify(user_message=user_message,
+                   assistant_message=assistant_message,
+                   usage=usage,
+                   send_model_message_again=send_model_message_again)
 
 
 @app.route('/generate_model_message', methods=['POST'])
 def generate_model_message():
-    global response_option_global
 
     ai_id = secure_information.AI_ID
     selected_experience_space = request.form.get(
@@ -189,14 +195,8 @@ def generate_model_message():
     messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
                                                         experience_space=selected_experience_space,
                                                         messages_number=1)
-    # Check if the response_option is set to "thinking" and to_user is empty
-    response_option = response_option_global
-    print("Retrieved response_option from session:",
-          response_option)  # Add this line
 
-    send_model_message_again = False
-    if response_option == 'thinking' and not bool(messages[0]['content']['to_user']):
-        send_model_message_again = True
+    send_model_message_again = check_thinking_mode(messages[0])
 
     return jsonify(assistant_message=messages[0], usage=usage, send_model_message_again=send_model_message_again)
 
@@ -206,7 +206,22 @@ def update_response_option():
     global response_option_global
     response_option = request.form.get('response_option')
     response_option_global = response_option
+    print(f'response_option changed to "{response_option_global}"')
     return jsonify(success=True)
+
+
+def check_thinking_mode(message):
+    global response_option_global
+
+    print("Retrieved response_option_global from global:",
+          response_option_global)
+
+    # Check if the response_option is set to "thinking" and to_user is empty
+    send_model_message_again = False
+    if response_option_global == 'thinking' and not bool(message['content']['to_user']):
+        send_model_message_again = True
+
+    return send_model_message_again
 
 
 def set_default_usage(prompt_tokens, completion_tokens, total_tokens):

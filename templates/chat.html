@@ -82,6 +82,10 @@
                         updateMessages([response.user_message, response.assistant_message], true);
                         userMessageInput.value = ""; // Clear the input field
                         updateTokenInformation(response.usage); // Update the usage values
+
+                        if (response.send_model_message_again) {
+                            generateModelMessage(); // Generate the model message again
+                        }                        
                     } else {
                         console.error("An error occurred while sending the user message.");
                     }
@@ -93,31 +97,7 @@
         });      
         
         document.querySelector("form[action='{{ url_for('chat') }}']").addEventListener("submit", function (event) {
-            event.preventDefault();
-            const experienceSpace = document.getElementById("experience_space").value;            
-            
-            // Function to send the request to generate a model message using an AJAX request
-            function generateModelMessage() {
-                const xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            const response = JSON.parse(xhr.responseText);
-                            updateMessages([response.assistant_message], true);
-                            updateTokenInformation(response.usage); // Update the usage values
-                            
-                            if (response.send_model_message_again) {
-                                generateModelMessage(); // Generate the model message again
-                            }
-                        } else {
-                            console.error("An error occurred while generating the model message.");
-                        }
-                    }
-                };
-                xhr.open("POST", "{{ url_for('generate_model_message') }}", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                xhr.send(`experience_space=${encodeURIComponent(experienceSpace)}`);
-            }
+            event.preventDefault();                                               
         
             generateModelMessage(); // Call the function to generate a model message
         });
@@ -129,7 +109,32 @@
         
         document.getElementById("step_by_step_option").addEventListener("change", function () {
             updateResponseOption("step_by_step");
-        });                              
+        });    
+        
+        // Function to send the request to generate a model message using an AJAX request
+        function generateModelMessage() {
+            const experienceSpace = document.getElementById("experience_space").value; 
+            
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        updateMessages([response.assistant_message], true);
+                        updateTokenInformation(response.usage); // Update the usage values
+                        
+                        if (response.send_model_message_again) {
+                            generateModelMessage(); // Generate the model message again
+                        }
+                    } else {
+                        console.error("An error occurred while generating the model message.");
+                    }
+                }
+            };
+            xhr.open("POST", "{{ url_for('generate_model_message') }}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(`experience_space=${encodeURIComponent(experienceSpace)}`);
+        }
         
                                              
     
