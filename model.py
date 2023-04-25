@@ -42,11 +42,12 @@ def user_say_to_model(user_name, user_message, messages, experience_space, memor
                      'user_name': user_name, 'date_time': date_time_str}
 
     # Save to Long-term memory
-    memory.add_user_message_to_memory(full_response=full_response,
-                                      index=memory_index,
-                                      metadata=metadata,
-                                      message_id=user_message_id,
-                                      date_time_str=date_time_str)
+    if settings.LONG_MEMORY_ENABLED:
+        memory.add_user_message_to_memory(full_response=full_response,
+                                          index=memory_index,
+                                          metadata=metadata,
+                                          message_id=user_message_id,
+                                          date_time_str=date_time_str)
 
     # messages.append(
     #     {"role": "user", "content": full_response})
@@ -85,13 +86,18 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
     ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
         response.choices[0].message.content)
 
-    existing_messages_ids = get_message_ids_from_existing_messages(messages)
+    if settings.LONG_MEMORY_ENABLED:
+        existing_messages_ids = get_message_ids_from_existing_messages(
+            messages)
 
-    # Get relevant memories from DB
-    filtered_memories = get_full_memories_from_db(get_memory_text=thoughts,
-                                                  index=memory_index,
-                                                  metadata=metadata,
-                                                  existing_messages_ids=existing_messages_ids)
+        # Get relevant memories from DB
+        filtered_memories = get_full_memories_from_db(get_memory_text=thoughts,
+                                                      index=memory_index,
+                                                      metadata=metadata,
+                                                      existing_messages_ids=existing_messages_ids)
+    else:
+        existing_messages_ids = []
+        filtered_memories = []
 
     response_message = json_converter.ai_message_to_json_values(
         ai_id, ai_name, thoughts, to_user, commands, filtered_memories, existing_messages_ids)
@@ -103,25 +109,31 @@ def generate_response(messages, experience_space, memory_index, metadata, contex
     date_time_str = date_time.strftime(settings.DATE_TIME_FORMAT)
 
     # Save to Long-term memory
-    memory.add_ai_message_to_memory(data=response_message,
-                                    index=memory_index,
-                                    metadata=metadata,
-                                    message_id=ai_message_id,
-                                    date_time_str=date_time_str)
+    if settings.LONG_MEMORY_ENABLED:
+        memory.add_ai_message_to_memory(data=response_message,
+                                        index=memory_index,
+                                        metadata=metadata,
+                                        message_id=ai_message_id,
+                                        date_time_str=date_time_str)
 
     return response, response_message
 
 
 def save_user_message_with_related_memories_to_db(messages, memory_index, metadata, user_name, user_message, experience_space, ai_id, ai_name):
-    existing_messages_ids = get_message_ids_from_existing_messages(messages)
 
-    get_memory_text = f"{user_name}: {user_message}"
+    if settings.LONG_MEMORY_ENABLED:
+        existing_messages_ids = get_message_ids_from_existing_messages(
+            messages)
 
-    # Get relevant memories from DB
-    filtered_memories = get_full_memories_from_db(get_memory_text=get_memory_text,
-                                                  index=memory_index,
-                                                  metadata=metadata,
-                                                  existing_messages_ids=existing_messages_ids)
+        get_memory_text = f"{user_name}: {user_message}"
+
+        # Get relevant memories from DB
+        filtered_memories = get_full_memories_from_db(get_memory_text=get_memory_text,
+                                                      index=memory_index,
+                                                      metadata=metadata,
+                                                      existing_messages_ids=existing_messages_ids)
+    else:
+        filtered_memories = []
 
     # Save to DB
     user_message_id, date_time = database.save_user_message(
@@ -259,6 +271,9 @@ def get_context_messages_from_db(ai_id, experience_space, memories_for_all_messa
     ai_name = ""
     entry_count = 0
     total_entries = len(entries)
+
+    if not settings.LONG_MEMORY_ENABLED:
+        messages_with_memory_showed_to_ai = 0
 
     for entry in entries:
         if not ai_name and entry.message_type == "assistant":
