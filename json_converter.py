@@ -57,7 +57,7 @@ def ai_message_to_json(entry, with_memory=True):
         'date_time': entry.date_time.strftime(settings.DATE_TIME_FORMAT)
     }
 
-    if entry.commands is not None and entry.commands != 'null':
+    if entry.commands is not None and entry.commands != 'null' and settings.COMMANDS_ENABLED:
         data['commands'] = json.loads(entry.commands)
 
     if with_memory:
@@ -127,7 +127,7 @@ def ai_message_to_json_from_dict(entry, withMemory=True):
         'date_time': date_time.strftime(settings.DATE_TIME_FORMAT)
     }
 
-    if entry['commands'] is not None and entry['commands'] != 'null':
+    if entry['commands'] is not None and entry['commands'] != 'null' and settings.COMMANDS_ENABLED:
         data['commands'] = json.loads(entry['commands'])
 
     if withMemory:
