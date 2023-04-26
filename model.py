@@ -317,9 +317,11 @@ def get_context_messages_from_db(ai_id,
         with_memory = total_entries - entry_count < messages_with_memory_showed_to_ai
 
         if entry.message_type == "user":
-            content = json_converter.user_message_to_json(entry, with_memory)
+            content = json_converter.user_message_to_json(
+                entry, with_memory, diagnostic)
         elif entry.message_type == "assistant":
-            content = json_converter.ai_message_to_json(entry, with_memory)
+            content = json_converter.ai_message_to_json(
+                entry, with_memory, diagnostic)
         else:
             continue
 

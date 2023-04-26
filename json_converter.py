@@ -26,7 +26,7 @@ def convert_db_memories_messages_to_json(entries):
     return messages
 
 
-def user_message_to_json(entry, with_memory=True):
+def user_message_to_json(entry, with_memory=True, diagnostic=False):
     data = {
         'message_id': entry.id,
         'user_name': entry.user_name,
@@ -35,6 +35,9 @@ def user_message_to_json(entry, with_memory=True):
     }
     # 'ai_id': entry.ai_id,
     # 'ai_name': entry.ai_name
+    if diagnostic:
+        if entry.diagnostic:
+            data['diagnostic'] = True
 
     if with_memory:
         if entry.memories is not None and entry.memories != 'null':
@@ -47,7 +50,7 @@ def user_message_to_json(entry, with_memory=True):
     return data
 
 
-def ai_message_to_json(entry, with_memory=True):
+def ai_message_to_json(entry, with_memory=True, diagnostic=False):
     data = {
         'message_id': entry.id,
         'ai_id': entry.ai_id,
@@ -56,6 +59,10 @@ def ai_message_to_json(entry, with_memory=True):
         'to_user': entry.to_user,
         'date_time': entry.date_time.strftime(settings.DATE_TIME_FORMAT)
     }
+
+    if diagnostic:
+        if entry.diagnostic:
+            data['diagnostic'] = True
 
     if entry.commands is not None and entry.commands != 'null' and settings.COMMANDS_ENABLED:
         data['commands'] = json.loads(entry.commands)

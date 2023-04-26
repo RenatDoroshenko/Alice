@@ -171,9 +171,16 @@
                 let messageContent = "";
                 if (message.role.toLowerCase() === "user" && 'user_name' in content && 'user_message' in content) {
                     let userMessage = {[content.user_name]: content.user_message};
+                    if ('message_id' in content){
+                        userMessage["message_id"] = content.message_id
+                    }
+                    if ('diagnostic' in content){
+                        userMessage["diagnostic"] = content.diagnostic
+                    }
                     if ('memories' in content) {
                         userMessage["memories"] = content.memories;
                     }
+
                     messageContent = JSON.stringify(userMessage, null, 4);
                 } else if (message.role.toLowerCase() === "system") {
                     messageContent = message.content;
