@@ -158,7 +158,8 @@ def send_user_message():
                                                          diagnostic=diagnostic)
 
     # Save changes made to memory index
-    memory.save_memory_index(memory_index, metadata)
+    if settings.LONG_MEMORY_ENABLED and not diagnostic:
+        memory.save_memory_index(memory_index, metadata)
 
     update_session_objects(response, selected_experience_space)
 
@@ -200,7 +201,8 @@ def generate_model_message():
                                                           diagnostic=diagnostic)
 
     # Save changes made to memory index
-    memory.save_memory_index(memory_index, metadata)
+    if settings.LONG_MEMORY_ENABLED and not diagnostic:
+        memory.save_memory_index(memory_index, metadata)
 
     update_session_objects(response, selected_experience_space)
 
