@@ -22,6 +22,7 @@ class Experience(db.Model):
     commands = db.Column(db.Text, nullable=True)
     memories = db.Column(db.Text, nullable=True)
     experience_space = db.Column(db.Integer, nullable=True)
+    diagnostic = db.Column(db.Boolean, nullable=False, default=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def to_dict(self):
@@ -90,18 +91,27 @@ def get_messages_by_ids(ids):
     return experiences
 
 
-def get_latest_messages(ai_id, experience_space, messages_number):
-    latest_messages = (
-        Experience.query.filter_by(
-            ai_id=ai_id, experience_space=experience_space)
-        .order_by(Experience.date_time.desc())
-        .limit(messages_number)
-        .all()
-    )
+def get_latest_messages(ai_id, experience_space, messages_number, diagnostic=False):
+    if diagnostic:
+        latest_messages = (
+            Experience.query.filter_by(
+                ai_id=ai_id, experience_space=experience_space)
+            .order_by(Experience.date_time.desc())
+            .limit(messages_number)
+            .all()
+        )
+    else:
+        latest_messages = (
+            Experience.query.filter_by(
+                ai_id=ai_id, experience_space=experience_space, diagnostic=False)
+            .order_by(Experience.date_time.desc())
+            .limit(messages_number)
+            .all()
+        )
     return latest_messages[::-1]
 
 
-def save_user_message(user_name, user_message, ai_id, ai_name, experience_space, memories):
+def save_user_message(user_name, user_message, ai_id, ai_name, experience_space, memories, diagnostic=False):
     memories_string = json.dumps([memory.to_dict() for memory in memories])
 
     print('user memories to save: ')
@@ -115,7 +125,8 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space,
         user_name=user_name,
         user_message=user_message,
         memories=memories_string,
-        experience_space=experience_space
+        experience_space=experience_space,
+        diagnostic=diagnostic
     )
     db.session.add(user_entry)
     db.session.commit()
@@ -123,7 +134,7 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space,
     return user_entry.id, user_entry.date_time
 
 
-def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, experience_space):
+def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, experience_space, diagnostic=False):
     commands_string = json.dumps(commands)
     memories_string = json.dumps([memory.to_dict() for memory in memories])
 
@@ -139,7 +150,8 @@ def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, exper
         to_user=to_user,
         commands=commands_string,
         memories=memories_string,
-        experience_space=experience_space
+        experience_space=experience_space,
+        diagnostic=diagnostic
     )
     db.session.add(ai_entry)
     db.session.commit()

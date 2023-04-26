@@ -68,9 +68,12 @@ def chat():
     selected_experience_space = int(request.form.get(
         'experience_space', session.get('experience_space', settings.DEFAULT_EXPERIENCE_SPACE)))
 
+    diagnostic = is_diagnostic_mode()
+
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
-                                                                        memories_only_for_context=True)
+                                                                        memories_only_for_context=True,
+                                                                        diagnostic=diagnostic)
 
     if 'usage' not in session:
         set_default_usage(0, 0, 0)
@@ -108,10 +111,13 @@ def change_experience_space():
     ai_id = secure_information.AI_ID
     selected_experience_space = int(request.form.get('experience_space'))
     print("Selected experience space:",
-          selected_experience_space)  # Add this line
+          selected_experience_space)
+    diagnostic = is_diagnostic_mode()
+
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
-                                                                        memories_for_all_messages=True)
+                                                                        memories_for_all_messages=True,
+                                                                        diagnostic=diagnostic)
 
     usage = session['usage']
     session['experience_space'] = selected_experience_space
@@ -132,12 +138,15 @@ def send_user_message():
     ai_id = secure_information.AI_ID
     selected_experience_space = request.form.get(
         'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
+    diagnostic = is_diagnostic_mode()
+
     user_message = request.form.get('user_message')
 
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
                                                                         memories_only_for_context=True,
-                                                                        messages_with_memory_showed_to_ai=settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI-1)
+                                                                        messages_with_memory_showed_to_ai=settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI-1,
+                                                                        diagnostic=diagnostic)
 
     # Process the user message and generate the model's response
     response, response_message = model.user_say_to_model(user_name=secure_information.USER_NAME,
@@ -145,7 +154,8 @@ def send_user_message():
                                                          messages=messages,
                                                          experience_space=selected_experience_space,
                                                          memory_index=memory_index,
-                                                         metadata=metadata)
+                                                         metadata=metadata,
+                                                         diagnostic=diagnostic)
 
     # Save changes made to memory index
     memory.save_memory_index(memory_index, metadata)
@@ -156,7 +166,8 @@ def send_user_message():
 
     messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
                                                         experience_space=selected_experience_space,
-                                                        messages_number=2)
+                                                        messages_number=2,
+                                                        diagnostic=diagnostic)
     user_message = messages[0]
     assistant_message = messages[1]
 
@@ -174,16 +185,19 @@ def generate_model_message():
     ai_id = secure_information.AI_ID
     selected_experience_space = request.form.get(
         'experience_space', settings.DEFAULT_EXPERIENCE_SPACE, type=int)
+    diagnostic = is_diagnostic_mode()
 
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
-                                                                        memories_only_for_context=True)
+                                                                        memories_only_for_context=True,
+                                                                        diagnostic=diagnostic)
 
     # Generate the model's response
     response, response_message = model.model_say_to_model(messages=messages,
                                                           experience_space=selected_experience_space,
                                                           memory_index=memory_index,
-                                                          metadata=metadata)
+                                                          metadata=metadata,
+                                                          diagnostic=diagnostic)
 
     # Save changes made to memory index
     memory.save_memory_index(memory_index, metadata)
@@ -194,7 +208,8 @@ def generate_model_message():
 
     messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
                                                         experience_space=selected_experience_space,
-                                                        messages_number=1)
+                                                        messages_number=1,
+                                                        diagnostic=diagnostic)
 
     send_model_message_again = should_model_think(messages[0])
 
@@ -225,11 +240,16 @@ def should_model_think(message):
     elif response_option_global == 'continuous':
         send_model_message_again = True
 
-    print('response_option_global: ', response_option_global)
+    print('communication mode: ', response_option_global)
     print('to_user: ', to_user)
     print('send_model_message_again: ', send_model_message_again)
 
     return send_model_message_again
+
+
+def is_diagnostic_mode():
+    global response_option_global
+    return response_option_global == 'diagnostic'
 
 
 def set_default_usage(prompt_tokens, completion_tokens, total_tokens):
