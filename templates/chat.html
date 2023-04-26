@@ -36,11 +36,17 @@
         <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
         <input type="hidden" name="generate_model_message" value="true">
         <button type="submit">Generate Model Message</button>
-        <!-- Add this inside the form for generating a model message -->        
-        <label for="thinking_option">Thinking</label>
+
+        <!-- Model Communication Modes -->           
+        
+        <input type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
+        <label for="continuous_option">Continuous</label>
+        
         <input type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
+        <label for="thinking_option">Thinking</label>
+        
+        <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>               
         <label for="step_by_step_option">Step-by-Step</label>
-        <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>       
     </form>
 
     <br />
@@ -102,7 +108,7 @@
             generateModelMessage(); // Call the function to generate a model message
         });
         
-
+        // Model communication modes
         document.getElementById("thinking_option").addEventListener("change", function () {
             updateResponseOption("thinking");
         });
@@ -110,6 +116,10 @@
         document.getElementById("step_by_step_option").addEventListener("change", function () {
             updateResponseOption("step_by_step");
         });    
+
+        document.getElementById("continuous_option").addEventListener("change", function () {
+            updateResponseOption("continuous");
+        });   
         
         // Function to send the request to generate a model message using an AJAX request
         function generateModelMessage() {
