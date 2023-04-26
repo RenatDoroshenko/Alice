@@ -47,6 +47,9 @@
         
         <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>               
         <label for="step_by_step_option">Step-by-Step</label>
+
+        <input type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>               
+        <label for="diagnostic_option">Diagnostic</label>
     </form>
 
     <br />
@@ -120,6 +123,10 @@
         document.getElementById("continuous_option").addEventListener("change", function () {
             updateResponseOption("continuous");
         });   
+
+        document.getElementById("diagnostic_option").addEventListener("change", function () {
+            updateResponseOption("diagnostic");
+        });  
         
         // Function to send the request to generate a model message using an AJAX request
         function generateModelMessage() {
