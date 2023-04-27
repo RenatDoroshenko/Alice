@@ -43,16 +43,21 @@
   --chat-container: rgba(255, 255, 255, 0.3);
   --message: rgb(168 0 201 / 14%);
   /*--message: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);*/
+
+  /* Roboto, Poppins, Montserrat */
+  --default-font: 'Poppins'
 }
 
 body {
   /* Set the gradient background color for the body */
   background-image: var(--body-gradient);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 
   /* Set the height to 100% to cover the entire page */
   height: 100%;
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--default-font), sans-serif;
 }
 
 
@@ -79,12 +84,20 @@ body {
 }
 
 .chat-header {
-  font-family: 'Roboto', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--default-font), sans-serif;
   font-size: 24px;
   color: var(--dark-black);
-  text-align: center;
   padding: 16px;
 }
+
+.chat-header i.material-icons {
+  margin-right: 8px;
+}
+
+
 
 .messages-container {
   background-color: var(--medium-blue-gradient);
@@ -97,10 +110,11 @@ body {
   /* adjust the height as needed */
   padding: 8px 12px;
   border-radius: 12px;
+  margin-bottom: 10px;
 }
 
 .message {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: var(--default-font), sans-serif !important;
   font-size: 16px;
   color: var(--dark-black);
   background-color: var(--message);
@@ -117,7 +131,7 @@ body {
   background-color: var(--medium-purple-rgba);
   border: none;
   border-radius: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--default-font), sans-serif;
   font-size: 16px;
   color: var(--dark-black);
   outline: none;
@@ -146,7 +160,7 @@ body {
 
 /* Custom button styles */
 .custom-btn {
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--default-font), sans-serif;
   font-size: 18px;
   color: var(--dark-blue);
   padding: 10px 20px;
@@ -179,14 +193,14 @@ body {
 }
 
 .token-info h3 {
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--default-font), sans-serif;
   font-size: 20px;
   color: var(--dark-blue);
   margin-bottom: 12px;
 }
 
 .token-info p {
-  font-family: 'Roboto', sans-serif;
+  font-family: var(--default-font), sans-serif;
   font-size: 16px;
   color: var(--dark-blue);
   margin-bottom: 8px;
@@ -194,4 +208,72 @@ body {
 
 .token-info strong {
   font-weight: bold;
+}
+
+/* Scroll-bar */
+/* Add this to your existing CSS */
+.messages-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background-color: rgba(103, 58, 183, 0.3);
+  border-radius: 6px;
+}
+
+.messages-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(103, 58, 183, 0.4);
+}
+
+/* Firefox */
+.messages-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(103, 58, 183, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+.messages-container:hover {
+  scrollbar-color: rgba(103, 58, 183, 0.4) rgba(255, 255, 255, 0.1);
+}
+
+/* Message scroll-bar */
+.message pre {
+  font-family: var(--default-font), sans-serif;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.message pre::-webkit-scrollbar {
+  height: 12px;
+}
+
+.message pre::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.message pre::-webkit-scrollbar-thumb {
+  background-color: rgba(103, 58, 183, 0.3);
+  border-radius: 6px;
+}
+
+.message pre::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(103, 58, 183, 0.4);
+}
+
+/* Firefox */
+.message pre {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(103, 58, 183, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+.message pre:hover {
+  scrollbar-color: rgba(103, 58, 183, 0.4) rgba(255, 255, 255, 0.1);
 }
