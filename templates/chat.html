@@ -45,12 +45,10 @@
                     
                 </div>   
             </div>
-        </form>
-        
-                       
-            
             <button type="submit">Send</button>
         </form>
+        
+                                                  
     
         <form action="{{ url_for('chat') }}" method="POST">
             <input type="hidden" name="messages" value="{{ messages }}">
