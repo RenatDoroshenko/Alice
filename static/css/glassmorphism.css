@@ -10,7 +10,6 @@
   --dark-blue: #1976D2;
   --light-black: #616161;
   --medium-black: #424242;
-  --dark-black: #212121;
 
   /* rgba values for colors */
   --medium-purple-rgba: rgba(149, 117, 205, 0.3);
@@ -27,25 +26,31 @@
   /* rgba values for gradient colors */
   --medium-purple-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);
   --medium-blue-gradient: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(33, 150, 243, 0.7) 100%);
-  /*--body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.7) 0%, rgba(33, 150, 243, 0.7) 100%);*/
-
-  /* Here is the best now: */
-  --body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(103, 58, 183, 0.6) 25%, rgba(33, 150, 243, 0.6) 50%, rgba(57, 73, 171, 0.6) 75%, rgba(63, 81, 181, 0.3) 100%);
-
-  /* Here is good one too: */
-  /* --body-gradient: radial-gradient(rgba(149, 117, 205, 0.7), rgba(103, 58, 183, 0.7), rgba(33, 150, 243, 0.7)); */
 
 
 
 
 
 
-  --chat-container: rgba(255, 255, 255, 0.3);
-  --message: rgb(168 0 201 / 14%);
+
   /*--message: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);*/
 
   /* Roboto, Poppins, Montserrat */
-  --default-font: 'Poppins'
+  --default-font: 'Poppins';
+
+  /* White Theme */
+  /* Here is the best now: */
+  --body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(103, 58, 183, 0.6) 25%, rgba(33, 150, 243, 0.6) 50%, rgba(57, 73, 171, 0.6) 75%, rgba(63, 81, 181, 0.3) 100%);
+  --dark-black: #212121;
+  --chat-container: rgba(255, 255, 255, 0.3);
+  --message: rgb(168 0 201 / 14%);
+
+  /* Dark Theme */
+  /* --body-gradient: linear-gradient(135deg, rgb(107 52 204) 0%, rgb(64 0 179 / 90%) 25%, rgb(0 137 246) 50%, rgb(10 33 168) 75%, rgb(0 26 171) 100%);
+  --dark-black: #ffffffbd;
+  --chat-container: rgb(0 0 0 / 41%);
+  --message: rgb(168 0 201 / 10%); */
+
 }
 
 body {
