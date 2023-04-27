@@ -30,7 +30,7 @@
   /*--body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.7) 0%, rgba(33, 150, 243, 0.7) 100%);*/
 
   /* Here is the best now: */
-  --body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(103, 58, 183, 0.7) 25%, rgba(33, 150, 243, 0.7) 50%, rgba(57, 73, 171, 0.7) 75%, rgba(63, 81, 181, 0.4) 100%);
+  --body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(103, 58, 183, 0.6) 25%, rgba(33, 150, 243, 0.6) 50%, rgba(57, 73, 171, 0.6) 75%, rgba(63, 81, 181, 0.3) 100%);
 
   /* Here is good one too: */
   /* --body-gradient: radial-gradient(rgba(149, 117, 205, 0.7), rgba(103, 58, 183, 0.7), rgba(33, 150, 243, 0.7)); */
