@@ -1,0 +1,98 @@
+:root {
+  --light-purple: #D1C4E9;
+  --medium-purple: #9575CD;
+  --dark-purple: #673AB7;
+  --pure-white: #FFFFFF;
+  --off-white: #F5F5F5;
+  --light-blue: #64B5F6;
+  --medium-blue: #2196F3;
+  --dark-blue: #1976D2;
+  --light-black: #616161;
+  --medium-black: #424242;
+  --dark-black: #212121;
+}
+
+
+.chat-container {
+  /* Set the container size and position */
+  width: 80%;
+  max-width: 1000px;
+  min-height: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+
+  /* Apply the background color and blur effect */
+  background-color: rgba(var(--dark-purple), 0.7);
+  backdrop-filter: blur(10px);
+
+  /* Add rounded corners and border */
+  border-radius: 20px;
+
+  /* Add a subtle shadow to create a floating effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.chat-header {
+  font-family: 'Roboto', sans-serif;
+  font-size: 24px;
+  color: var(--medium-purple);
+  text-align: center;
+  padding: 16px;
+}
+
+.messages-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  /* adjust the color and transparency as needed */
+  padding: 16px;
+  /* add padding to create space around the messages */
+  overflow-y: auto;
+  /* enable scrolling if the content overflows the container */
+  max-height: 400px;
+  /* adjust the height as needed */
+}
+
+.message {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: var(--dark-black);
+  background-color: var(--off-white);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  /* separate messages with a small margin */
+}
+
+/* Drop Down */
+.glass-input,
+.dropdown-menu.glass-input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: var(--dark-black);
+  outline: none;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-menu.glass-input {
+  padding: 4px 0;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+}
+
+.glass-input:hover,
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.glass-input:focus,
+.dropdown-item:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+}

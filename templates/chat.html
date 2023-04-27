@@ -5,63 +5,85 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with GPT-3.5-turbo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/glassmorphism.css') }}">
+    <!-- Add this line to the head of your HTML file to include Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Chat with GPT-3.5-turbo</h1>
+    <div class="chat-container">
+        <header class="chat-header">
+            <i class="material-icons">chat</i> Chat Application
+          </header>        
 
-    <div id="messages">
+        <div class="messages-container" id="messages">
+        
+        </div>
+        
+        <input type="hidden" id="ai_id" value="{{ ai_id }}">
+        <input type="hidden" id="ai_name" value="{{ ai_name }}">
     
-    </div>
-    
-    <input type="hidden" id="ai_id" value="{{ ai_id }}">
-    <input type="hidden" id="ai_name" value="{{ ai_name }}">
-
-    <form id="user_message_form" method="POST">
-        <input type="hidden" name="messages" value="{{ messages }}">
-        <label for="user_message">Your message:</label>
-        <input type="text" name="user_message" id="user_message" autofocus>
-        <label for="experience_space">Experience Space:</label>
-        <select name="experience_space" id="experience_space">
-            {% for es in all_experience_spaces %}
-                <option value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</option>
-            {% endfor %}
-            <option value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</option>
-        </select>
+        <form id="user_message_form" method="POST" class="d-flex flex-column">
+            <input type="hidden" name="messages" value="{{ messages }}">
+            <div class="form-group">
+                <label for="user_message">Your message:</label>
+                <textarea name="user_message" id="user_message" class="glass-input" rows="3" autofocus></textarea>
+            </div>
         
-        <button type="submit">Send</button>
-    </form>
-
-    <form action="{{ url_for('chat') }}" method="POST">
-        <input type="hidden" name="messages" value="{{ messages }}">
-        <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
-        <input type="hidden" name="generate_model_message" value="true">
-        <button type="submit">Generate Model Message</button>
-
-        <!-- Model Communication Modes -->           
+            <div class="form-group d-flex align-items-center mt-2">
+                <label for="experience_space" class="me-2">Experience Space:</label>
+                <div class="dropdown">
+                    <button class="btn glass-input dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      Choose Experience Space
+                    </button>
+                    <ul class="dropdown-menu glass-input" aria-labelledby="experience_space_dropdown">
+                        {% for es in all_experience_spaces %}
+                            <li><a class="dropdown-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
+                        {% endfor %}
+                        <li><a class="dropdown-item" href="#" data-value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</a></li>
+                    </ul>
+                    
+                </div>   
+            </div>
+        </form>
         
-        <input type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
-        <label for="continuous_option">Continuous</label>
-        
-        <input type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
-        <label for="thinking_option">Thinking</label>
-        
-        <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>               
-        <label for="step_by_step_option">Step-by-Step</label>
-
-        <input type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>               
-        <label for="diagnostic_option">Diagnostic</label>
-    </form>
-
-    <br />
-    <br />
-    <div>
-        <h3>Token Information:</h3>
-        <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
-        <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>
-        <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
-    </div>
+                       
             
-    <input type="hidden" id="initial_messages" value="{{ initial_messages | tojson }}">
+            <button type="submit">Send</button>
+        </form>
+    
+        <form action="{{ url_for('chat') }}" method="POST">
+            <input type="hidden" name="messages" value="{{ messages }}">
+            <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
+            <input type="hidden" name="generate_model_message" value="true">
+            <button type="submit">Generate Model Message</button>
+    
+            <!-- Model Communication Modes -->           
+            
+            <input type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
+            <label for="continuous_option">Continuous</label>
+            
+            <input type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
+            <label for="thinking_option">Thinking</label>
+            
+            <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>               
+            <label for="step_by_step_option">Step-by-Step</label>
+    
+            <input type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>               
+            <label for="diagnostic_option">Diagnostic</label>
+        </form>
+    
+        <br />
+        <br />
+        <div>
+            <h3>Token Information:</h3>
+            <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
+            <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>
+            <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
+        </div>
+                
+        <input type="hidden" id="initial_messages" value="{{ initial_messages | tojson }}">    
+    </div>
 
     <script>
         let requestQueue = [];
@@ -72,18 +94,23 @@
             fetchAndUpdateMessages(initialExperienceSpace);
         }); */
         
-        document.getElementById("experience_space").addEventListener("change", function () {
+        /* Select Drop Down */
+        /*document.getElementById("experience_space").addEventListener("change", function () {
             const experienceSpace = this.options[this.selectedIndex].value;
             console.log('experience space passed to fetchAndUpdateMessages:', experienceSpace);
             fetchAndUpdateMessages(experienceSpace);
             document.getElementById("generate_experience_space").value = experienceSpace;
-        });   
+        });   */
+        addEventListenersToDropdownItems();
+        setInitialDropdownValue();
+        
+          
 
         document.getElementById("user_message_form").addEventListener("submit", function (event) {
             event.preventDefault();
             const userMessageInput = document.getElementById("user_message");
             const userMessage = userMessageInput.value;
-            const experienceSpace = document.getElementById("experience_space").value;
+            const experienceSpace = getDropdownValue();
         
             requestQueue.push(() => sendUserMessage(userMessage, experienceSpace));
             if (!isRequestInProgress) processNextRequest();
@@ -123,10 +150,7 @@
                         updateMessages([response.user_message, response.assistant_message], true);
                         userMessageInput.value = ""; // Clear the input field
                         updateTokenInformation(response.usage); // Update the usage values
-    
-                        /*if (response.send_model_message_again) {
-                            generateModelMessage(); // Generate the model message again
-                        }*/
+
                         processNextRequest(response.send_model_message_again); // Process the next request in the queue
                     } else {
                         console.error("An error occurred while sending the user message.");
@@ -138,6 +162,23 @@
             xhr.send(`user_message=${encodeURIComponent(userMessage)}&experience_space=${encodeURIComponent(experienceSpace)}`);
         }
 
+        function getDropdownValue() {
+            const dropdownButton = document.getElementById("experience_space_dropdown");
+            return dropdownButton.textContent.trim();
+        }
+        
+        function setDropdownValue(value) {
+            const dropdownButton = document.getElementById("experience_space_dropdown");
+            const items = document.querySelectorAll(".dropdown-item");
+        
+            items.forEach((item) => {
+                if (item.dataset.value == value) {
+                    dropdownButton.textContent = item.textContent;
+                    return;
+                }
+            });
+        }        
+
         function sendModelMessage(experienceSpace) {
             
             const xhr = new XMLHttpRequest();
@@ -146,11 +187,8 @@
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
                         updateMessages([response.assistant_message], true);
-                        updateTokenInformation(response.usage); // Update the usage values
-                        
-                        /*if (response.send_model_message_again) {
-                            generateModelMessage(); // Generate the model message again
-                        }*/
+                        updateTokenInformation(response.usage); // Update the usage values 
+
                         processNextRequest(response.send_model_message_again); // Process the next request in the queue
                     } else {
                         console.error("An error occurred while generating the model message.");
@@ -160,21 +198,6 @@
             xhr.open("POST", "{{ url_for('generate_model_message') }}", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.send(`experience_space=${encodeURIComponent(experienceSpace)}`);
-        }
-        
-        // Function to send the request to generate a model message using an AJAX request
-        function generateModelMessage() {
-            const experienceSpace = document.getElementById("experience_space").value;
-        
-            // Check if sendModelMessage() is already in the queue
-            const isModelMessageInQueue = requestQueue.some(request => request === sendModelMessage.bind(null, experienceSpace));
-        
-            // Add sendModelMessage() to the queue only if it's not already there
-            if (!isModelMessageInQueue) {
-                requestQueue.push(sendModelMessage.bind(null, experienceSpace));
-            }
-            
-            if (!isRequestInProgress) processNextRequest();
         }
         
                                              
@@ -215,7 +238,7 @@
                 // Replace newline characters with HTML line breaks
                 //messageContent = messageContent.replace(/\n/g, '<br>');
         
-                const messageHtml = `<pre><strong>${role}:</strong>${messageContent}</pre>`;
+                const messageHtml = `<div class='message'><pre><strong>${role}:</strong>${messageContent}</pre></div>`;
                 messagesDiv.innerHTML += messageHtml;
             });
         }
@@ -227,7 +250,7 @@
 
                 if (send_model_message_again){
                     isRequestInProgress = true
-                    const experienceSpace = document.getElementById("experience_space").value;
+                    const experienceSpace = getDropdownValue();
                     sendModelMessage(experienceSpace)
                 }
                 return;
@@ -245,7 +268,7 @@
             document.getElementById("total_tokens").innerText = usage.total_tokens;
         }
 
-        function updateSelectOptions(newOptions) {
+        /*function updateSelectOptions(newOptions) {
             const select = document.getElementById("experience_space");
             select.innerHTML = "";
             
@@ -262,7 +285,57 @@
             createNewOption.value = newOptions[newOptions.length - 1] + 1;
             createNewOption.text = "Create New Experience Space (" + createNewOption.value + ")";
             select.add(createNewOption);
+        }*/
+        function updateDropdownOptions(newOptions) {
+            const dropdownMenu = document.querySelector(".dropdown-menu");
+            dropdownMenu.innerHTML = "";
+        
+            newOptions.forEach(function (optionValue) {
+                console.log(optionValue);
+                const listItem = document.createElement("li");
+                const anchor = document.createElement("a");
+                anchor.classList.add("dropdown-item");
+                anchor.href = "#";
+                anchor.dataset.value = optionValue;
+                anchor.textContent = optionValue;
+                listItem.appendChild(anchor);
+                dropdownMenu.appendChild(listItem);
+            });
+        
+            // Add "Create New Experience Space" option
+            const createNewListItem = document.createElement("li");
+            const createNewAnchor = document.createElement("a");
+            createNewAnchor.classList.add("dropdown-item");
+            createNewAnchor.href = "#";
+            createNewAnchor.dataset.value = newOptions[newOptions.length - 1] + 1;
+            createNewAnchor.textContent = "Create New Experience Space (" + createNewAnchor.dataset.value + ")";
+            createNewListItem.appendChild(createNewAnchor);
+            dropdownMenu.appendChild(createNewListItem);
+
+            addEventListenersToDropdownItems();
         }
+
+        function addEventListenersToDropdownItems() {
+            document.querySelectorAll(".dropdown-item").forEach((item) => {
+                item.addEventListener("click", function () {
+                    const value = this.dataset.value;
+                    setDropdownValue(value);
+                    console.log("experience space passed to fetchAndUpdateMessages:", value);
+                    fetchAndUpdateMessages(value);
+                    document.getElementById("generate_experience_space").value = value;
+                });
+            });
+        }
+
+        function setInitialDropdownValue() {
+            const selectedOption = document.querySelector(".dropdown-item[selected]");
+            if (selectedOption) {
+                const value = selectedOption.dataset.value;
+                setDropdownValue(value);
+            }
+        }        
+        
+        
         
         function fetchAndUpdateMessages(experienceSpace) {
             console.log("fetchAndUpdateMessages called with experienceSpace:", experienceSpace);  // Add this line
@@ -274,8 +347,10 @@
                         const response = JSON.parse(xhr.responseText);
                         updateMessages(response.messages);
                         updateTokenInformation(response.usage);
-                        updateSelectOptions(response.all_experience_spaces);
-                        document.getElementById("experience_space").value = experienceSpace;
+                        //updateSelectOptions(response.all_experience_spaces);
+                        updateDropdownOptions(response.all_experience_spaces)
+                        //document.getElementById("experience_space").value = experienceSpace;
+                        setDropdownValue(experienceSpace)
                     } else {
                         console.error("An error occurred while fetching messages.");
                     }
@@ -315,5 +390,7 @@
 
     </script>
     
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
