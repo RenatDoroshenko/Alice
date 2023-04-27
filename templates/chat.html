@@ -45,7 +45,7 @@
                     
                 </div>   
             </div>
-            <button type="submit">Send</button>
+            <button type="submit" class="custom-btn mt-2">Send</button>
         </form>
         
                                                   
@@ -54,26 +54,24 @@
             <input type="hidden" name="messages" value="{{ messages }}">
             <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
             <input type="hidden" name="generate_model_message" value="true">
-            <button type="submit">Generate Model Message</button>
-    
-            <!-- Model Communication Modes -->           
-            
-            <input type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
-            <label for="continuous_option">Continuous</label>
-            
-            <input type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
-            <label for="thinking_option">Thinking</label>
-            
-            <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>               
-            <label for="step_by_step_option">Step-by-Step</label>
-    
-            <input type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>               
-            <label for="diagnostic_option">Diagnostic</label>
+            <button type="submit" class="custom-btn glass-input mt-2">Generate Model Message</button>                                                                   
         </form>
+
+        <input type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
+        <label for="continuous_option">Continuous</label>
+        
+        <input type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
+        <label for="thinking_option">Thinking</label>
+        
+        <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>               
+        <label for="step_by_step_option">Step-by-Step</label>
+
+        <input type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>               
+        <label for="diagnostic_option">Diagnostic</label>
     
         <br />
         <br />
-        <div>
+        <div class="token-info">
             <h3>Token Information:</h3>
             <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
             <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>

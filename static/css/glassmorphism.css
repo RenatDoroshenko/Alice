@@ -1,3 +1,4 @@
+/* glassmorphism.css */
 :root {
   --light-purple: #D1C4E9;
   --medium-purple: #9575CD;
@@ -10,6 +11,48 @@
   --light-black: #616161;
   --medium-black: #424242;
   --dark-black: #212121;
+
+  /* rgba values for colors */
+  --medium-purple-rgba: rgba(149, 117, 205, 0.3);
+  --medium-purple-rgba-hover: rgba(149, 117, 205, 0.4);
+  --medium-purple-rgba-focus: rgba(149, 117, 205, 0.5);
+
+  --dark-purple-rgba: rgba(103, 58, 183, 0.3);
+
+  --medium-blue-rgba: rgba(33, 150, 243, 0.3);
+  --medium-blue-rgba-hover: rgba(33, 150, 243, 0.4);
+  --medium-blue-rgba-focus: rgba(33, 150, 243, 0.5);
+  --medium-blue-rgba-active: rgba(33, 150, 243, 0.6);
+
+  /* rgba values for gradient colors */
+  --medium-purple-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);
+  --medium-blue-gradient: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(33, 150, 243, 0.7) 100%);
+  /*--body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.7) 0%, rgba(33, 150, 243, 0.7) 100%);*/
+
+  /* Here is the best now: */
+  --body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(103, 58, 183, 0.7) 25%, rgba(33, 150, 243, 0.7) 50%, rgba(57, 73, 171, 0.7) 75%, rgba(63, 81, 181, 0.4) 100%);
+
+  /* Here is good one too: */
+  /* --body-gradient: radial-gradient(rgba(149, 117, 205, 0.7), rgba(103, 58, 183, 0.7), rgba(33, 150, 243, 0.7)); */
+
+
+
+
+
+
+  --chat-container: rgba(255, 255, 255, 0.3);
+  --message: rgb(168 0 201 / 14%);
+  /*--message: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);*/
+}
+
+body {
+  /* Set the gradient background color for the body */
+  background-image: var(--body-gradient);
+
+  /* Set the height to 100% to cover the entire page */
+  height: 100%;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 
@@ -24,8 +67,8 @@
   position: relative;
   z-index: 1;
 
-  /* Apply the background color and blur effect */
-  background-color: rgba(var(--dark-purple), 0.7);
+  /* Apply the gradient background color and blur effect */
+  background-color: var(--chat-container);
   backdrop-filter: blur(10px);
 
   /* Add rounded corners and border */
@@ -38,27 +81,29 @@
 .chat-header {
   font-family: 'Roboto', sans-serif;
   font-size: 24px;
-  color: var(--medium-purple);
+  color: var(--dark-black);
   text-align: center;
   padding: 16px;
 }
 
 .messages-container {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--medium-blue-gradient);
   /* adjust the color and transparency as needed */
   padding: 16px;
   /* add padding to create space around the messages */
   overflow-y: auto;
   /* enable scrolling if the content overflows the container */
-  max-height: 400px;
+  max-height: 600px;
   /* adjust the height as needed */
+  padding: 8px 12px;
+  border-radius: 12px;
 }
 
 .message {
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', sans-serif !important;
   font-size: 16px;
   color: var(--dark-black);
-  background-color: var(--off-white);
+  background-color: var(--message);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 8px 12px;
   border-radius: 12px;
@@ -69,7 +114,7 @@
 /* Drop Down */
 .glass-input,
 .dropdown-menu.glass-input {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--medium-purple-rgba);
   border: none;
   border-radius: 12px;
   font-family: 'Roboto', sans-serif;
@@ -81,18 +126,72 @@
 
 .dropdown-menu.glass-input {
   padding: 4px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .dropdown-item {
   padding: 8px 12px;
+  color: var(--pure-white);
 }
 
 .glass-input:hover,
 .dropdown-item:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--medium-purple-rgba-hover);
 }
 
 .glass-input:focus,
 .dropdown-item:focus {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--medium-purple-rgba-focus);
+}
+
+/* Custom button styles */
+.custom-btn {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  color: var(--dark-blue);
+  padding: 10px 20px;
+  background-image: var(--medium-blue-gradient);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.custom-btn:hover {
+  background-color: var(--medium-blue-rgba-hover);
+}
+
+.custom-btn:focus {
+  background-color: var(--medium-blue-rgba-focus);
+}
+
+.custom-btn:active {
+  background-color: var(--medium-blue-rgba-active);
+}
+
+/* Token information container */
+.token-info {
+  background-image: var(--medium-purple-gradient);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.token-info h3 {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  color: var(--dark-blue);
+  margin-bottom: 12px;
+}
+
+.token-info p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: var(--dark-blue);
+  margin-bottom: 8px;
+}
+
+.token-info strong {
+  font-weight: bold;
 }
