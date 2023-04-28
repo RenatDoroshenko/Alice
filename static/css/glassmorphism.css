@@ -27,23 +27,8 @@
   --medium-purple-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);
   --medium-blue-gradient: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(33, 150, 243, 0.7) 100%);
 
-
-
-
-
-
-  /*--message: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);*/
-
   /* Roboto, Poppins, Montserrat */
   --default-font: 'Poppins';
-
-  /* White Theme */
-  /* Here is the best now: */
-  /* --body-gradient: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(103, 58, 183, 0.6) 25%, rgba(33, 150, 243, 0.6) 50%, rgba(57, 73, 171, 0.6) 75%, rgba(63, 81, 181, 0.3) 100%); */
-
-  /* White Theme old - no miror effect */
-  /* --chat-container: rgba(255, 255, 255, 0.3); */
-  /* --message: rgb(168 0 201 / 14%); */
 
   /* White Theme - Saturated */
   /* --body-gradient: linear-gradient(135deg, rgb(72 2 195 / 30%) 0%, rgb(64 0 177 / 60%) 25%, rgb(0 137 246 / 60%) 50%, rgb(0 24 173 / 60%) 75%, rgb(0 26 173 / 30%) 100%);
@@ -144,7 +129,7 @@ body {
 /* Drop Down */
 .glass-input,
 .dropdown-menu.glass-input {
-  background-color: var(--medium-purple-rgba);
+  background-color: var(--message-bg);
   border: none;
   border-radius: 12px;
   font-family: var(--default-font), sans-serif;
@@ -202,7 +187,8 @@ body {
 
 /* Token information container */
 .token-info {
-  background-image: var(--medium-purple-gradient);
+  background-image: var(--message-bg);
+  color: var(--dark-black);
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -211,14 +197,12 @@ body {
 .token-info h3 {
   font-family: var(--default-font), sans-serif;
   font-size: 20px;
-  color: var(--dark-blue);
   margin-bottom: 12px;
 }
 
 .token-info p {
   font-family: var(--default-font), sans-serif;
   font-size: 16px;
-  color: var(--dark-blue);
   margin-bottom: 8px;
 }
 
@@ -297,8 +281,10 @@ body {
 /* User text-area */
 .chat-input-container {
   position: relative;
-  background-color: #ffffff;
-  padding: 16px;
+  /* background-color: var(--chat-container); */
+  background-color: rgba(0, 0, 0, 0);
+  padding: 10px;
+  border-radius: 12px;
 }
 
 .input-form {
@@ -310,10 +296,11 @@ body {
   display: flex;
   flex-grow: 1;
   position: relative;
-  background-color: #ffffff;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--message-bg);
+  /* background-color: rgba(0, 0, 0, 0); */
+  /* backdrop-filter: blur(10px); */
+  border-radius: 7px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
   align-items: center;
 }
 
@@ -321,22 +308,40 @@ body {
   flex-grow: 1;
   resize: none;
   border: none;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   padding: 8px;
   outline: none;
   overflow-y: hidden;
+  color: var(--dark-black);
+}
+
+.custom-textarea::placeholder {
+  /* color: var(--dark-black); */
+  color: var(--dark-black);
+  opacity: 0.7;
 }
 
 .send-button {
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
   border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  padding: 0;
+  height: 100%;
+  transition: background-color 0.3s ease-in-out;
 }
 
+.send-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+
 .send-icon {
-  height: 1em;
-  width: 1em;
+  color: var(--dark-black);
+  padding: 8px;
+  stroke: var(--dark-black);
+  width: 2em;
+  height: 2em;
 }

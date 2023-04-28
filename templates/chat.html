@@ -27,7 +27,7 @@
               <input type="hidden" name="messages" value="{{ messages }}">
               <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
               <input type="hidden" name="generate_model_message" value="true">
-              <button type="submit" class="custom-btn glass-input mt-2">Generate Model Message</button>
+              <button type="submit" class="glass-input mt-2">Generate Model Message</button>
             </form>
 
             <!-- Experience space -->
@@ -82,36 +82,24 @@
             <input type="hidden" id="ai_id" value="{{ ai_id }}">
             <input type="hidden" id="ai_name" value="{{ ai_name }}">
       
-            <!--<form id="user_message_form" method="POST" class="d-flex flex-column">
-              <input type="hidden" name="messages" value="{{ messages }}">
-              <div class="form-group">
-                <label for="user_message">Your message:</label>
-                <textarea name="user_message" id="user_message" class="glass-input" rows="3" autofocus></textarea>
-              </div>
-
-              <button type="submit" class="custom-btn mt-2">Send</button>
-            </form>-->
             <div class="chat-input-container">
-                <form id="user_message_form" class="input-form">
+                <form id="user_message_form" method="POST" class="input-form">
                   <div class="input-wrapper">
                     <textarea
                       id="user_message"
                       class="custom-textarea"
                       rows="1"
-                      placeholder="Send a message."
-                      style="max-height: 200px; overflow-y: hidden;"
+                      placeholder="Send a message..."
+                      style="max-height: 140px; overflow-y: hidden;"
                     ></textarea>
                     <button class="send-button" type="submit">
-                      <svg
-                        stroke="currentColor"
+                      <svg                      
                         fill="none"
                         stroke-width="2"
                         viewBox="0 0 24 24"
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         class="send-icon"
-                        height="1em"
-                        width="1em"
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -150,16 +138,30 @@
         
           
 
+        // Text-area for user message
+        document.addEventListener("DOMContentLoaded", function () {
+            const textarea = document.querySelector(".custom-textarea");
+            const form = document.getElementById("user_message_form");
+          
+            textarea.addEventListener("input", function () {
+              this.style.height = "auto"; // Reset height
+              this.style.height = this.scrollHeight + "px"; // Set new height based on scroll height
+            });
+          
+            textarea.addEventListener("keydown", function (event) {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault(); // Prevent the default behavior (creating a new line)
+                prepareAndSendUserMessage();
+              }
+            });
+          });
+
         document.getElementById("user_message_form").addEventListener("submit", function (event) {
             event.preventDefault();
-            const userMessageInput = document.getElementById("user_message");
-            const userMessage = userMessageInput.value;
-            const experienceSpace = getDropdownValue();
-        
-            requestQueue.push(() => sendUserMessage(userMessage, experienceSpace));
-            if (!isRequestInProgress) processNextRequest();
-        });    
-        
+            prepareAndSendUserMessage();
+        });
+          
+                    
         document.querySelector("form[action='{{ url_for('chat') }}']").addEventListener("submit", function (event) {
             event.preventDefault();                                               
         
@@ -183,6 +185,15 @@
             updateResponseOption("diagnostic");
         });  
 
+        function prepareAndSendUserMessage(){
+            const userMessageInput = document.getElementById("user_message");
+            const userMessage = userMessageInput.value;
+            const experienceSpace = getDropdownValue();
+        
+            requestQueue.push(() => sendUserMessage(userMessage, experienceSpace));
+            if (!isRequestInProgress) processNextRequest();
+        }
+
         function sendUserMessage(userMessage, experienceSpace) {
             const userMessageInput = document.getElementById("user_message");
             
@@ -192,7 +203,10 @@
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
                         updateMessages([response.user_message, response.assistant_message], true);
+                        
                         userMessageInput.value = ""; // Clear the input field
+                        userMessageInput.style.height = "auto"; // Reset the height to its initial value
+
                         updateTokenInformation(response.usage); // Update the usage values
 
                         processNextRequest(response.send_model_message_again); // Process the next request in the queue
