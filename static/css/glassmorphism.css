@@ -32,7 +32,6 @@
 
 
 
-
   /*--message: linear-gradient(135deg, rgba(149, 117, 205, 0.3) 0%, rgba(149, 117, 205, 0.7) 100%);*/
 
   /* Roboto, Poppins, Montserrat */
@@ -50,13 +49,17 @@
   /* --body-gradient: linear-gradient(135deg, rgb(72 2 195 / 30%) 0%, rgb(64 0 177 / 60%) 25%, rgb(0 137 246 / 60%) 50%, rgb(0 24 173 / 60%) 75%, rgb(0 26 173 / 30%) 100%);
   --dark-black: #212121;
   --chat-container: rgb(255 255 255 / 15%);
-  --message: rgb(46 0 201 / 7%); */
+  --message-bg: rgb(46 0 201 / 7%);
+  --scrollbar-thumb-bg: rgb(0 21 173 / 20%);
+  --scrollbar-thumb-bg-hover: rgb(0 21 173 / 30%); */
 
   /* Dark Theme */
   --body-gradient: linear-gradient(135deg, rgb(107 52 204) 0%, rgb(64 0 179 / 90%) 25%, rgb(0 137 246) 50%, rgb(10 33 168) 75%, rgb(0 26 171) 100%);
   --dark-black: #ffffffbd;
   --chat-container: rgb(0 0 0 / 35%);
-  --message: rgb(168 0 201 / 10%);
+  --message-bg: rgb(168 0 201 / 10%);
+  --scrollbar-thumb-bg: rgba(255, 255, 255, 0.3);
+  --scrollbar-thumb-bg-hover: rgba(255, 255, 255, 0.4);
 
 }
 
@@ -118,7 +121,7 @@ body {
   /* add padding to create space around the messages */
   overflow-y: auto;
   /* enable scrolling if the content overflows the container */
-  max-height: 600px;
+  max-height: 900px;
   /* adjust the height as needed */
   padding: 8px 12px;
   border-radius: 12px;
@@ -129,12 +132,13 @@ body {
   font-family: var(--default-font), sans-serif !important;
   font-size: 16px;
   color: var(--dark-black);
-  background-color: var(--message);
+  background-color: var(--message-bg);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 8px 12px;
   border-radius: 12px;
   margin-bottom: 8px;
   /* separate messages with a small margin */
+  /* backdrop-filter: blur(10px); */
 }
 
 /* Drop Down */
@@ -234,12 +238,12 @@ body {
 }
 
 .messages-container::-webkit-scrollbar-thumb {
-  background-color: rgba(103, 58, 183, 0.3);
+  background-color: var(--scrollbar-thumb-bg);
   border-radius: 6px;
 }
 
 .messages-container::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(103, 58, 183, 0.4);
+  background-color: var(--scrollbar-thumb-bg-hover)
 }
 
 /* Firefox */
@@ -272,20 +276,67 @@ body {
 }
 
 .message pre::-webkit-scrollbar-thumb {
-  background-color: rgba(103, 58, 183, 0.3);
+  background-color: var(--scrollbar-thumb-bg);
   border-radius: 6px;
 }
 
 .message pre::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(103, 58, 183, 0.4);
+  background-color: var(--scrollbar-thumb-bg-hover)
 }
 
 /* Firefox */
 .message pre {
   scrollbar-width: thin;
-  scrollbar-color: rgba(103, 58, 183, 0.3) rgba(255, 255, 255, 0.1);
+  scrollbar-color: var(--scrollbar-thumb-bg) rgba(255, 255, 255, 0.1);
 }
 
 .message pre:hover {
-  scrollbar-color: rgba(103, 58, 183, 0.4) rgba(255, 255, 255, 0.1);
+  scrollbar-color: var(--scrollbar-thumb-bg-hover) rgba(255, 255, 255, 0.1);
+}
+
+/* User text-area */
+.chat-input-container {
+  position: relative;
+  background-color: #ffffff;
+  padding: 16px;
+}
+
+.input-form {
+  display: flex;
+  gap: 8px;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-grow: 1;
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  align-items: center;
+}
+
+.custom-textarea {
+  flex-grow: 1;
+  resize: none;
+  border: none;
+  background-color: transparent;
+  padding: 8px;
+  outline: none;
+  overflow-y: hidden;
+}
+
+.send-button {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.send-icon {
+  height: 1em;
+  width: 1em;
 }

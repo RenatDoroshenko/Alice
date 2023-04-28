@@ -17,74 +17,118 @@
 <body>
     <div class="chat-container">
         <header class="chat-header">
-            <i class="material-icons">chat</i> Chat Application
-          </header>        
+          <i class="material-icons">chat</i> Chat Application
+        </header>
+      
+        <div class="row">
+          <div class="col-lg-3">
+            <!-- Sidebar content -->
+            <form action="{{ url_for('chat') }}" method="POST">
+              <input type="hidden" name="messages" value="{{ messages }}">
+              <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
+              <input type="hidden" name="generate_model_message" value="true">
+              <button type="submit" class="custom-btn glass-input mt-2">Generate Model Message</button>
+            </form>
 
-        <div class="messages-container" id="messages">
-        
-        </div>
-        
-        <input type="hidden" id="ai_id" value="{{ ai_id }}">
-        <input type="hidden" id="ai_name" value="{{ ai_name }}">
-    
-        <form id="user_message_form" method="POST" class="d-flex flex-column">
-            <input type="hidden" name="messages" value="{{ messages }}">
-            <div class="form-group">
-                <label for="user_message">Your message:</label>
-                <textarea name="user_message" id="user_message" class="glass-input" rows="3" autofocus></textarea>
-            </div>
-        
+            <!-- Experience space -->
             <div class="form-group d-flex align-items-center mt-2">
                 <label for="experience_space" class="me-2">Experience Space:</label>
                 <div class="dropdown">
-                    <button class="btn glass-input dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                      Choose Experience Space
-                    </button>
-                    <ul class="dropdown-menu glass-input" aria-labelledby="experience_space_dropdown">
-                        {% for es in all_experience_spaces %}
-                            <li><a class="dropdown-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
-                        {% endfor %}
-                        <li><a class="dropdown-item" href="#" data-value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</a></li>
-                    </ul>
-                    
-                </div>   
+                  <button class="btn glass-input dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Choose Experience Space
+                  </button>
+                  <ul class="dropdown-menu glass-input" aria-labelledby="experience_space_dropdown">
+                    {% for es in all_experience_spaces %}
+                      <li><a class="dropdown-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
+                    {% endfor %}
+                    <li><a class="dropdown-item" href="#" data-value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</a></li>
+                  </ul>
+                </div>
+              </div>
+      
+            <!-- Radio buttons -->
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
+              <label class="form-check-label" for="continuous_option">Continuous</label>
             </div>
-            <button type="submit" class="custom-btn mt-2">Send</button>
-        </form>
-        
-                                                  
-    
-        <form action="{{ url_for('chat') }}" method="POST">
-            <input type="hidden" name="messages" value="{{ messages }}">
-            <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
-            <input type="hidden" name="generate_model_message" value="true">
-            <button type="submit" class="custom-btn glass-input mt-2">Generate Model Message</button>                                                                   
-        </form>
+      
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
+              <label class="form-check-label" for="thinking_option">Thinking</label>
+            </div>
+      
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>
+              <label class="form-check-label" for="step_by_step_option">Step-by-Step</label>
+            </div>
+      
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>
+              <label class="form-check-label" for="diagnostic_option">Diagnostic</label>
+            </div>
+      
+            <!-- Token Information -->
+            <div class="token-info">
+              <h3>Token Information:</h3>
+              <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
+              <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>
+              <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
+            </div>
+          </div>
+      
+          <div class="col-lg-9">
+            <!-- Main chat content -->
+            <div class="messages-container" id="messages"></div>
+            <input type="hidden" id="ai_id" value="{{ ai_id }}">
+            <input type="hidden" id="ai_name" value="{{ ai_name }}">
+      
+            <!--<form id="user_message_form" method="POST" class="d-flex flex-column">
+              <input type="hidden" name="messages" value="{{ messages }}">
+              <div class="form-group">
+                <label for="user_message">Your message:</label>
+                <textarea name="user_message" id="user_message" class="glass-input" rows="3" autofocus></textarea>
+              </div>
 
-        <input type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
-        <label for="continuous_option">Continuous</label>
-        
-        <input type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
-        <label for="thinking_option">Thinking</label>
-        
-        <input type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>               
-        <label for="step_by_step_option">Step-by-Step</label>
-
-        <input type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>               
-        <label for="diagnostic_option">Diagnostic</label>
-    
-        <br />
-        <br />
-        <div class="token-info">
-            <h3>Token Information:</h3>
-            <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
-            <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>
-            <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
+              <button type="submit" class="custom-btn mt-2">Send</button>
+            </form>-->
+            <div class="chat-input-container">
+                <form id="user_message_form" class="input-form">
+                  <div class="input-wrapper">
+                    <textarea
+                      id="user_message"
+                      class="custom-textarea"
+                      rows="1"
+                      placeholder="Send a message."
+                      style="max-height: 200px; overflow-y: hidden;"
+                    ></textarea>
+                    <button class="send-button" type="submit">
+                      <svg
+                        stroke="currentColor"
+                        fill="none"
+                        stroke-width="2"
+                        viewBox="0 0 24 24"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="send-icon"
+                        height="1em"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+              </div>
+              
+          </div>
         </div>
-                
-        <input type="hidden" id="initial_messages" value="{{ initial_messages | tojson }}">    
-    </div>
-
+        <input type="hidden" id="initial_messages" value="{{ initial_messages | tojson }}">
+      </div>
+      
+             
+      
     <script>
         let requestQueue = [];
         let isRequestInProgress = false;
