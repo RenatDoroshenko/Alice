@@ -65,7 +65,7 @@ body {
 .chat-container {
   /* Set the container size and position */
   width: 80%;
-  max-width: 1000px;
+  max-width: 80%;
   min-height: 600px;
   margin: 50px auto;
   padding: 20px;
