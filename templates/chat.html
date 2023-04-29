@@ -32,11 +32,11 @@
                             <button class="btn glass-input dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 Choose Experience Space
                             </button>
-                            <ul class="dropdown-menu glass-input" aria-labelledby="experience_space_dropdown">
+                            <ul class="dropdown-menu experience-space-dropdown glass-input" aria-labelledby="experience_space_dropdown">
                                 {% for es in all_experience_spaces %}
-                                <li><a class="dropdown-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
+                                <li><a class="dropdown-item experience-space-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
                                 {% endfor %}
-                                <li><a class="dropdown-item" href="#" data-value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</a></li>
+                                <li><a class="dropdown-item experience-space-item" href="#" data-value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</a></li>
                             </ul>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
         
                 <!-- Radio buttons -->
                 <h3 class="container-title">Communication Mode:</h3>
-                <div class="communication-modes glass-container">
+                <!--<div class="communication-modes glass-container">
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
                         <label class="form-check-label" for="continuous_option">Continuous</label>
@@ -64,7 +64,29 @@
                         <input class="form-check-input" type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>
                         <label class="form-check-label" for="diagnostic_option">Diagnostic</label>
                     </div>
-                </div>
+                </div>-->
+                <div class="glass-container response-option">
+                    <div class="form-group d-flex align-items-center mt-2">
+                        <div class="dropdown full-width-dropdown">
+                            <button class="btn glass-input dropdown-toggle" type="button" id="response_option_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ response_option.capitalize() }}
+                            </button>
+                            <ul class="dropdown-menu glass-input" aria-labelledby="response_option_dropdown">
+                                <!--<li><a class="dropdown-item communication-mode-item" href="#" data-value="continuous">Continuous</a></li>
+                                <li><a class="dropdown-item communication-mode-item" href="#" data-value="thinking">Thinking</a></li>
+                                <li><a class="dropdown-item communication-mode-item" href="#" data-value="step_by_step">Step-by-Step</a></li>
+                                <li><a class="dropdown-item communication-mode-item" href="#" data-value="diagnostic">Diagnostic</a></li>-->
+                                {% set response_options = ['continuous', 'thinking', 'step_by_step', 'diagnostic'] %}
+                                {% for option in response_options %}
+                                <li>
+                                    <a class="dropdown-item communication-mode-item {% if option == response_option %}selected{% endif %}" type="submit" name="response_option" value="{{ option }}">{{ option.capitalize() }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>    
+          
         
                 <!-- Token Information -->
                 <h3 class="container-title">Token Information:</h3>
@@ -177,7 +199,7 @@
         });
         
         // Model communication modes
-        document.getElementById("thinking_option").addEventListener("change", function () {
+        /*document.getElementById("thinking_option").addEventListener("change", function () {
             updateResponseOption("thinking");
         });
         
@@ -191,7 +213,22 @@
 
         document.getElementById("diagnostic_option").addEventListener("change", function () {
             updateResponseOption("diagnostic");
-        });  
+        });  */
+
+        // Model communication modes
+        document.querySelectorAll(".communication-mode-item").forEach(function (item) {
+            item.addEventListener("click", function () {
+                const value = this.getAttribute('value');
+                updateResponseOption(value);
+        
+                // Update dropdown button text to show the selected option
+                const dropdownButton = document.getElementById("response_option_dropdown");
+                dropdownButton.textContent = this.textContent;
+            });
+        });
+        
+        
+
 
         function prepareAndSendUserMessage(){
             const userMessageInput = document.getElementById("user_message");
@@ -235,7 +272,7 @@
         
         function setDropdownValue(value) {
             const dropdownButton = document.getElementById("experience_space_dropdown");
-            const items = document.querySelectorAll(".dropdown-item");
+            const items = document.querySelectorAll(".experience-space-item");
         
             items.forEach((item) => {
                 if (item.dataset.value == value) {
@@ -353,7 +390,7 @@
             select.add(createNewOption);
         }*/
         function updateDropdownOptions(newOptions) {
-            const dropdownMenu = document.querySelector(".dropdown-menu");
+            const dropdownMenu = document.querySelector(".experience-space-dropdown");
             dropdownMenu.innerHTML = "";
         
             newOptions.forEach(function (optionValue) {
@@ -361,6 +398,7 @@
                 const listItem = document.createElement("li");
                 const anchor = document.createElement("a");
                 anchor.classList.add("dropdown-item");
+                anchor.classList.add("experience-space-item");
                 anchor.href = "#";
                 anchor.dataset.value = optionValue;
                 anchor.textContent = optionValue;
@@ -372,6 +410,7 @@
             const createNewListItem = document.createElement("li");
             const createNewAnchor = document.createElement("a");
             createNewAnchor.classList.add("dropdown-item");
+            createNewAnchor.classList.add("experience-space-item");
             createNewAnchor.href = "#";
             createNewAnchor.dataset.value = newOptions[newOptions.length - 1] + 1;
             createNewAnchor.textContent = "Create New Experience Space (" + createNewAnchor.dataset.value + ")";
@@ -382,7 +421,7 @@
         }
 
         function addEventListenersToDropdownItems() {
-            document.querySelectorAll(".dropdown-item").forEach((item) => {
+            document.querySelectorAll(".experience-space-item").forEach((item) => {
                 item.addEventListener("click", function () {
                     const value = this.dataset.value;
                     setDropdownValue(value);
@@ -394,7 +433,7 @@
         }
 
         function setInitialDropdownValue() {
-            const selectedOption = document.querySelector(".dropdown-item[selected]");
+            const selectedOption = document.querySelector(".experience-space-item[selected]");
             if (selectedOption) {
                 const value = selectedOption.dataset.value;
                 setDropdownValue(value);
