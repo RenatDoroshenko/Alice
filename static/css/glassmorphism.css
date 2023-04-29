@@ -53,6 +53,7 @@
   --text-area-bg: var(--message-bg);
 
   /* Alternative Dark Theme */
+  /* Brighter text-area */
   /* --text-area-bg: rgb(168 0 201 / 10%); */
 }
 
@@ -122,6 +123,11 @@ body {
   margin-bottom: 10px;
 }
 
+.sidebar-container {
+  padding-top: 16px;
+  padding-left: 16px;
+}
+
 .message {
   font-family: var(--default-font), sans-serif !important;
   font-size: 16px;
@@ -135,8 +141,35 @@ body {
   /* backdrop-filter: blur(10px); */
 }
 
+.glass-container {
+  background-color: var(--glass-container-bg);
+  color: var(--dark-black);
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+}
+
+.glass-container p {
+  font-family: var(--default-font), sans-serif;
+  font-size: 16px;
+  margin: 5px auto;
+}
+
+.glass-container strong {
+  font-weight: bold;
+}
+
+.container-title {
+  font-family: var(--default-font), sans-serif;
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: var(--dark-black);
+  padding-left: 16px;
+}
+
 /* Drop Down */
-.glass-input,
+/* .glass-input,
 .dropdown-menu.glass-input {
   background-color: var(--message-bg);
   border: none;
@@ -151,9 +184,9 @@ body {
 .dropdown-menu.glass-input {
   padding: 4px 0;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
+} */
 
-.dropdown-item {
+/* .dropdown-item {
   padding: 8px 12px;
   color: var(--dark-black);
 }
@@ -166,7 +199,7 @@ body {
 .glass-input:focus,
 .dropdown-item:focus {
   background-color: var(--medium-purple-rgba-focus);
-}
+} */
 
 /* Custom button styles */
 .custom-btn {
@@ -195,29 +228,7 @@ body {
 }
 
 /* Token information container */
-/* .token-info {
-  background-image: var(--message-bg);
-  color: var(--dark-black);
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-} */
 
-.token-info h3 {
-  font-family: var(--default-font), sans-serif;
-  font-size: 20px;
-  margin-bottom: 12px;
-}
-
-.token-info p {
-  font-family: var(--default-font), sans-serif;
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.token-info strong {
-  font-weight: bold;
-}
 
 /* Scroll-bar */
 /* Add this to your existing CSS */
@@ -355,16 +366,58 @@ body {
 }
 
 /* Experience Space */
+.experience-space {
+  padding: 0px 0px;
+}
+
+.full-width-dropdown {
+  width: 100%;
+  position: relative;
+}
+
+.full-width-dropdown .btn {
+  width: 100%;
+  text-align: center;
+  color: var(--dark-black);
+}
+
+.full-width-dropdown .dropdown-toggle::after {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.full-width-dropdown .dropdown-menu {
+  width: 100%;
+  /* border-radius: 0 0 12px 12px; */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  /* background-color: var(--glass-container-bg); */
+  background-color: rgba(7, 0, 80, 0.19);
+  backdrop-filter: blur(0.1rem);
+  padding-top: 0px;
+  padding-bottom: 0px;
+  outline: none;
+  transition: background-color 0.3s ease;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--default-font), sans-serif;
+  font-size: 16px;
+}
+
+.full-width-dropdown .dropdown-item {
+  color: var(--dark-black);
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.full-width-dropdown .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--dark-black);
+  border-radius: 12px;
+}
 
 /* Temp Radio-button */
-.glass-container {
-  background-color: var(--glass-container-bg);
-  color: var(--dark-black);
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-  margin-bottom: 10px;
-}
 
 .form-check {
   position: relative;

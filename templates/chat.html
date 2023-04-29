@@ -23,62 +23,65 @@
         <div class="row">
           <div class="col-lg-3">
             <!-- Sidebar content -->
-            <form action="{{ url_for('chat') }}" method="POST">
-              <input type="hidden" name="messages" value="{{ messages }}">
-              <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
-              <input type="hidden" name="generate_model_message" value="true">
-              <button type="submit" class="glass-input mt-2">Generate Model Message</button>
-            </form>
-
-            <!-- Experience space -->
-            <div class="glass-container experience-space">
-                <div class="form-group d-flex align-items-center mt-2">
-                    <label for="experience_space" class="me-2">Experience Space:</label>
-                    <div class="dropdown">
-                    <button class="btn glass-input dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Choose Experience Space
-                    </button>
-                    <ul class="dropdown-menu glass-input" aria-labelledby="experience_space_dropdown">
-                        {% for es in all_experience_spaces %}
-                        <li><a class="dropdown-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
-                        {% endfor %}
-                        <li><a class="dropdown-item" href="#" data-value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</a></li>
-                    </ul>
+            <div class="sidebar-container">
+                <!-- Experience space -->
+                <h3 class="container-title">Experience Space:</h3>
+                <div class="glass-container experience-space">
+                    <div class="form-group d-flex align-items-center mt-2">                    
+                        <div class="dropdown full-width-dropdown">
+                            <button class="btn glass-input dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Choose Experience Space
+                            </button>
+                            <ul class="dropdown-menu glass-input" aria-labelledby="experience_space_dropdown">
+                                {% for es in all_experience_spaces %}
+                                <li><a class="dropdown-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
+                                {% endfor %}
+                                <li><a class="dropdown-item" href="#" data-value="{{ highest_experience_space + 1 }}">Create New Experience Space ({{ highest_experience_space + 1 }})</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-      
-            <!-- Radio buttons -->
-            <div class="communication-modes glass-container">
-                <div class="form-check">
-                <input class="form-check-input" type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
-                <label class="form-check-label" for="continuous_option">Continuous</label>
+        
+                <!-- Radio buttons -->
+                <h3 class="container-title">Communication Mode:</h3>
+                <div class="communication-modes glass-container">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
+                        <label class="form-check-label" for="continuous_option">Continuous</label>
+                    </div>
+            
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
+                        <label class="form-check-label" for="thinking_option">Thinking</label>
+                    </div>
+            
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>
+                        <label class="form-check-label" for="step_by_step_option">Step-by-Step</label>
+                    </div>
+            
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>
+                        <label class="form-check-label" for="diagnostic_option">Diagnostic</label>
+                    </div>
                 </div>
         
-                <div class="form-check">
-                <input class="form-check-input" type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
-                <label class="form-check-label" for="thinking_option">Thinking</label>
+                <!-- Token Information -->
+                <h3 class="container-title">Token Information:</h3>
+                <div class="token-info glass-container">              
+                    <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
+                    <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>
+                    <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
                 </div>
-        
-                <div class="form-check">
-                <input class="form-check-input" type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>
-                <label class="form-check-label" for="step_by_step_option">Step-by-Step</label>
-                </div>
-        
-                <div class="form-check">
-                <input class="form-check-input" type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>
-                <label class="form-check-label" for="diagnostic_option">Diagnostic</label>
-                </div>
-            </div>
-      
-            <!-- Token Information -->
-            <div class="token-info glass-container">
-              <h3>Token Information:</h3>
-              <p><strong>Prompt tokens:</strong> <span id="prompt_tokens">{{ prompt_tokens }}</span></p>
-              <p><strong>Completion tokens:</strong> <span id="completion_tokens">{{ completion_tokens }}</span></p>
-              <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
-            </div>
-            <!-- Test Elemenst with Glassmorphism -->            
+
+                <!-- Generate Model Message -->            
+                <form action="{{ url_for('chat') }}" method="POST">
+                    <input type="hidden" name="messages" value="{{ messages }}">
+                    <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
+                    <input type="hidden" name="generate_model_message" value="true">
+                    <button type="submit" class="glass-input mt-2">Generate Model Message</button>
+                </form>
+            </div>            
           </div>
       
           <div class="col-lg-9">
