@@ -36,16 +36,24 @@
   --chat-container: rgb(255 255 255 / 15%);
   --message-bg: rgb(46 0 201 / 7%);
   --scrollbar-thumb-bg: rgb(0 21 173 / 20%);
-  --scrollbar-thumb-bg-hover: rgb(0 21 173 / 30%); */
+  --scrollbar-thumb-bg-hover: rgb(0 21 173 / 30%);
+  --glass-container-bg: var(--message-bg);
+  --text-area-bg: var(--message-bg); */
+
+
 
   /* Dark Theme */
   --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
   --dark-black: #ffffffbd;
-  --chat-container: rgb(0 0 0 / 35%);
-  --message-bg: rgb(168 0 201 / 10%);
+  --chat-container: rgb(0 0 0 / 20%);
+  --message-bg: rgb(82 0 98 / 25%);
   --scrollbar-thumb-bg: rgba(255, 255, 255, 0.3);
   --scrollbar-thumb-bg-hover: rgba(255, 255, 255, 0.4);
+  --glass-container-bg: rgb(7 0 80 / 19%);
+  --text-area-bg: var(--message-bg);
 
+  /* Alternative Dark Theme */
+  /* --text-area-bg: rgb(168 0 201 / 10%); */
 }
 
 body {
@@ -75,7 +83,7 @@ body {
 
   /* Apply the gradient background color and blur effect */
   background-color: var(--chat-container);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(40px);
 
   /* Add rounded corners and border */
   border-radius: 20px;
@@ -187,13 +195,13 @@ body {
 }
 
 /* Token information container */
-.token-info {
+/* .token-info {
   background-image: var(--message-bg);
   color: var(--dark-black);
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
+} */
 
 .token-info h3 {
   font-family: var(--default-font), sans-serif;
@@ -297,7 +305,7 @@ body {
   display: flex;
   flex-grow: 1;
   position: relative;
-  background-color: var(--message-bg);
+  background-color: var(--text-area-bg);
   /* background-color: rgba(0, 0, 0, 0); */
   /* backdrop-filter: blur(10px); */
   border-radius: 7px;
@@ -346,14 +354,19 @@ body {
   height: 2em;
 }
 
-/* Temp Radio-button */
+/* Experience Space */
 
-.form-check-label {
+/* Temp Radio-button */
+.glass-container {
+  background-color: var(--glass-container-bg);
   color: var(--dark-black);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 10px;
 }
 
-/* Radio-buttons */
-/* .form-check {
+.form-check {
   position: relative;
   padding-left: 2rem;
   margin-bottom: 1rem;
@@ -384,4 +397,7 @@ body {
 
 .form-check input[type="radio"]:hover+label {
   background-color: rgba(255, 255, 255, 0.1);
-} */
+}
+
+
+/* Test Elements with glassmorphism */
