@@ -72,10 +72,6 @@
                                 {{ response_option.capitalize() }}
                             </button>
                             <ul class="dropdown-menu glass-input" aria-labelledby="response_option_dropdown">
-                                <!--<li><a class="dropdown-item communication-mode-item" href="#" data-value="continuous">Continuous</a></li>
-                                <li><a class="dropdown-item communication-mode-item" href="#" data-value="thinking">Thinking</a></li>
-                                <li><a class="dropdown-item communication-mode-item" href="#" data-value="step_by_step">Step-by-Step</a></li>
-                                <li><a class="dropdown-item communication-mode-item" href="#" data-value="diagnostic">Diagnostic</a></li>-->
                                 {% set response_options = ['continuous', 'thinking', 'step_by_step', 'diagnostic'] %}
                                 {% for option in response_options %}
                                 <li>
