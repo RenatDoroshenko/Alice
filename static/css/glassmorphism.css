@@ -31,19 +31,20 @@
   --default-font: 'Poppins';
 
   /* White Theme - Saturated */
-  /* --body-gradient: linear-gradient(135deg, rgb(72 2 195 / 30%) 0%, rgb(64 0 177 / 50%) 25%, rgb(0 137 246 / 60%) 50%, rgb(0 24 173 / 50%) 75%, rgb(0 26 173 / 30%) 100%);
+  --body-gradient: linear-gradient(135deg, rgb(72 2 195 / 30%) 0%, rgb(64 0 177 / 50%) 25%, rgb(0 137 246 / 60%) 50%, rgb(0 24 173 / 50%) 75%, rgb(0 26 173 / 30%) 100%);
   --dark-black: #212121;
   --chat-container: rgb(255 255 255 / 15%);
   --message-bg: rgb(46 0 201 / 7%);
   --scrollbar-thumb-bg: rgb(0 21 173 / 20%);
   --scrollbar-thumb-bg-hover: rgb(0 21 173 / 30%);
   --glass-container-bg: var(--message-bg);
-  --text-area-bg: var(--message-bg); */
+  --text-area-bg: var(--message-bg);
+  --dropdown-menu-bg: linear-gradient(135deg, rgb(172 146 224) 0%, rgb(143 176 239) 100%);
 
 
 
   /* Dark Theme */
-  --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
+  /* --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
   --dark-black: #ffffffbd;
   --chat-container: rgb(0 0 0 / 20%);
   --message-bg: rgb(82 0 98 / 25%);
@@ -51,6 +52,7 @@
   --scrollbar-thumb-bg-hover: rgba(255, 255, 255, 0.4);
   --glass-container-bg: rgb(7 0 80 / 19%);
   --text-area-bg: var(--message-bg);
+  --dropdown-menu-bg: linear-gradient(135deg, rgb(77 0 213 / 90%) 0%, rgb(0 11 78 / 90%) 100%); */
 
   /* Alternative Dark Theme */
   /* Brighter text-area */
@@ -393,7 +395,9 @@ body {
   width: 100%;
   /* border-radius: 0 0 12px 12px; */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-  background-color: var(--glass-container-bg);
+  /* background-color: var(--glass-container-bg); */
+  /* background-color: rgb(7 0 80); */
+  background-image: var(--dropdown-menu-bg);
   backdrop-filter: blur(0.1rem);
   padding-top: 0px;
   padding-bottom: 0px;
@@ -403,6 +407,8 @@ body {
   border-radius: 12px;
   font-family: var(--default-font), sans-serif;
   font-size: 16px;
+  opacity: 0.95;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .full-width-dropdown .dropdown-item {
