@@ -29,10 +29,10 @@
                 <div class="glass-container experience-space">
                     <div class="form-group d-flex align-items-center mt-2">                    
                         <div class="dropdown full-width-dropdown">
-                            <button class="btn glass-input dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn dropdown-toggle" type="button" id="experience_space_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 Choose Experience Space
                             </button>
-                            <ul class="dropdown-menu experience-space-dropdown glass-input" aria-labelledby="experience_space_dropdown">
+                            <ul class="dropdown-menu experience-space-dropdown" aria-labelledby="experience_space_dropdown">
                                 {% for es in all_experience_spaces %}
                                 <li><a class="dropdown-item experience-space-item" href="#" data-value="{{ es }}" {% if es == experience_space %}selected{% endif %}>{{ es }}</a></li>
                                 {% endfor %}
@@ -44,34 +44,13 @@
         
                 <!-- Radio buttons -->
                 <h3 class="container-title">Communication Mode:</h3>
-                <!--<div class="communication-modes glass-container">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="continuous_option" name="response_option" value="continuous" {% if response_option == 'continuous' %}checked{% endif %}>
-                        <label class="form-check-label" for="continuous_option">Continuous</label>
-                    </div>
-            
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="thinking_option" name="response_option" value="thinking" {% if response_option == 'thinking' %}checked{% endif %}>
-                        <label class="form-check-label" for="thinking_option">Thinking</label>
-                    </div>
-            
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="step_by_step_option" name="response_option" value="step_by_step" {% if response_option == 'step_by_step' %}checked{% endif %}>
-                        <label class="form-check-label" for="step_by_step_option">Step-by-Step</label>
-                    </div>
-            
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" id="diagnostic_option" name="response_option" value="diagnostic" {% if response_option == 'diagnostic' %}checked{% endif %}>
-                        <label class="form-check-label" for="diagnostic_option">Diagnostic</label>
-                    </div>
-                </div>-->
                 <div class="glass-container response-option">
                     <div class="form-group d-flex align-items-center mt-2">
                         <div class="dropdown full-width-dropdown">
-                            <button class="btn glass-input dropdown-toggle" type="button" id="response_option_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn dropdown-toggle" type="button" id="response_option_dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ response_option.capitalize() }}
                             </button>
-                            <ul class="dropdown-menu glass-input" aria-labelledby="response_option_dropdown">
+                            <ul class="dropdown-menu" aria-labelledby="response_option_dropdown">
                                 {% set response_options = ['continuous', 'thinking', 'step_by_step', 'diagnostic'] %}
                                 {% for option in response_options %}
                                 <li>
@@ -92,13 +71,15 @@
                     <p><strong>Total tokens:</strong> <span id="total_tokens">{{ total_tokens }}</span></p>
                 </div>
 
-                <!-- Generate Model Message -->            
-                <form action="{{ url_for('chat') }}" method="POST">
-                    <input type="hidden" name="messages" value="{{ messages }}">
-                    <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
-                    <input type="hidden" name="generate_model_message" value="true">
-                    <button type="submit" class="glass-input mt-2">Generate Model Message</button>
-                </form>
+                <!-- Generate Model Message -->      
+                <div class="generate-model-message-container">
+                    <form action="{{ url_for('chat') }}" method="POST">
+                        <input type="hidden" name="messages" value="{{ messages }}">
+                        <input type="hidden" name="experience_space" id="generate_experience_space" value="{{ experience_space }}">
+                        <input type="hidden" name="generate_model_message" value="true">
+                        <button type="submit" class="btn glass-button">Generate Model Message</button>
+                    </form>
+                </div>      
             </div>            
           </div>
       

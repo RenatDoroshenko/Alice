@@ -43,12 +43,13 @@
   --dropdown-button-hover: rgba(255, 255, 255, 0.05) !important;
   --dropdown-button-active: rgba(255, 255, 255, 0.1) !important;
   --dropdown-button-glowing: inset 0 4px 6px rgb(172 146 224 / 10%), 0 0 15px rgb(127 105 255 / 60%);
-  --dropdown-item-hover: rgba(255, 255, 255, 0.1); */
+  --dropdown-item-hover: rgba(255, 255, 255, 0.1);
+  --glass-button-hover: rgb(46 0 201 / 5%); */
 
 
 
   /* Dark Theme */
-  --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
+  /* --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
   --dark-black: #ffffffbd;
   --chat-container: rgb(0 0 0 / 20%);
   --message-bg: rgb(82 0 98 / 25%);
@@ -61,6 +62,8 @@
   --dropdown-button-active: rgba(0, 0, 0, 0.2) !important;
   --dropdown-button-glowing: inset 0 4px 6px rgba(77, 0, 213, 0.1), 0 0 15px rgb(119 139 255 / 60%);
   --dropdown-item-hover: rgba(0, 0, 0, 0.2);
+  --glass-button-hover: rgb(82 0 98 / 40%); */
+
 
 
   /* Alternative Dark Theme */
@@ -140,6 +143,8 @@ body {
 .sidebar-container {
   padding-top: 16px;
   padding-left: 16px;
+  height: 100%;
+  position: relative;
 }
 
 .message {
@@ -282,7 +287,6 @@ body {
 /* User text-area */
 .chat-input-container {
   position: relative;
-  /* background-color: var(--chat-container); */
   background-color: rgba(0, 0, 0, 0);
   padding: 10px;
   border-radius: 12px;
@@ -361,6 +365,8 @@ body {
   width: 100%;
   text-align: center;
   color: var(--dark-black);
+  font-family: var(--default-font), sans-serif !important;
+  font-size: 16px !important;
 }
 
 /* Remove Border-color from DropDown */
@@ -413,24 +419,57 @@ body {
   border-radius: 12px;
 }
 
-.full-width-dropdown .btn:hover,
-.btn:hover {
-  /* box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.1); */
-  box-shadow: var(--dropdown-button-glowing);
-  background-color: var(--dropdown-button-hover);
-  border-radius: 12px;
-}
-
 .btn {
   border-radius: 12px !important;
 }
 
+/* Glowing Effect */
+.full-width-dropdown .btn:hover,
+.btn:hover {
+  /* box-shadow: var(--dropdown-button-glowing); */
+  background-color: var(--dropdown-button-hover);
+  border-radius: 12px;
+}
 
 .full-width-dropdown .btn:focus {
-  box-shadow: var(--dropdown-button-glowing);
-  /* background-color: var(--dropdown-button-active);
-  border-radius: 12px; */
+  /* box-shadow: var(--dropdown-button-glowing); */
 }
+
+/* Button */
+.glass-button {
+  border-radius: 12px;
+  width: 100%;
+  text-align: center;
+  background-color: var(--glass-container-bg) !important;
+  color: var(--dark-black) !important;
+  font-family: var(--default-font), sans-serif !important;
+  font-size: 16px !important;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Glowing Effect 2 */
+
+.glass-button:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  /* box-shadow: var(--dropdown-button-glowing) !important; */
+  background-color: var(--glass-button-hover) !important;
+  border-radius: 12px !important;
+}
+
+.glass-button:active {
+  background-color: var(--dropdown-button-active) !important;
+}
+
+.generate-model-message-container {
+  position: absolute;
+  bottom: 10px;
+  left: 16px;
+  right: 0;
+}
+
+
 
 /* Temp Radio-button */
 
