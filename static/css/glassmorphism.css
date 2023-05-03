@@ -41,8 +41,9 @@
   --text-area-bg: var(--message-bg);
   --dropdown-menu-bg: linear-gradient(135deg, rgb(172 146 224) 0%, rgb(143 176 239) 100%);
   --dropdown-button-hover: rgba(255, 255, 255, 0.05) !important;
-  --dropdown-button-active: rgba(255, 255, 255, 0.1) !important; 
-  --dropdown-button-glowing: inset 0 4px 6px rgba(77, 0, 213, 0.1), 0 0 15px rgb(119 139 255 / 74%);*/
+  --dropdown-button-active: rgba(255, 255, 255, 0.1) !important;
+  --dropdown-button-glowing: inset 0 4px 6px rgb(172 146 224 / 10%), 0 0 15px rgb(127 105 255 / 60%);
+  --dropdown-item-hover: rgba(255, 255, 255, 0.1); */
 
 
 
@@ -58,7 +59,8 @@
   --dropdown-menu-bg: linear-gradient(135deg, rgb(77 0 213 / 90%) 0%, rgb(0 11 78 / 90%) 100%);
   --dropdown-button-hover: rgba(0, 0, 0, 0.15) !important;
   --dropdown-button-active: rgba(0, 0, 0, 0.2) !important;
-  --dropdown-button-glowing: inset 0 4px 6px rgba(77, 0, 213, 0.1), 0 0 15px rgb(119 139 255 / 74%);
+  --dropdown-button-glowing: inset 0 4px 6px rgba(77, 0, 213, 0.1), 0 0 15px rgb(119 139 255 / 60%);
+  --dropdown-item-hover: rgba(0, 0, 0, 0.2);
 
 
   /* Alternative Dark Theme */
@@ -406,7 +408,7 @@ body {
 }
 
 .full-width-dropdown .dropdown-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--dropdown-item-hover);
   color: var(--dark-black);
   border-radius: 12px;
 }
