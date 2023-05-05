@@ -138,6 +138,10 @@ body {
   padding: 8px 12px;
   border-radius: 12px;
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Align messages to the left by default */
 }
 
 .sidebar-container {
@@ -149,15 +153,62 @@ body {
 
 .message {
   font-family: var(--default-font), sans-serif !important;
-  font-size: 16px;
+  font-size: 14px;
   color: var(--dark-black);
   background-color: var(--message-bg);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 8px 12px;
   border-radius: 12px;
   margin-bottom: 8px;
-  /* separate messages with a small margin */
-  /* backdrop-filter: blur(10px); */
+  max-width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-content {
+  flex: 1;
+  margin-bottom: 4px;
+}
+
+
+.thoughts-message {
+  /* background-color: rgba(255, 0, 0, 0.1); */
+  background-color: rgb(207 0 212 / 25%);
+  /* Red tint */
+}
+
+.to-user-message {
+  /* background-color: rgba(0, 255, 0, 0.1); */
+  /* Green tint */
+}
+
+.memories-message {
+  /* background-color: rgba(0, 0, 255, 0.1); */
+  /* background-color: rgba(0, 255, 0, 0.1); */
+  background-color: rgb(0 135 28 / 20%);
+  /* Blue tint */
+}
+
+.assistant-message {
+  align-self: flex-start;
+  /* Align assistant messages to the left */
+}
+
+.user-message {
+  align-self: flex-end;
+  /* Align user and system messages to the right */
+}
+
+.system-message {
+  max-width: 100% !important;
+  align-self: flex-start;
+}
+
+.date-time {
+  font-size: 12px;
+  color: var(--dark-black);
+  opacity: 0.6;
+  text-align: right;
 }
 
 .glass-container {
@@ -249,6 +300,7 @@ body {
 /* Message scroll-bar */
 .message pre {
   font-family: var(--default-font), sans-serif;
+  font-size: 15px;
   white-space: pre-wrap;
   word-wrap: break-word;
   max-width: 100%;
