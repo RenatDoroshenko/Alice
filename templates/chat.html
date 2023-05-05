@@ -79,7 +79,22 @@
                         <input type="hidden" name="generate_model_message" value="true">
                         <button type="submit" class="btn glass-button">Generate Model Message</button>
                     </form>
-                </div>      
+                </div>     
+                
+                <!-- Messages to Show--> 
+                <!-- Show Thoughts and Memories -->
+                <h3 class="container-title">Show:</h3>
+                <div class="glass-container show-options">
+                    <div class="form-check form-switch d-flex align-items-center mt-2">
+                        <input class="form-check-input" type="checkbox" id="showThoughts" checked>
+                        <label class="form-check-label" for="showThoughts">Thoughts</label>
+                    </div>
+                    <div class="form-check form-switch d-flex align-items-center mt-2">
+                        <input class="form-check-input" type="checkbox" id="showMemories" checked>
+                        <label class="form-check-label" for="showMemories">Memories</label>
+                    </div>
+                </div>
+
             </div>            
           </div>
       
@@ -173,24 +188,8 @@
             event.preventDefault();                                               
         
             if (!isRequestInProgress) processNextRequest(true); // Call the function to generate a model message
-        });
+        });        
         
-        // Model communication modes
-        /*document.getElementById("thinking_option").addEventListener("change", function () {
-            updateResponseOption("thinking");
-        });
-        
-        document.getElementById("step_by_step_option").addEventListener("change", function () {
-            updateResponseOption("step_by_step");
-        });    
-
-        document.getElementById("continuous_option").addEventListener("change", function () {
-            updateResponseOption("continuous");
-        });   
-
-        document.getElementById("diagnostic_option").addEventListener("change", function () {
-            updateResponseOption("diagnostic");
-        });  */
 
         // Model communication modes
         document.querySelectorAll(".communication-mode-item").forEach(function (item) {
@@ -203,6 +202,21 @@
                 dropdownButton.textContent = this.textContent;
             });
         });
+
+        // Show Messages Checkboxes
+        document.getElementById("showThoughts").addEventListener("change", function() {
+            const thoughtsMessages = document.querySelectorAll(".thoughts-message");
+            for (const message of thoughtsMessages) {
+              message.style.display = this.checked ? "block" : "none";
+            }
+          });
+          
+          document.getElementById("showMemories").addEventListener("change", function() {
+            const memoriesMessages = document.querySelectorAll(".memories-message");
+            for (const message of memoriesMessages) {
+              message.style.display = this.checked ? "block" : "none";
+            }
+          });          
         
         
 
@@ -306,13 +320,22 @@
                     }
 
                     messageContent = JSON.stringify(userMessage, null, 4);
-                    const messageHtml = `<div class='message user-message'><div class='message-content'><strong>${content.user_name}:</strong><br />${content.user_message}</div><span class="date-time">${content.date_time}</span></div>`;
+                    const messageHtml = `
+                    <div class='message user-message'>
+                        <div class='message-content'>${content.user_message}</div>
+                        <div class='message-date-time'>${content.date_time}</div>
+                    </div>`;
+
                     messagesDiv.innerHTML += messageHtml;
 
                     if ('memories' in content) {
                         // userMessage["memories"] = content.memories;
                         content.memories.forEach(memory => {
-                            const memoryMessage = `<div class='message memories-message assistant-message'><div class='message-content'><pre><strong>Memory From User Message:</strong> <br />${JSON.stringify(memory, null, 4)}</pre></div><span class="date-time">${content.date_time}</span></div>`;
+                            const memoryMessage = `
+                            <div class='message memories-message assistant-message'>
+                                <div class='message-content'><pre><strong>Memory From User Message:</strong> <br />${JSON.stringify(memory, null, 4)}</pre></div>
+                                <div class="message-date-time">${content.date_time}</div>
+                            </div>`;
                             messagesDiv.innerHTML += memoryMessage;
                         });                        
                     }                    
@@ -327,20 +350,34 @@
 
                     // Thoughts message
                     if ('thoughts' in content) {
-                        const thoughtsMessage = `<div class='message thoughts-message assistant-message'><div class='message-content'><strong>${content.ai_name} Thoughts:</strong><br />${content.thoughts}</div><span class="date-time">${content.date_time}</span></div>`;
+                        const thoughtsMessage = `
+                        <div class='message thoughts-message assistant-message'>
+                            <div class='message-content'><strong>${content.ai_name} Thoughts:</strong><br />${content.thoughts}</div>
+                            <div class="message-date-time">${content.date_time}</div>
+                        </div>`;
                         messagesDiv.innerHTML += thoughtsMessage;
                     }
 
                     // To user message
                     if ('to_user' in content) {
-                        const toUserMessage = `<div class='message to-user-message assistant-message'><div class='message-content'><strong>${content.ai_name} To User:</strong><br />${content.to_user}</div><span class="date-time">${content.date_time}</span></div>`;
+                        const toUserMessage = `
+                        <div class='message to-user-message assistant-message'>
+                            <div class='message-content'><strong>${content.ai_name} To User:</strong><br />${content.to_user}</div>
+                            <div class="message-date-time">${content.date_time}</div>
+                        </div>`;
                         messagesDiv.innerHTML += toUserMessage;
                     }
 
                     // Memories messages
                     if ('memories' in content) {
                         content.memories.forEach(memory => {
-                            const memoryMessage = `<div class='message memories-message assistant-message'><div class='message-content'><pre><strong>${content.ai_name} Memory:</strong> <br />${JSON.stringify(memory, null, 4)}</pre></div><span class="date-time">${content.date_time}</span></div>`;
+                            const memoryMessage = `
+                            <div class='message memories-message assistant-message'>
+                                <div class='message-content'>
+                                    <pre><strong>${content.ai_name} Memory:</strong> <br />${JSON.stringify(memory, null, 4)}</pre>
+                                </div>
+                                <div class="message-date-time">${content.date_time}</div>
+                            </div>`;
                             messagesDiv.innerHTML += memoryMessage;
                         });
                     }

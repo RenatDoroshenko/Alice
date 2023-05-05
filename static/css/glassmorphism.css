@@ -63,6 +63,8 @@
   --dropdown-button-glowing: inset 0 4px 6px rgba(77, 0, 213, 0.1), 0 0 15px rgb(119 139 255 / 60%);
   --dropdown-item-hover: rgba(0, 0, 0, 0.2);
   --glass-button-hover: rgb(82 0 98 / 40%);
+  --checkbox-bg: rgb(255 255 255) !important;
+  --checkbox-checked-bg: rgb(0 56 192) !important;
 
 
 
@@ -163,6 +165,7 @@ body {
   max-width: 70%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .message-content {
@@ -173,7 +176,7 @@ body {
 
 .thoughts-message {
   /* background-color: rgba(255, 0, 0, 0.1); */
-  background-color: rgb(207 0 212 / 25%);
+  background-color: rgb(207 0 212 / 15%);
   /* Red tint */
 }
 
@@ -185,7 +188,7 @@ body {
 .memories-message {
   /* background-color: rgba(0, 0, 255, 0.1); */
   /* background-color: rgba(0, 255, 0, 0.1); */
-  background-color: rgb(0 135 28 / 20%);
+  background-color: rgb(0 135 28 / 10%);
   /* Blue tint */
 }
 
@@ -204,11 +207,17 @@ body {
   align-self: flex-start;
 }
 
-.date-time {
+/* .date-time {
   font-size: 12px;
   color: var(--dark-black);
   opacity: 0.6;
   text-align: right;
+} */
+.message-date-time {
+  font-size: 12px;
+  color: var(--dark-black);
+  text-align: right;
+  margin-bottom: 0;
 }
 
 .glass-container {
@@ -557,6 +566,28 @@ body {
 .form-check input[type="radio"]:hover+label {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* Messages to Show Checkboxes */
+/* .form-switch .form-check-input {
+  background-image: var(--message-bg) !important;
+} */
+
+.show-options .form-check-input {
+  background-color: var(--checkbox-bg) !important;
+}
+
+.form-switch .form-check-input {
+  /* --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%2386b7fe'/%3e%3c/svg%3e") !important; */
+}
+
+.show-options .form-check-label {
+  padding-left: 10px;
+}
+
+.show-options .form-check-input:checked {
+  background-color: var(--checkbox-checked-bg) !important;
+}
+
 
 
 /* Test Elements with glassmorphism */
