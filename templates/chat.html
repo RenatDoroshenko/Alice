@@ -93,6 +93,10 @@
                         <input class="form-check-input" type="checkbox" id="showMemories" checked>
                         <label class="form-check-label" for="showMemories">Memories</label>
                     </div>
+                    <div class="form-check form-switch d-flex align-items-center mt-2">
+                        <input class="form-check-input" type="checkbox" id="showSystem" checked>
+                        <label class="form-check-label" for="showSystem">System Message</label>
+                    </div>
                 </div>
 
             </div>            
@@ -216,8 +220,14 @@
             for (const message of memoriesMessages) {
               message.style.display = this.checked ? "block" : "none";
             }
+          });       
+          
+          document.getElementById("showSystem").addEventListener("change", function() {
+            const memoriesMessages = document.querySelectorAll(".system-message");
+            for (const message of memoriesMessages) {
+              message.style.display = this.checked ? "block" : "none";
+            }
           });          
-        
         
 
 
