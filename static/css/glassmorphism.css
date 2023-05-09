@@ -50,7 +50,8 @@
 
   /* Dark Theme */
   --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
-  --dark-black: #ffffffbd;
+  /* --dark-black: #ffffffbd; */
+  --dark-black: white;
   --chat-container: rgb(0 0 0 / 20%);
   --message-bg: rgb(82 0 98 / 25%);
   --scrollbar-thumb-bg: rgba(255, 255, 255, 0.3);
@@ -65,6 +66,9 @@
   --glass-button-hover: rgb(82 0 98 / 40%);
   --checkbox-bg: rgb(255 255 255) !important;
   --checkbox-checked-bg: rgb(0 56 192) !important;
+  --user-message-bg: linear-gradient(135deg, rgb(118 0 255 / 82%) 0%, rgb(0 31 223 / 70%) 100%);
+  --user-message-color: white;
+  --message-date-color: #ffffffbd;
 
 
 
@@ -199,6 +203,8 @@ body {
 
 .user-message {
   align-self: flex-end;
+  background-image: var(--user-message-bg);
+  color: var(--user-message-color);
   /* Align user and system messages to the right */
 }
 
@@ -215,7 +221,7 @@ body {
 } */
 .message-date-time {
   font-size: 12px;
-  color: var(--dark-black);
+  color: var(--message-date-color);
   text-align: right;
   margin-bottom: 0;
 }
