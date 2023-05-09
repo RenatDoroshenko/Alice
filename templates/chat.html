@@ -86,15 +86,15 @@
                 <h3 class="container-title">Show:</h3>
                 <div class="glass-container show-options">
                     <div class="form-check form-switch d-flex align-items-center mt-2">
-                        <input class="form-check-input" type="checkbox" id="showThoughts" checked>
+                        <input class="form-check-input" type="checkbox" id="showThoughts" {{ 'checked' if showThoughts else '' }}>
                         <label class="form-check-label" for="showThoughts">Thoughts</label>
                     </div>
                     <div class="form-check form-switch d-flex align-items-center mt-2">
-                        <input class="form-check-input" type="checkbox" id="showMemories" checked>
+                        <input class="form-check-input" type="checkbox" id="showMemories" {{ 'checked' if showMemories else '' }}>
                         <label class="form-check-label" for="showMemories">Memories</label>
                     </div>
                     <div class="form-check form-switch d-flex align-items-center mt-2">
-                        <input class="form-check-input" type="checkbox" id="showSystem" checked>
+                        <input class="form-check-input" type="checkbox" id="showSystem" {{ 'checked' if showSystem else '' }}>
                         <label class="form-check-label" for="showSystem">System Message</label>
                     </div>
                 </div>
@@ -213,6 +213,8 @@
             for (const message of thoughtsMessages) {
               message.style.display = this.checked ? "block" : "none";
             }
+
+            saveCheckboxesState();
           });
           
           document.getElementById("showMemories").addEventListener("change", function() {
@@ -220,6 +222,8 @@
             for (const message of memoriesMessages) {
               message.style.display = this.checked ? "block" : "none";
             }
+
+            saveCheckboxesState();
           });       
           
           document.getElementById("showSystem").addEventListener("change", function() {
@@ -227,7 +231,28 @@
             for (const message of memoriesMessages) {
               message.style.display = this.checked ? "block" : "none";
             }
-          });          
+
+            saveCheckboxesState();
+          });   
+          
+          // Updating Show Mesasge Checkboxes
+          function saveCheckboxesState() {
+            const showThoughts = document.getElementById("showThoughts").checked;
+            const showMemories = document.getElementById("showMemories").checked;
+            const showSystem = document.getElementById("showSystem").checked;
+          
+            fetch('/save_checkboxes', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                showThoughts,
+                showMemories,
+                showSystem
+              })
+            });
+          }
         
 
 
@@ -311,6 +336,10 @@
             if (!append) {
                 messagesDiv.innerHTML = "";
             }
+
+            const showThoughts = document.getElementById("showThoughts").checked;
+            const showMemories = document.getElementById("showMemories").checked;
+            const showSystem = document.getElementById("showSystem").checked;
         
             newMessages.forEach(function(message) {
                 content = message.content
@@ -342,7 +371,7 @@
                         // userMessage["memories"] = content.memories;
                         content.memories.forEach(memory => {
                             const memoryMessage = `
-                            <div class='message memories-message assistant-message'>
+                            <div class='message memories-message assistant-message' style='display: ${showMemories ? 'block' : 'none'}'>
                                 <div class='message-content'><pre><strong>Memory From User Message:</strong> <br />${JSON.stringify(memory, null, 4)}</pre></div>
                                 <div class="message-date-time">${content.date_time}</div>
                             </div>`;
@@ -351,7 +380,10 @@
                     }                    
                 } else if (message.role.toLowerCase() === "system") {
                     messageContent = message.content;
-                    const messageHtml = `<div class='message system-message'><pre><strong>${role}:</strong>${messageContent}</pre></div>`;
+                    const messageHtml = `
+                    <div class='message system-message' style='display: ${showSystem ? 'block' : 'none'}'>
+                        <pre><strong>${role}:</strong>${messageContent}</pre>
+                    </div>`;
                     messagesDiv.innerHTML += messageHtml;
 
                 } else if (message.role.toLowerCase() === "assistant") {
@@ -361,7 +393,7 @@
                     // Thoughts message
                     if ('thoughts' in content) {
                         const thoughtsMessage = `
-                        <div class='message thoughts-message assistant-message'>
+                        <div class='message thoughts-message assistant-message' style='display: ${showThoughts ? 'block' : 'none'}'>
                             <div class='message-content'><strong>${content.ai_name} Thoughts:</strong><br />${content.thoughts}</div>
                             <div class="message-date-time">${content.date_time}</div>
                         </div>`;
@@ -382,7 +414,7 @@
                     if ('memories' in content) {
                         content.memories.forEach(memory => {
                             const memoryMessage = `
-                            <div class='message memories-message assistant-message'>
+                            <div class='message memories-message assistant-message' style='display: ${showMemories ? 'block' : 'none'}'>
                                 <div class='message-content'>
                                     <pre><strong>${content.ai_name} Memory:</strong> <br />${JSON.stringify(memory, null, 4)}</pre>
                                 </div>

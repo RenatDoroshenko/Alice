@@ -24,3 +24,8 @@ VECTOR_INDEX_DIMENSION = 1536
 
 # Communication Modes
 DEFAULT_COMMUNICATION_MODE = 'step_by_step'
+
+# Show Messages
+SHOW_THOUGHTS = True
+SHOW_MEMORIES = True
+SHOW_SYSTEM = True

@@ -52,6 +52,11 @@ with app.app_context():
 memory_index, metadata = memory.load_memory_index()
 
 response_option_global = settings.DEFAULT_COMMUNICATION_MODE
+checkboxes_state = {
+    'showThoughts': settings.SHOW_THOUGHTS,
+    'showMemories': settings.SHOW_MEMORIES,
+    'showSystem': settings.SHOW_SYSTEM
+}
 
 
 @app.template_filter('tojson')
@@ -98,7 +103,10 @@ def chat():
                                'ai_id', secure_information.AI_ID),
                            ai_name=session.get(
                                'ai_name', secure_information.AI_NAME),
-                           response_option=response_option_global)
+                           response_option=response_option_global,
+                           showThoughts=checkboxes_state['showThoughts'],
+                           showMemories=checkboxes_state['showMemories'],
+                           showSystem=checkboxes_state['showSystem'])
 
 
 # Select experience space
@@ -224,6 +232,15 @@ def update_response_option():
     response_option = request.form.get('response_option')
     response_option_global = response_option
     print(f'response_option changed to "{response_option_global}"')
+    return jsonify(success=True)
+
+
+@app.route('/save_checkboxes', methods=['POST'])
+def save_checkboxes():
+    global checkboxes_state
+    checkboxes_state['showThoughts'] = request.json.get('showThoughts', True)
+    checkboxes_state['showMemories'] = request.json.get('showMemories', True)
+    checkboxes_state['showSystem'] = request.json.get('showSystem', True)
     return jsonify(success=True)
 
 
