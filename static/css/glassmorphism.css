@@ -31,9 +31,11 @@
   --default-font: 'Poppins';
 
   /* White Theme - Saturated */
-  /* --body-gradient: linear-gradient(135deg, rgb(72 2 195 / 30%) 0%, rgb(64 0 177 / 50%) 25%, rgb(0 137 246 / 60%) 50%, rgb(0 24 173 / 50%) 75%, rgb(0 26 173 / 30%) 100%);
+  --body-gradient: linear-gradient(135deg, rgb(72 2 195 / 30%) 0%, rgb(64 0 177 / 50%) 25%, rgb(0 137 246 / 60%) 50%, rgb(0 24 173 / 50%) 75%, rgb(0 26 173 / 30%) 100%);
   --dark-black: black;
-  --chat-container: rgb(255 255 255 / 15%);
+  --chat-container: rgba(255, 255, 255, 0);
+  --chat-header: rgb(255 255 255 / 15%);
+  --sidebar-container-bg: rgb(255 255 255 / 15%);
   --message-bg: rgb(46 0 201 / 7%);
   --scrollbar-thumb-bg: rgb(0 21 173 / 20%);
   --scrollbar-thumb-bg-hover: rgb(0 21 173 / 30%);
@@ -54,14 +56,16 @@
   --memories-message-bg: linear-gradient(135deg, rgb(95 216 248 / 79%) 0%, rgb(98 90 255 / 61%) 100%);
   --system-message-bg: linear-gradient(135deg, rgb(118 0 255 / 82%) 0%, rgb(0 31 223 / 70%) 100%);
 
-  --message-date-color: #212121; */
+  --message-date-color: #212121;
 
 
 
   /* Dark Theme */
-  --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
+  /* --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
   --dark-black: white;
-  --chat-container: rgb(0 0 0 / 20%);
+  --chat-container: rgb(0 0 0 / 0%);
+  --chat-header: rgb(0 0 0 / 20%);
+  --sidebar-container-bg: rgb(79 0 159 / 20%);
   --message-bg: rgb(82 0 98 / 25%);
   --scrollbar-thumb-bg: rgba(255, 255, 255, 0.3);
   --scrollbar-thumb-bg-hover: rgba(255, 255, 255, 0.4);
@@ -82,7 +86,7 @@
   --memories-message-bg: linear-gradient(135deg, rgb(0 140 255 / 54%) 0%, rgb(0 35 255 / 40%) 100%);
   --system-message-bg: linear-gradient(135deg, rgb(118 0 255 / 82%) 0%, rgb(0 31 223 / 70%) 100%);
 
-  --message-date-color: #ffffffbd;
+  --message-date-color: #ffffffbd; */
 
 
 
@@ -115,7 +119,7 @@ body {
   max-width: 80%;
   min-height: 600px;
   margin: 50px auto;
-  padding: 20px;
+  /* padding: 20px; */
   box-sizing: border-box;
   position: relative;
   z-index: 1;
@@ -131,6 +135,10 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+.content-container {
+  padding: 20px 20px 20px 20px
+}
+
 .chat-header {
   display: flex;
   align-items: center;
@@ -138,14 +146,20 @@ body {
   font-family: var(--default-font), sans-serif;
   font-size: 24px;
   color: var(--dark-black);
-  padding: 16px;
+  padding: 16px 0px;
+
+  background-color: var(--chat-header);
+  border-radius: 20px 20px 0 0;
 }
 
 .chat-header i.material-icons {
   margin-right: 8px;
 }
 
-
+.messages-block {
+  padding-top: 20px;
+  padding-right: 32px !important;
+}
 
 .messages-container {
   background-color: var(--medium-blue-gradient);
@@ -170,6 +184,10 @@ body {
   padding-left: 16px;
   height: 100%;
   position: relative;
+
+  background-color: var(--sidebar-container-bg);
+  padding: 20px;
+  border-radius: 0 0 0 20px;
 }
 
 .message {
@@ -368,6 +386,7 @@ body {
   background-color: rgba(0, 0, 0, 0);
   padding: 10px;
   border-radius: 12px;
+  padding-bottom: 30px;
 }
 
 .input-form {
@@ -413,10 +432,12 @@ body {
   padding: 0;
   height: 100%;
   transition: background-color 0.3s ease-in-out;
+  border-radius: 0 7px 7px 0;
 }
 
 .send-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  /* background-color: rgba(255, 255, 255, 0.1); */
+  background-color: var(--dropdown-button-hover);
 }
 
 
@@ -542,9 +563,10 @@ body {
 
 .generate-model-message-container {
   position: absolute;
-  bottom: 10px;
-  left: 16px;
+  bottom: 30px;
+  left: 20px;
   right: 0;
+  width: 90%;
 }
 
 
