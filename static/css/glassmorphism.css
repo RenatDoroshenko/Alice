@@ -32,7 +32,7 @@
 
   /* White Theme - Saturated */
   /* --body-gradient: linear-gradient(135deg, rgb(72 2 195 / 30%) 0%, rgb(64 0 177 / 50%) 25%, rgb(0 137 246 / 60%) 50%, rgb(0 24 173 / 50%) 75%, rgb(0 26 173 / 30%) 100%);
-  --dark-black: #212121;
+  --dark-black: black;
   --chat-container: rgb(255 255 255 / 15%);
   --message-bg: rgb(46 0 201 / 7%);
   --scrollbar-thumb-bg: rgb(0 21 173 / 20%);
@@ -44,13 +44,22 @@
   --dropdown-button-active: rgba(255, 255, 255, 0.1) !important;
   --dropdown-button-glowing: inset 0 4px 6px rgb(172 146 224 / 10%), 0 0 15px rgb(127 105 255 / 60%);
   --dropdown-item-hover: rgba(255, 255, 255, 0.1);
-  --glass-button-hover: rgb(46 0 201 / 5%); */
+  --glass-button-hover: rgb(46 0 201 / 5%);
+  --checkbox-bg: rgb(255 255 255) !important;
+  --checkbox-checked-bg: rgb(0 56 192) !important;
+
+  --user-message-bg: linear-gradient(135deg, rgb(214 134 255) 0%, rgb(135 135 255) 100%);
+  --to-user-message-bg: linear-gradient(135deg, rgb(149 211 255 / 47%) 0%, rgb(169 169 255 / 52%) 100%);
+  --thoughts-message-bg: linear-gradient(135deg, rgb(255 169 169 / 66%) 0%, rgb(201 135 255) 100%);
+  --memories-message-bg: linear-gradient(135deg, rgb(95 216 248 / 79%) 0%, rgb(98 90 255 / 61%) 100%);
+  --system-message-bg: linear-gradient(135deg, rgb(118 0 255 / 82%) 0%, rgb(0 31 223 / 70%) 100%);
+
+  --message-date-color: #212121; */
 
 
 
   /* Dark Theme */
   --body-gradient: linear-gradient(135deg, rgb(107 52 204 / 60%) 0%, rgb(64 0 179 / 85%) 25%, rgb(0 119 213) 50%, rgb(10 33 168 / 90%) 75%, rgb(0 26 171 / 68%) 100%);
-  /* --dark-black: #ffffffbd; */
   --dark-black: white;
   --chat-container: rgb(0 0 0 / 20%);
   --message-bg: rgb(82 0 98 / 25%);
@@ -66,13 +75,19 @@
   --glass-button-hover: rgb(82 0 98 / 40%);
   --checkbox-bg: rgb(255 255 255) !important;
   --checkbox-checked-bg: rgb(0 56 192) !important;
+
   --user-message-bg: linear-gradient(135deg, rgb(118 0 255 / 82%) 0%, rgb(0 31 223 / 70%) 100%);
-  --user-message-color: white;
+  --to-user-message-bg: linear-gradient(135deg, rgb(180 0 255 / 20%) 0%, rgb(0 0 255 / 15%) 100%);
+  --thoughts-message-bg: linear-gradient(135deg, rgb(255 0 190 / 65%) 0%, rgb(127 0 255 / 60%) 100%);
+  --memories-message-bg: linear-gradient(135deg, rgb(0 140 255 / 54%) 0%, rgb(0 35 255 / 40%) 100%);
+  --system-message-bg: linear-gradient(135deg, rgb(118 0 255 / 82%) 0%, rgb(0 31 223 / 70%) 100%);
+
   --message-date-color: #ffffffbd;
 
 
 
   /* Alternative Dark Theme */
+  /* --dark-black: #ffffffbd; */
   /* Brighter text-area */
   /* --text-area-bg: rgb(168 0 201 / 10%); */
 
@@ -179,21 +194,17 @@ body {
 
 
 .thoughts-message {
-  /* background-color: rgba(255, 0, 0, 0.1); */
-  background-color: rgb(207 0 212 / 15%);
-  /* Red tint */
+  /* background-color: rgb(207 0 212 / 15%);   */
+  background-image: var(--thoughts-message-bg);
 }
 
 .to-user-message {
-  /* background-color: rgba(0, 255, 0, 0.1); */
-  /* Green tint */
+  background-image: var(--to-user-message-bg);
 }
 
 .memories-message {
-  /* background-color: rgba(0, 0, 255, 0.1); */
-  /* background-color: rgba(0, 255, 0, 0.1); */
-  background-color: rgb(0 135 28 / 10%);
-  /* Blue tint */
+  /* background-color: rgb(0 135 28 / 10%); */
+  background-image: var(--memories-message-bg);
 }
 
 .assistant-message {
@@ -204,7 +215,7 @@ body {
 .user-message {
   align-self: flex-end;
   background-image: var(--user-message-bg);
-  color: var(--user-message-color);
+  color: var(--dark-black);
   /* Align user and system messages to the right */
 }
 
