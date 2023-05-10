@@ -99,6 +99,10 @@
                         <input class="form-check-input" type="checkbox" id="showSystem" {{ 'checked' if showSystem else '' }}>
                         <label class="form-check-label" for="showSystem">System Message</label>
                     </div>
+                    <div class="form-check form-switch d-flex align-items-center mt-2">
+                        <input class="form-check-input" type="checkbox" id="debugFormat">
+                        <label class="form-check-label" for="debugFormat">Debug Format</label>
+                    </div>
                 </div>
 
             </div>            
@@ -236,6 +240,51 @@
 
             saveCheckboxesState();
           });   
+
+          document.getElementById("debugFormat").addEventListener("change", function() {
+
+            // hide and show other messages
+            if(this.checked){
+                // here need to hide all messages except system-message.
+                const allMessages = document.querySelectorAll(".message");
+                for (const message of allMessages) {
+                    if (!message.classList.contains('system-message')) {
+                        message.style.display = "none";
+                    }
+                } 
+
+            }
+            else{
+                const showThoughts = document.getElementById("showThoughts").checked;
+                const showMemories = document.getElementById("showMemories").checked;   
+                
+                const userMessages = document.querySelectorAll(".user-message");
+                for (const message of userMessages) {
+                    message.style.display = "block";
+                } 
+
+                const toUserMessages = document.querySelectorAll(".to-user-message");
+                for (const message of toUserMessages) {
+                    message.style.display = "block";
+                } 
+                
+                const thoughtsMessages = document.querySelectorAll(".thoughts-message");
+                for (const message of thoughtsMessages) {
+                    message.style.display = showThoughts ? "block" : "none";
+                } 
+    
+                const memoriesMessages = document.querySelectorAll(".memories-message");
+                for (const message of memoriesMessages) {
+                    message.style.display = showMemories ? "block" : "none";
+                } 
+            }
+
+
+            const debugMessages = document.querySelectorAll(".debug-format");            
+            for (const message of debugMessages) {
+              message.style.display = this.checked ? "block" : "none";
+            }            
+          });  
           
           // Updating Show Mesasge Checkboxes
           function saveCheckboxesState() {
@@ -342,6 +391,7 @@
             const showThoughts = document.getElementById("showThoughts").checked;
             const showMemories = document.getElementById("showMemories").checked;
             const showSystem = document.getElementById("showSystem").checked;
+            const debugFormat = document.getElementById("debugFormat").checked;
         
             newMessages.forEach(function(message) {
                 content = message.content
@@ -360,7 +410,7 @@
                         userMessage["diagnostic"] = content.diagnostic
                     }
 
-                    messageContent = JSON.stringify(userMessage, null, 4);
+                    messageContent = JSON.stringify(userMessage, null, 4);                    
                     const messageHtml = `
                     <div class='message user-message'>
                         <div class='message-content'>${content.user_message}</div>
@@ -368,6 +418,15 @@
                     </div>`;
 
                     messagesDiv.innerHTML += messageHtml;
+                    
+                    // Debug format Messages
+                    debugMessage = `
+                    <div class='message user-message debug-format' style='display: ${debugFormat ? 'block' : 'none'}'>
+                        <div class='message-content'>User: <pre>${JSON.stringify(content, null, 4)}</pre></div>
+                    </div>`;
+
+                    messagesDiv.innerHTML += debugMessage;   
+                    // End Debug format Messages                 
 
                     if ('memories' in content) {
                         // userMessage["memories"] = content.memories;
@@ -411,6 +470,15 @@
                         </div>`;
                         messagesDiv.innerHTML += toUserMessage;
                     }
+
+                    // Debug format Messages
+                    debugMessage = `
+                    <div class='message to-user-message assistant-message debug-format' style='display: ${debugFormat ? 'block' : 'none'}'>
+                        <div class='message-content'>${content.ai_name}: <pre>${JSON.stringify(content, null, 4)}</pre></div>
+                    </div>`;
+
+                    messagesDiv.innerHTML += debugMessage;   
+                    // End Debug format Messages 
 
                     // Memories messages
                     if ('memories' in content) {
