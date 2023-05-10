@@ -262,10 +262,6 @@ def ensure_json_format(json_data):
         else:
             print("Failed to fix the JSON data.")
 
-
-def replace_newlines_with_html_br(text):
-    return text.replace('\n', '<br>')
-
 # Parse JSON
 
 

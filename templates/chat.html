@@ -413,7 +413,7 @@
                     messageContent = JSON.stringify(userMessage, null, 4);                    
                     const messageHtml = `
                     <div class='message user-message'>
-                        <div class='message-content'>${content.user_message}</div>
+                        <div class='message-content'><pre>${content.user_message}</pre></div>
                         <div class='message-date-time'>${content.date_time}</div>
                     </div>`;
 
@@ -455,7 +455,7 @@
                     if ('thoughts' in content) {
                         const thoughtsMessage = `
                         <div class='message thoughts-message assistant-message' style='display: ${showThoughts ? 'block' : 'none'}'>
-                            <div class='message-content'><strong>${content.ai_name} Thoughts:</strong><br />${content.thoughts}</div>
+                            <div class='message-content'><strong>${content.ai_name} Thoughts:</strong><br /><pre>${content.thoughts}</pre></div>
                             <div class="message-date-time">${content.date_time}</div>
                         </div>`;
                         messagesDiv.innerHTML += thoughtsMessage;
@@ -465,7 +465,7 @@
                     if ('to_user' in content) {
                         const toUserMessage = `
                         <div class='message to-user-message assistant-message'>
-                            <div class='message-content'><strong>${content.ai_name} To User:</strong><br />${content.to_user}</div>
+                            <div class='message-content'><strong>${content.ai_name} To User:</strong><br /><pre>${content.to_user}</pre></div>
                             <div class="message-date-time">${content.date_time}</div>
                         </div>`;
                         messagesDiv.innerHTML += toUserMessage;

@@ -357,6 +357,7 @@ body {
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
+  margin-bottom: 0;
 }
 
 .message pre::-webkit-scrollbar {
