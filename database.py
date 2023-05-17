@@ -20,6 +20,7 @@ class Experience(db.Model):
     user_name = db.Column(db.String(100), nullable=True)
     user_message = db.Column(db.Text, nullable=True)
     commands = db.Column(db.Text, nullable=True)
+    commands_result = db.Column(db.Text, nullable=True)
     memories = db.Column(db.Text, nullable=True)
     experience_space = db.Column(db.Integer, nullable=True)
     diagnostic = db.Column(db.Boolean, nullable=False, default=False)
@@ -37,6 +38,7 @@ class Experience(db.Model):
             'user_name': self.user_name,
             'user_message': self.user_message,
             'commands': self.commands,
+            'commands_result': self.commands_result,
             'memories': self.memories,
             'experience_space': self.experience_space,
             'date_time': self.date_time.isoformat()
@@ -134,8 +136,10 @@ def save_user_message(user_name, user_message, ai_id, ai_name, experience_space,
     return user_entry.id, user_entry.date_time
 
 
-def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, experience_space, diagnostic=False):
-    commands_string = json.dumps(commands)
+def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, commands_result, memories, experience_space, diagnostic=False):
+    # commands_string = json.dumps(commands)
+    commands_string = commands
+    commands_result_string = json.dumps(commands_result)
     memories_string = json.dumps([memory.to_dict() for memory in memories])
 
     print('ai memories to save: ')
@@ -149,6 +153,7 @@ def save_ai_message(ai_id, ai_name, thoughts, to_user, commands, memories, exper
         thoughts=thoughts,
         to_user=to_user,
         commands=commands_string,
+        commands_result=commands_result_string,
         memories=memories_string,
         experience_space=experience_space,
         diagnostic=diagnostic

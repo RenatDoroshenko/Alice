@@ -67,6 +67,9 @@ def ai_message_to_json(entry, with_memory=True, diagnostic=False):
     if entry.commands is not None and entry.commands != 'null' and settings.COMMANDS_ENABLED:
         data['commands'] = json.loads(entry.commands)
 
+    if entry.commands_result is not None and entry.commands_result != 'null' and settings.COMMANDS_ENABLED:
+        data['commands_result'] = json.loads(entry.commands_result)
+
     if with_memory:
         if entry.memories is not None and entry.memories != 'null':
             # Here is the format of messages from the db
@@ -137,6 +140,9 @@ def ai_message_to_json_from_dict(entry, withMemory=True):
     if entry['commands'] is not None and entry['commands'] != 'null' and settings.COMMANDS_ENABLED:
         data['commands'] = json.loads(entry['commands'])
 
+    if entry['commands_result'] is not None and entry['commands_result'] != 'null' and settings.COMMANDS_ENABLED:
+        data['commands_result'] = json.loads(entry['commands_result'])
+
     if withMemory:
         if entry['memories'] is not None and entry['memories'] != 'null':
             # Here is format of messages from db
@@ -150,7 +156,7 @@ def ai_message_to_json_from_dict(entry, withMemory=True):
 
 
 # Used when model responded
-def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands, memories, existing_message_ids):
+def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands, commands_result, memories, existing_message_ids):
     data = {
         'ai_id': ai_id,
         'ai_name': ai_name,
@@ -160,6 +166,9 @@ def ai_message_to_json_values(ai_id, ai_name, thoughts, to_user, commands, memor
 
     if commands is not None and commands != 'null':
         data['commands'] = commands
+
+    if commands_result is not None and commands_result != 'null':
+        data['commands_result'] = commands_result
 
     if memories:
         # Convert the memories to JSON format and remove duplicates based on entry.id

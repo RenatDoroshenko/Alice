@@ -344,7 +344,9 @@
 
         function getDropdownValue() {
             const dropdownButton = document.getElementById("experience_space_dropdown");
-            return dropdownButton.textContent.trim();
+            const textContent = dropdownButton.textContent;
+            const match = textContent.match(/\d+/); // matches any sequence of digits
+            return match ? match[0] : null; // if there's a match, return the first one; otherwise return null
         }
         
         function setDropdownValue(value) {

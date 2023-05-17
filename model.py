@@ -8,6 +8,7 @@ import secure_information
 import database
 import json_converter
 import memory
+import commands as cmd
 
 
 def model_say_to_model(messages, experience_space, memory_index, metadata, diagnostic=False):
@@ -103,6 +104,11 @@ def generate_response(messages,
     ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
         response.choices[0].message.content)
 
+    # Here execute commands
+    commands_result = ""
+    if commands is not None and commands != 'null' and settings.COMMANDS_ENABLED:
+        commands_result = cmd.parse_command(commands)
+
     if settings.LONG_MEMORY_ENABLED:
         existing_messages_ids = get_message_ids_from_existing_messages(
             messages)
@@ -117,11 +123,11 @@ def generate_response(messages,
         filtered_memories = []
 
     response_message = json_converter.ai_message_to_json_values(
-        ai_id, ai_name, thoughts, to_user, commands, filtered_memories, existing_messages_ids)
+        ai_id, ai_name, thoughts, to_user, commands, commands_result, filtered_memories, existing_messages_ids)
 
     # Save AI message to db
     ai_message_id, date_time = database.save_ai_message(
-        ai_id, ai_name, thoughts, to_user, commands, filtered_memories, experience_space, diagnostic)
+        ai_id, ai_name, thoughts, to_user, commands, commands_result, filtered_memories, experience_space, diagnostic)
 
     date_time_str = date_time.strftime(settings.DATE_TIME_FORMAT)
 
