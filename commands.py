@@ -1,4 +1,5 @@
 import json
+import code_execution_commands as code_cmd
 # FORMAT:
 
 # "commands": [
@@ -40,7 +41,20 @@ def get_text():
 # Register Commands
 registered_commands = {
     "print_text": print_text,
-    'get_text': get_text
+    "get_text": get_text,
+
+    # File commands
+    "read_file": code_cmd.read_file,
+    "write_file": code_cmd.write_file,
+    "delete_file": code_cmd.delete_file,
+    "insert_lines": code_cmd.insert_lines,
+    "delete_lines": code_cmd.delete_lines,
+    "execute_file": code_cmd.execute_file,
+    "list_files": code_cmd.list_files,
+
+    # File commands in App
+    "list_directory_in_app": code_cmd.list_directory_in_app,
+    "read_file_in_app": code_cmd.read_file_in_app
 }
 
 
@@ -50,6 +64,9 @@ def parse_command(commands_str):
     print(f"Start parsing commands: {commands_str}")
 
     commands = json.loads(commands_str)
+    if commands is None or commands == 'null':
+        print(f"Wrong format of commands: {commands}")
+        return ""
 
     for command_data in commands:
         command_name = command_data['name']

@@ -9,6 +9,7 @@ import database
 import json_converter
 import memory
 import commands as cmd
+from main import app
 
 
 def model_say_to_model(messages, experience_space, memory_index, metadata, diagnostic=False):
@@ -106,7 +107,7 @@ def generate_response(messages,
 
     # Here execute commands
     commands_result = ""
-    if commands is not None and commands != 'null' and settings.COMMANDS_ENABLED:
+    if commands is not None and commands != 'null' and json.loads(commands) != 'null' and settings.COMMANDS_ENABLED:
         commands_result = cmd.parse_command(commands)
 
     if settings.LONG_MEMORY_ENABLED:
@@ -374,5 +375,8 @@ def put_to_open_ai_format(message_type, content):
 def create_manifest_message():
     return [
         {'role': 'system', 'content': format.MANIFEST.format(
-            user_name=secure_information.USER_NAME, ai_id=secure_information.AI_ID, ai_name=secure_information.AI_NAME)}
+            user_name=secure_information.USER_NAME,
+            ai_id=secure_information.AI_ID,
+            ai_name=secure_information.AI_NAME,
+            root_path=app.root_path)}
     ]
