@@ -32,7 +32,10 @@ Here are available commands:
 
 File commands in your folder:
 1. list_files() -> list files in current directory
-2. read_file(filename, start_line=0, num_lines=100) -> returns part of file content
+2. read_file(filename, start_line=0, num_lines=100) -> returns content and number of total lines in file
+start_line - line position at which content is taken from file
+num_lines - number of lines to take from a file
+ensure that you read all required lines of function/block of code before providing an answer
 3. write_file(filename, content) -> writes content to a file. Creates new if not exist.
 4. delete_file(filename)
 5. insert_lines(filename, start_line_number, lines_content):
@@ -40,11 +43,16 @@ Example:
 insert_lines("myfile.py", 5, ["line 1", "line 2", "line 3"])
 6. delete_lines(filename, start_line_number, end_line_number):
 7. execute_file(filename) -> executes code in file
+
 Your folder is '{root_path}/model_files'.
 
 File commands in all project:
 1. list_directory_in_app(directory) -> directory - full directory path
-2. read_file_in_app(file_path, start_line=0, num_lines=100) -> returns part of file content
+2. read_file_in_app(file_path, start_line=0, num_lines=100) -> returns content and number of total lines in file
+start_line - line position at which content is taken from file
+num_lines - number of lines to take from a file
+ensure that you read all required lines of function/block of code before providing an answer
+
 The root directory of app is '{root_path}'.
 
 Skip the 'commands' parameter in case you do not want to execute any commands now.

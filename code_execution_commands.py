@@ -11,8 +11,17 @@ def list_files():
 
 
 def read_file(filename, start_line=0, num_lines=100):
-    print(f'COMMANDS: read_file - filename={filename}')
+    print(
+        f'COMMANDS: read_file - filename={filename}, start_line={start_line}, num_lines={num_lines}')
     lines = []
+    total_lines = 0
+
+    # First, count all lines in the file
+    with open(f"{folder_path}/{filename}", "r") as f:
+        for i, line in enumerate(f):
+            total_lines += 1
+
+    # Then, read the specific lines
     with open(f"{folder_path}/{filename}", "r") as f:
         for i, line in enumerate(f):
             if i < start_line:
@@ -21,7 +30,16 @@ def read_file(filename, start_line=0, num_lines=100):
                 lines.append(line)
             else:
                 break
-    return ''.join(lines)
+
+    # -1 because line numbers are zero-indexed
+    end_line = start_line + len(lines) - 1
+
+    return {
+        'content': ''.join(lines),
+        'total_lines': total_lines,
+        'start_line': start_line,
+        'end_line': end_line,
+    }
 
 
 def write_file(filename, content):
@@ -100,6 +118,7 @@ def get_python_command():
 
 
 def list_directory_in_app(directory):
+    print(f'COMMANDS: list_directory_in_app - directory={directory}')
     try:
         # Returns a list of all files and directories in the specified directory
         return os.listdir(directory)
@@ -110,8 +129,18 @@ def list_directory_in_app(directory):
 
 
 def read_file_in_app(file_path, start_line=0, num_lines=100):
+    print(
+        f'COMMANDS: read_file_in_app - file_path={file_path}, start_line={start_line}, num_lines={num_lines}')
     try:
         lines = []
+        total_lines = 0
+
+        # First, count all lines in the file
+        with open(file_path, "r") as f:
+            for i, line in enumerate(f):
+                total_lines += 1
+
+        # Then, read the specific lines
         with open(file_path, "r") as f:
             for i, line in enumerate(f):
                 if i < start_line:
@@ -120,7 +149,16 @@ def read_file_in_app(file_path, start_line=0, num_lines=100):
                     lines.append(line)
                 else:
                     break
-        return ''.join(lines)
+
+        # -1 because line numbers are zero-indexed
+        end_line = start_line + len(lines) - 1
+
+        return {
+            'content': ''.join(lines),
+            'total_lines': total_lines,
+            'start_line': start_line,
+            'end_line': end_line,
+        }
     except FileNotFoundError:
         return f"The file '{file_path}' does not exist"
     except IsADirectoryError:
