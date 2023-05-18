@@ -28,7 +28,7 @@ FAISS_INDEX_FOLDER = "memory"
 VECTOR_INDEX_DIMENSION = 1536
 
 # Communication Modes
-DEFAULT_COMMUNICATION_MODE = 'step_by_step'
+DEFAULT_COMMUNICATION_MODE = 'thinking'
 
 # Show Messages
 SHOW_THOUGHTS = True
