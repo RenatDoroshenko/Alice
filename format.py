@@ -55,7 +55,7 @@ ensure that you read all required lines of function/block of code before providi
 
 The root directory of app is '{root_path}'.
 
-Important: tell to user in case your commands give not enough information to achieve your goal, and what additional information is needed.
+Important: tell to user in case your commands give not enough information to achieve your goal, and what additional information from the command is needed.
 
 Skip the 'commands' parameter in case you do not want to execute any commands now.
 
