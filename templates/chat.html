@@ -467,11 +467,13 @@
 
                 } else if (message.role.toLowerCase() === "plan") {
                     messageContent = message.content;
-                    const messageHtml = `
-                    <div class='message plan-message' style='display: ${showPlan ? 'block' : 'none'}'>
-                        <pre>${messageContent}</pre>
-                    </div>`;
-                    messagesDiv.innerHTML += messageHtml;
+                    if(messageContent){
+                        const messageHtml = `
+                        <div class='message plan-message' style='display: ${showPlan ? 'block' : 'none'}'>
+                            <pre>${messageContent}</pre>
+                        </div>`;
+                        messagesDiv.innerHTML += messageHtml;    
+                    }
 
                 } else if (message.role.toLowerCase() === "assistant") {
                     // old logic

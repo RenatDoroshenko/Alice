@@ -291,10 +291,12 @@ def get_plan(plan_id):
     return output
 
 
-def get_all_plans():
+def get_all_plans(empty_string_if_none=False):
     plans = Plan.query.all()
 
     if not plans:
+        if empty_string_if_none:
+            return None
         return "No plans currently exist."
 
     result = []

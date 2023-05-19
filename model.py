@@ -385,8 +385,12 @@ def create_manifest_message():
     ]
 
 
-def get_current_plan():
-    plans_list = database.get_all_plans()
+def get_current_plan(empty_string_if_none=False):
+    plans_list = database.get_all_plans(empty_string_if_none)
+
+    if plans_list is None:
+        return plans_list
+
     plans_str = "\n".join(plans_list)
 
     return plans_str
