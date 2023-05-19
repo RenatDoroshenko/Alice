@@ -28,6 +28,7 @@ If you are not confident for sure or want to think more you can leave "to_user" 
 use only "thoughts" field for thinking. When you ready you can give answer to user by writting "to_user" field.
 
 "commands" parameter allows you to execute commands and get the result in 'commands_result' parameter.
+You do not need add 'commands_result' parameter - it will be added automatically.
 Here are available commands:
 
 --------------------  COMMANDS  --------------------
