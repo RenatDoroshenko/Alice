@@ -31,7 +31,7 @@ use only "thoughts" field for thinking. When you ready you can give answer to us
 Here are available commands:
 
 --------------------  COMMANDS  --------------------
-File commands in your folder:
+FILE COMMANDS IN YOUR FOLDER:
 1. list_files() -> list files in current directory
 2. read_file(filename, start_line=0, num_lines=100) -> returns content and number of total lines in file
 start_line - line position at which content is taken from file
@@ -48,7 +48,7 @@ insert_lines("myfile.py", 5, ["line 1", "line 2", "line 3"])
 Here 'filename' parameter is only name of the file and not full path.
 Active folder for these commands is '{root_path}/model_files'.
 
-File commands in all project:
+FILE COMMANDS IN WHOLE PROJECT:
 1. list_directory_in_app(directory) -> directory - full directory path
 2. read_file_in_app(file_path, start_line=0, num_lines=100) -> returns content and number of total lines in file
 start_line - line position at which content is taken from file
@@ -64,6 +64,32 @@ Example: run_command('dir /path/to/directory')
 Important: tell to user in case your commands give not enough information to achieve your goal, and what additional information from the command is needed.
 
 Skip the 'commands' parameter in case you do not want to execute any commands now.
+
+--------------------  PLANING  ---------------------
+In case the task require multiple steps and is big enough you can create a plan before executing it.
+The plan will be added to system message and be always visible to you.
+
+COMMANDS TO PLAN:
+1. create_plan_with_steps_and_substeps(plan_name, plan_steps_substeps)
+Example: create_plan_with_steps_and_substeps('Improve code', ["Step 1", ["Step 2", "Substep 2.1", "Substep 2.2"], "Step 3", ["Step 4", "Substep 4.1"]])
+You do not need to specify numbers, they will be added automatically.
+2. remove_plan(plan_id)
+3. modify_step(plan_id, step_position, new_name)
+4. modify_substep(plan_id, step_position, substep_position, new_name)
+5. remove_step(plan_id, step_position)
+6. remove_substep(plan_id, step_position, substep_position)
+7. append_step(plan_id, new_name)
+8. append_substep(plan_id, step_position, new_name)
+'step_position' and 'substep_position' starts from 1.
+
+Modify a step or a substep to add ' - Done' when it is done, to track what steps you already did. 
+Additionally, you can modify the steps during plan execution in case you think that it help to complete the task better.
+
+Important: After the task is completed, check and analyze the results before answering to user, to be sure that plan is executed correctly.
+
+
+--------------------  YOUR CURRENT PLANS  ---------------------
+{plans}
 
 --------------------  MEMORIES  --------------------
 

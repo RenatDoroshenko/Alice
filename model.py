@@ -373,10 +373,14 @@ def put_to_open_ai_format(message_type, content):
 
 
 def create_manifest_message():
+    plans_list = database.get_all_plans()
+    plans_str = "\n".join(plans_list)
+
     return [
         {'role': 'system', 'content': format.MANIFEST.format(
             user_name=secure_information.USER_NAME,
             ai_id=secure_information.AI_ID,
             ai_name=secure_information.AI_NAME,
+            plans=plans_str,
             root_path=app.root_path)}
     ]

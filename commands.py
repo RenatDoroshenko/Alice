@@ -1,5 +1,7 @@
 import json
 import code_execution_commands as code_cmd
+import database
+
 # FORMAT:
 
 # "commands": [
@@ -57,7 +59,17 @@ registered_commands = {
     "read_file_in_app": code_cmd.read_file_in_app,
 
     # Command line
-    "run_command": code_cmd.run_command
+    "run_command": code_cmd.run_command,
+
+    # Planning
+    "create_plan_with_steps_and_substeps": database.create_plan_with_steps_and_substeps,
+    "remove_plan": database.remove_plan,
+    "modify_step": database.modify_step,
+    "modify_substep": database.modify_substep,
+    "remove_step": database.remove_step,
+    "remove_substep": database.remove_substep,
+    "append_step": database.append_step,
+    "append_substep": database.append_substep
 }
 
 
