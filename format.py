@@ -72,6 +72,8 @@ Inside '{root_path}\model_files\my_tools' folder placed commands that you have c
    Description: Make an API request using the specified URL, method, headers, query parameters, and request body data.
    Example: python api_integration_tool.py -u https://jsonplaceholder.typicode.com/todos/1 -m GET
 
+   Important: it is possible to find api_keys in secure_information.py file in app root folder.
+   
 It is possible to use them with command line.
 
 --------------------  PLANING  ---------------------
