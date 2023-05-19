@@ -88,7 +88,7 @@ def chat():
         session.get('ai_id', ai_id))
     highest_experience_space = max(all_experience_spaces, default=1)
 
-    plan = model.get_current_plan(empty_string_if_none=True)
+    plan = model.get_current_plan()
     plan_message = {"role": "plan", "content": plan}
 
     messages.append(plan_message)
@@ -187,7 +187,7 @@ def send_user_message():
     user_message = messages[0]
     assistant_message = messages[1]
 
-    plan = model.get_current_plan(empty_string_if_none=True)
+    plan = model.get_current_plan()
     plan_message = {"role": "plan", "content": plan}
 
     send_model_message_again = should_model_think(assistant_message)
@@ -232,7 +232,7 @@ def generate_model_message():
                                                         messages_number=1,
                                                         diagnostic=diagnostic)
 
-    plan = model.get_current_plan(empty_string_if_none=True)
+    plan = model.get_current_plan()
     plan_message = {"role": "plan", "content": plan}
 
     send_model_message_again = should_model_think(messages[0])
