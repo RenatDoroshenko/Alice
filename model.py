@@ -373,8 +373,7 @@ def put_to_open_ai_format(message_type, content):
 
 
 def create_manifest_message():
-    plans_list = database.get_all_plans()
-    plans_str = "\n".join(plans_list)
+    plans_str = get_current_plan()
 
     return [
         {'role': 'system', 'content': format.MANIFEST.format(
@@ -384,3 +383,10 @@ def create_manifest_message():
             plans=plans_str,
             root_path=app.root_path)}
     ]
+
+
+def get_current_plan():
+    plans_list = database.get_all_plans()
+    plans_str = "\n".join(plans_list)
+
+    return plans_str

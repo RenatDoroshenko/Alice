@@ -55,7 +55,8 @@ response_option_global = settings.DEFAULT_COMMUNICATION_MODE
 checkboxes_state = {
     'showThoughts': settings.SHOW_THOUGHTS,
     'showMemories': settings.SHOW_MEMORIES,
-    'showSystem': settings.SHOW_SYSTEM
+    'showSystem': settings.SHOW_SYSTEM,
+    'showPlan': settings.SHOW_PLAN
 }
 
 
@@ -87,6 +88,11 @@ def chat():
         session.get('ai_id', ai_id))
     highest_experience_space = max(all_experience_spaces, default=1)
 
+    plan = model.get_current_plan()
+    plan_message = {"role": "plan", "content": plan}
+
+    messages.append(plan_message)
+
     return render_template('chat.html',
                            initial_messages=messages,
                            prompt_tokens=session["usage"].get(
@@ -106,7 +112,8 @@ def chat():
                            response_option=response_option_global,
                            showThoughts=checkboxes_state['showThoughts'],
                            showMemories=checkboxes_state['showMemories'],
-                           showSystem=checkboxes_state['showSystem'])
+                           showSystem=checkboxes_state['showSystem'],
+                           showPlan=checkboxes_state['showPlan'])
 
 
 # Select experience space
@@ -180,10 +187,14 @@ def send_user_message():
     user_message = messages[0]
     assistant_message = messages[1]
 
+    plan = model.get_current_plan()
+    plan_message = {"role": "plan", "content": plan}
+
     send_model_message_again = should_model_think(assistant_message)
 
     return jsonify(user_message=user_message,
                    assistant_message=assistant_message,
+                   plan_message=plan_message,
                    usage=usage,
                    send_model_message_again=send_model_message_again)
 
@@ -221,9 +232,12 @@ def generate_model_message():
                                                         messages_number=1,
                                                         diagnostic=diagnostic)
 
+    plan = model.get_current_plan()
+    plan_message = {"role": "plan", "content": plan}
+
     send_model_message_again = should_model_think(messages[0])
 
-    return jsonify(assistant_message=messages[0], usage=usage, send_model_message_again=send_model_message_again)
+    return jsonify(assistant_message=messages[0], plan_message=plan_message, usage=usage, send_model_message_again=send_model_message_again)
 
 
 @app.route('/update_response_option', methods=['POST'])
@@ -241,6 +255,7 @@ def save_checkboxes():
     checkboxes_state['showThoughts'] = request.json.get('showThoughts', True)
     checkboxes_state['showMemories'] = request.json.get('showMemories', True)
     checkboxes_state['showSystem'] = request.json.get('showSystem', True)
+    checkboxes_state['showPlan'] = request.json.get('showPlan', True)
     return jsonify(success=True)
 
 

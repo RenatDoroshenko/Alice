@@ -100,6 +100,10 @@
                         <label class="form-check-label" for="showSystem">System Message</label>
                     </div>
                     <div class="form-check form-switch d-flex align-items-center mt-2">
+                        <input class="form-check-input" type="checkbox" id="showPlan" {{ 'checked' if showPlan else '' }}>
+                        <label class="form-check-label" for="showPlan">Show Plan</label>
+                    </div>
+                    <div class="form-check form-switch d-flex align-items-center mt-2">
                         <input class="form-check-input" type="checkbox" id="debugFormat">
                         <label class="form-check-label" for="debugFormat">Debug Format</label>
                     </div>
@@ -241,6 +245,15 @@
             saveCheckboxesState();
           });   
 
+          document.getElementById("showPlan").addEventListener("change", function() {
+            const planMessages = document.querySelectorAll(".plan-message");
+            for (const message of planMessages) {
+              message.style.display = this.checked ? "block" : "none";
+            }
+
+            saveCheckboxesState();
+          });  
+
           document.getElementById("debugFormat").addEventListener("change", function() {
 
             // hide and show other messages
@@ -248,7 +261,7 @@
                 // here need to hide all messages except system-message.
                 const allMessages = document.querySelectorAll(".message");
                 for (const message of allMessages) {
-                    if (!message.classList.contains('system-message')) {
+                    if (!message.classList.contains('system-message') && !message.classList.contains('plan-message')) {
                         message.style.display = "none";
                     }
                 } 
@@ -291,6 +304,7 @@
             const showThoughts = document.getElementById("showThoughts").checked;
             const showMemories = document.getElementById("showMemories").checked;
             const showSystem = document.getElementById("showSystem").checked;
+            const showPlan = document.getElementById("showPlan").checked;
           
             fetch('/save_checkboxes', {
               method: 'POST',
@@ -300,7 +314,8 @@
               body: JSON.stringify({
                 showThoughts,
                 showMemories,
-                showSystem
+                showSystem,
+                showPlan
               })
             });
           }
@@ -324,7 +339,7 @@
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        updateMessages([response.user_message, response.assistant_message], true);
+                        updateMessages([response.user_message, response.assistant_message, response.plan_message], true);
                         
                         userMessageInput.value = ""; // Clear the input field
                         userMessageInput.style.height = "auto"; // Reset the height to its initial value
@@ -368,7 +383,7 @@
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        updateMessages([response.assistant_message], true);
+                        updateMessages([response.assistant_message, response.plan_message], true);
                         updateTokenInformation(response.usage); // Update the usage values 
 
                         processNextRequest(response.send_model_message_again); // Process the next request in the queue
@@ -393,12 +408,13 @@
             const showThoughts = document.getElementById("showThoughts").checked;
             const showMemories = document.getElementById("showMemories").checked;
             const showSystem = document.getElementById("showSystem").checked;
+            const showPlan = document.getElementById("showPlan").checked;
             const debugFormat = document.getElementById("debugFormat").checked;
         
             newMessages.forEach(function(message) {
                 content = message.content
                 const role = message.role.charAt(0).toUpperCase() + message.role.slice(1);
-                if(message.role.toLowerCase() !== "system"){
+                if(message.role.toLowerCase() !== "system" && message.role.toLowerCase() !== "plan"){
                     content = typeof message.content === "string" ? JSON.parse(message.content) : message.content;
                 }
         
@@ -446,6 +462,14 @@
                     const messageHtml = `
                     <div class='message system-message' style='display: ${showSystem ? 'block' : 'none'}'>
                         <pre><strong>${role}:</strong>${messageContent}</pre>
+                    </div>`;
+                    messagesDiv.innerHTML += messageHtml;
+
+                } else if (message.role.toLowerCase() === "plan") {
+                    messageContent = message.content;
+                    const messageHtml = `
+                    <div class='message plan-message' style='display: ${showPlan ? 'block' : 'none'}'>
+                        <pre>${messageContent}</pre>
                     </div>`;
                     messagesDiv.innerHTML += messageHtml;
 
