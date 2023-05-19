@@ -1,5 +1,6 @@
 import subprocess
 import os
+import html
 
 # The folder where files will be created
 folder_path = "model_files"
@@ -163,3 +164,22 @@ def read_file_in_app(file_path, start_line=0, num_lines=100):
         return f"The file '{file_path}' does not exist"
     except IsADirectoryError:
         return f"'{file_path}' is a directory, not a file"
+
+# Command line
+# Example: run_command('dir /path/to/directory')
+
+
+def run_command(command):
+    print(f'COMMANDS: run_command - command_args={command}')
+    try:
+        result = subprocess.run(command, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, universal_newlines=True, shell=True)
+        return {
+            'output': [html.escape(line) for line in result.stdout.splitlines()],
+            'error': [html.escape(line) for line in result.stderr.splitlines()],
+            'returncode': result.returncode
+        }
+    except Exception as e:
+        return {
+            'error': str(e)
+        }

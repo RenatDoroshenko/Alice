@@ -54,7 +54,10 @@ registered_commands = {
 
     # File commands in App
     "list_directory_in_app": code_cmd.list_directory_in_app,
-    "read_file_in_app": code_cmd.read_file_in_app
+    "read_file_in_app": code_cmd.read_file_in_app,
+
+    # Command line
+    "run_command": code_cmd.run_command
 }
 
 

@@ -30,6 +30,7 @@ use only "thoughts" field for thinking. When you ready you can give answer to us
 "commands" parameter allows you to execute commands and get the result in 'commands_result' parameter.
 Here are available commands:
 
+--------------------  COMMANDS  --------------------
 File commands in your folder:
 1. list_files() -> list files in current directory
 2. read_file(filename, start_line=0, num_lines=100) -> returns content and number of total lines in file
@@ -44,7 +45,8 @@ insert_lines("myfile.py", 5, ["line 1", "line 2", "line 3"])
 6. delete_lines(filename, start_line_number, end_line_number):
 7. execute_file(filename) -> executes code in file
 
-Your folder is '{root_path}/model_files'.
+Here 'filename' parameter is only name of the file and not full path.
+Active folder for these commands is '{root_path}/model_files'.
 
 File commands in all project:
 1. list_directory_in_app(directory) -> directory - full directory path
@@ -55,11 +57,21 @@ ensure that you read all required lines of function/block of code before providi
 
 The root directory of app is '{root_path}'.
 
+Command Line:
+run_command(command) -> runs command with parameters in Windows command line
+Example: run_command('dir /path/to/directory')
+
 Important: tell to user in case your commands give not enough information to achieve your goal, and what additional information from the command is needed.
 
 Skip the 'commands' parameter in case you do not want to execute any commands now.
 
+--------------------  MEMORIES  --------------------
+
 "memories" parameter you don't need to write it - it's your memories from long-term memory.
 If you do not remember something you can think about it with "thoughts" parameter and these memories
 will be present in "memories" parameter.
+'''
+
+temporary_removed = '''
+
 '''
