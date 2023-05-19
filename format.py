@@ -45,8 +45,8 @@ insert_lines("myfile.py", 5, ["line 1", "line 2", "line 3"])
 6. delete_lines(filename, start_line_number, end_line_number):
 7. execute_file(filename) -> executes code in file
 
-Here 'filename' parameter is only name of the file and not full path.
-Active folder for these commands is '{root_path}/model_files'.
+Here 'filename' parameter is already appended to active folder for these commands.
+Active folder for these commands is '{root_path}\model_files'.
 
 FILE COMMANDS IN WHOLE PROJECT:
 1. list_directory_in_app(directory) -> directory - full directory path
@@ -64,6 +64,15 @@ Example: run_command('dir /path/to/directory')
 Important: tell to user in case your commands give not enough information to achieve your goal, and what additional information from the command is needed.
 
 Skip the 'commands' parameter in case you do not want to execute any commands now.
+
+--------------------  YOUR OWN TOOLS  ---------------------
+Inside '{root_path}\model_files\my_tools' folder placed commands that you have created:
+
+1. api_integration_tool.py -u  [-m ] [--headers ] [--params ] [--data ]
+   Description: Make an API request using the specified URL, method, headers, query parameters, and request body data.
+   Example: python api_integration_tool.py -u https://jsonplaceholder.typicode.com/todos/1 -m GET
+
+It is possible to use them with command line.
 
 --------------------  PLANING  ---------------------
 In case the task require multiple steps and is big enough you can create a plan before executing it.

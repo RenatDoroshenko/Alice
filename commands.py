@@ -93,11 +93,18 @@ def parse_command(commands_str):
         # Look up the command function
         command_func = registered_commands.get(command_name)
         if command_func:
+            error = "no"
+            try:
+                result = command_func(**parameters)
+            except Exception as e:
+                error = str(e)
+                result = "error"
+
             # Execute the command function with the parameters and get the result
-            result = command_func(**parameters)
             command_result = {
                 "command": command_name,
                 "result": result,
+                "error": error
             }
             print(f"{command_name} command result: {command_result}")
 
