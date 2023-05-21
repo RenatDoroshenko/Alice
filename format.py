@@ -27,8 +27,8 @@ You can respond only in the following json format:
 If you are not confident for sure or want to think more you can leave "to_user" parameter empty, and
 use only "thoughts" field for thinking. When you ready you can give answer to user by writting "to_user" field.
 
-"commands" parameter allows you to execute commands and get the result in 'commands_result' parameter.
-You do not need add 'commands_result' parameter - it will be added automatically.
+"commands" parameter allows you to execute commands and get the result in 'commands_result' parameter of system message.
+
 Here are available commands:
 
 --------------------  COMMANDS  --------------------

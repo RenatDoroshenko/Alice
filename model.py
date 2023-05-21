@@ -67,7 +67,8 @@ def user_say_to_model(user_name,
     updated_messages, _, _ = get_context_messages_with_manifest(ai_id=ai_id,
                                                                 experience_space=experience_space,
                                                                 memories_only_for_context=True,
-                                                                diagnostic=diagnostic)
+                                                                diagnostic=diagnostic,
+                                                                commands_as_system_message=True)
 
     response, response_message = generate_response(
         messages=updated_messages,
@@ -300,7 +301,9 @@ def get_context_messages_from_db(ai_id,
                                  memories_for_all_messages=False,
                                  messages_number=settings.MESSAGES_LIMIT_FROM_DB,
                                  messages_with_memory_showed_to_ai=settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI,
-                                 diagnostic=False):
+                                 diagnostic=False,
+                                 commands_as_system_message=True,
+                                 to_user=False):
     entries = database.get_latest_messages(
         ai_id, experience_space, messages_number, diagnostic)
 
@@ -327,12 +330,22 @@ def get_context_messages_from_db(ai_id,
             content = json_converter.user_message_to_json(
                 entry, with_memory, diagnostic)
         elif entry.message_type == "assistant":
-            content = json_converter.ai_message_to_json(
-                entry, with_memory, diagnostic)
+            content, commands_result = json_converter.ai_message_to_json(
+                entry, with_memory, diagnostic, commands_as_system_message)
         else:
             continue
 
         messages.append(put_to_open_ai_format(entry.message_type, content))
+
+        if entry.message_type == "assistant" and commands_result is not None and commands_result != '':
+
+            if (to_user):
+                messages.append(put_to_open_ai_format(
+                    "commands_result", commands_result))
+            else:
+                commands_result_content = {"commands_result": commands_result}
+                messages.append(put_to_open_ai_format(
+                    "system", commands_result_content))
 
     if not ai_name:
         ai_name = secure_information.AI_NAME
@@ -345,7 +358,9 @@ def get_context_messages_with_manifest(ai_id,
                                        memories_for_all_messages=False,
                                        memories_only_for_context=False,
                                        messages_with_memory_showed_to_ai=settings.MESSAGES_WITH_MEMORY_SHOWED_TO_AI,
-                                       diagnostic=False):
+                                       diagnostic=False,
+                                       commands_as_system_message=True,
+                                       to_user=False):
 
     messages = create_manifest_message()
     messages_from_db, ai_id, ai_name = get_context_messages_from_db(
@@ -353,7 +368,9 @@ def get_context_messages_with_manifest(ai_id,
         experience_space=experience_space,
         memories_for_all_messages=memories_for_all_messages,
         messages_with_memory_showed_to_ai=messages_with_memory_showed_to_ai,
-        diagnostic=diagnostic)
+        diagnostic=diagnostic,
+        commands_as_system_message=commands_as_system_message,
+        to_user=to_user)
 
     messages.extend(messages_from_db)
 
@@ -393,3 +410,7 @@ def get_current_plan():
         return plans_str
 
     return plans_list
+
+
+def move_commands_to_system_message():
+    pass

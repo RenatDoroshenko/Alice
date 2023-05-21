@@ -17,7 +17,8 @@ def convert_db_memories_messages_to_json(entries):
             content = user_message_to_json(entry, with_memory=False)
 
         elif entry.message_type == "assistant":
-            content = ai_message_to_json(entry, with_memory=False)
+            content, _ = ai_message_to_json(
+                entry, with_memory=False)
         else:
             continue
 
@@ -50,7 +51,7 @@ def user_message_to_json(entry, with_memory=True, diagnostic=False):
     return data
 
 
-def ai_message_to_json(entry, with_memory=True, diagnostic=False):
+def ai_message_to_json(entry, with_memory=True, diagnostic=False, commands_as_system_message=False):
     data = {
         'message_id': entry.id,
         'ai_id': entry.ai_id,
@@ -68,7 +69,10 @@ def ai_message_to_json(entry, with_memory=True, diagnostic=False):
         data['commands'] = json.loads(entry.commands)
 
     if entry.commands_result is not None and entry.commands_result != 'null' and settings.COMMANDS_ENABLED:
-        data['commands_result'] = json.loads(entry.commands_result)
+        if commands_as_system_message:
+            commands_result_message = json.loads(entry.commands_result)
+        else:
+            data['commands_result'] = json.loads(entry.commands_result)
 
     if with_memory:
         if entry.memories is not None and entry.memories != 'null':
@@ -80,7 +84,10 @@ def ai_message_to_json(entry, with_memory=True, diagnostic=False):
                 print('formatted memories: ', formatted_memories)
                 data['memories'] = formatted_memories
 
-    return data
+    if commands_as_system_message:
+        return data, commands_result_message
+
+    return data, None
 
 
 def convert_db_memories_messages_to_json_from_dict(entries):
@@ -296,6 +303,8 @@ def parse_ai_message(json_data):
 
     # json_data = remove_invalid_control_characters(json_data)
     data = json.loads(json_data)
+    if isinstance(data, str):
+        data = json.loads(json_data)
     ai_id = int(data.get('ai_id')) if data.get('ai_id') is not None else None
     ai_name = data.get('ai_name')
     thoughts = data.get('thoughts')
@@ -322,10 +331,11 @@ def parse_environment_message(json_data):
 def convert_content_to_string(messages):
     messages_with_format = messages.copy()
     for i, message in enumerate(messages_with_format):
-        if i == 0 and message['role'] == 'system':
+        # if i == 0 and message['role'] == 'system':
+        if i == 0:
             continue
 
         content = message['content']
-        if isinstance(content, dict):
+        if not isinstance(content, str):
             message['content'] = json.dumps(content)
     return messages_with_format

@@ -227,7 +227,8 @@ body {
   background-image: var(--to-user-message-bg);
 }
 
-.memories-message {
+.memories-message,
+.commands-result-message {
   /* background-color: rgb(0 135 28 / 10%); */
   background-image: var(--memories-message-bg);
 }

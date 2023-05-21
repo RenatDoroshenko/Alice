@@ -79,7 +79,8 @@ def chat():
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
                                                                         memories_only_for_context=True,
-                                                                        diagnostic=diagnostic)
+                                                                        diagnostic=diagnostic,
+                                                                        to_user=True)
 
     if 'usage' not in session:
         set_default_usage(0, 0, 0)
@@ -132,7 +133,8 @@ def change_experience_space():
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
                                                                         memories_for_all_messages=True,
-                                                                        diagnostic=diagnostic)
+                                                                        diagnostic=diagnostic,
+                                                                        to_user=True)
 
     usage = session['usage']
     session['experience_space'] = selected_experience_space
@@ -183,7 +185,8 @@ def send_user_message():
     messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
                                                         experience_space=selected_experience_space,
                                                         messages_number=2,
-                                                        diagnostic=diagnostic)
+                                                        diagnostic=diagnostic,
+                                                        to_user=True)
     user_message = messages[0]
     assistant_message = messages[1]
 
@@ -210,7 +213,8 @@ def generate_model_message():
     messages, ai_id, ai_name = model.get_context_messages_with_manifest(ai_id=ai_id,
                                                                         experience_space=selected_experience_space,
                                                                         memories_only_for_context=True,
-                                                                        diagnostic=diagnostic)
+                                                                        diagnostic=diagnostic,
+                                                                        commands_as_system_message=True)
 
     # Generate the model's response
     response, response_message = model.model_say_to_model(messages=messages,
@@ -230,7 +234,8 @@ def generate_model_message():
     messages, _, _ = model.get_context_messages_from_db(ai_id=ai_id,
                                                         experience_space=selected_experience_space,
                                                         messages_number=1,
-                                                        diagnostic=diagnostic)
+                                                        diagnostic=diagnostic,
+                                                        to_user=True)
 
     plan = model.get_current_plan()
     plan_message = {"role": "plan", "content": plan}

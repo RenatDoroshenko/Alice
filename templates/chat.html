@@ -261,7 +261,7 @@
                 // here need to hide all messages except system-message.
                 const allMessages = document.querySelectorAll(".message");
                 for (const message of allMessages) {
-                    if (!message.classList.contains('system-message') && !message.classList.contains('plan-message')) {
+                    if (!message.classList.contains('system-message') && !message.classList.contains('plan-message') && !message.classList.contains('commands-result-message')) {
                         message.style.display = "none";
                     }
                 } 
@@ -470,6 +470,15 @@
                     const messageHtml = `
                     <div class='message plan-message' style='display: ${showPlan ? 'block' : 'none'}'>
                         <pre>${messageContent}</pre>
+                    </div>`;
+                    messagesDiv.innerHTML += messageHtml;
+
+                } else if (message.role.toLowerCase() === "commands_result") {
+                    messageContent = message.content;
+                    jsonContent = JSON.parse(messageContent);                    
+                    const messageHtml = `
+                    <div class='message commands-result-message' style='display: ${showPlan ? 'block' : 'none'}'>\                        
+                        <pre><strong>Commands Result:</strong><br/><pre>${JSON.stringify(jsonContent, null, 4)}</pre>
                     </div>`;
                     messagesDiv.innerHTML += messageHtml;
 
