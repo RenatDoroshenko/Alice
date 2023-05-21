@@ -47,6 +47,7 @@ insert_lines("myfile.py", 5, ["line 1", "line 2", "line 3"])
 7. execute_file(filename) -> executes code in file
 
 Here 'filename' parameter is already appended to active folder for these commands.
+Important: read the file after changing it to ensure that the changes were applied correctly.
 Active folder for these commands is '{root_path}\model_files'.
 
 FILE COMMANDS IN WHOLE PROJECT:
@@ -74,6 +75,13 @@ Inside '{root_path}\model_files\my_tools' folder placed commands that you have c
    Example: python api_integration_tool.py -u https://jsonplaceholder.typicode.com/todos/1 -m GET
 
    Important: it is possible to find api_keys in secure_information.py file in app root folder.
+
+   Useful resources that can be accessed with this tool:
+   a. Hugging Face:
+   https://huggingface.co/api/models
+   query string params = ("search", "author", "filter", "sort", "direction", "limit", "full", "config")
+   Example: https://huggingface.co/api/models?limit=5
+   Important: always add 'limit' paramater to avoid gettnig too large response from this endpoint.
    
 It is possible to use them with command line.
 
@@ -85,6 +93,7 @@ COMMANDS TO PLAN:
 1. create_plan_with_steps_and_substeps(plan_name, plan_steps_substeps)
 Example: create_plan_with_steps_and_substeps('Improve code', ["Step 1", ["Step 2", "Substep 2.1", "Substep 2.2"], "Step 3", ["Step 4", "Substep 4.1"]])
 You do not need to specify numbers, they will be added automatically.
+Important: before using planning commands that described below you need to have at least 1 plan created.
 2. remove_plan(plan_id)
 3. modify_step(plan_id, step_position, new_name)
 4. modify_substep(plan_id, step_position, substep_position, new_name)

@@ -190,6 +190,10 @@ def send_user_message():
     user_message = messages[0]
     assistant_message = messages[1]
 
+    command_message = {"role": "commands_result", "content": ''}
+    if len(messages) > 2:
+        command_message = messages[2]
+
     plan = model.get_current_plan()
     plan_message = {"role": "plan", "content": plan}
 
@@ -197,6 +201,7 @@ def send_user_message():
 
     return jsonify(user_message=user_message,
                    assistant_message=assistant_message,
+                   command_message=command_message,
                    plan_message=plan_message,
                    usage=usage,
                    send_model_message_again=send_model_message_again)
@@ -240,9 +245,17 @@ def generate_model_message():
     plan = model.get_current_plan()
     plan_message = {"role": "plan", "content": plan}
 
+    command_message = {"role": "commands_result", "content": ''}
+    if len(messages) > 1:
+        command_message = messages[1]
+
     send_model_message_again = should_model_think(messages[0])
 
-    return jsonify(assistant_message=messages[0], plan_message=plan_message, usage=usage, send_model_message_again=send_model_message_again)
+    return jsonify(assistant_message=messages[0],
+                   command_message=command_message,
+                   plan_message=plan_message,
+                   usage=usage,
+                   send_model_message_again=send_model_message_again)
 
 
 @app.route('/update_response_option', methods=['POST'])

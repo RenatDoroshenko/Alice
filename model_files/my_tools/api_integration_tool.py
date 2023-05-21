@@ -17,9 +17,13 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    headers = dict(pair.split('=') for pair in args.headers) if args.headers else None
-    params = dict(pair.split('=') for pair in args.params) if args.params else None
-    data = dict(pair.split('=') for pair in args.data) if args.data else None
+    headers = {key.strip(): value.strip() for key, value in (pair.split('=', 1) for pair in args.headers if '=' in pair)} if args.headers else None
+    print('headers added: ', headers)
+    params = {key.strip(): value.strip() for key, value in (pair.split('=', 1) for pair in args.params if '=' in pair)} if args.params else None
+    print('params added: ', params)
+    data = {key.strip(): value.strip() for key, value in (pair.split('=', 1) for pair in args.data if '=' in pair)} if args.data else None
+    print('data added: ', data)
 
     response = make_api_request(args.url, args.method, headers, params, data)
     print(response)
+    

@@ -339,7 +339,7 @@
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        updateMessages([response.user_message, response.assistant_message, response.plan_message], true);
+                        updateMessages([response.user_message, response.assistant_message, response.command_message, response.plan_message], true);
                         
                         userMessageInput.value = ""; // Clear the input field
                         userMessageInput.style.height = "auto"; // Reset the height to its initial value
@@ -383,7 +383,7 @@
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        updateMessages([response.assistant_message, response.plan_message], true);
+                        updateMessages([response.assistant_message, response.command_message, response.plan_message], true);
                         updateTokenInformation(response.usage); // Update the usage values 
 
                         processNextRequest(response.send_model_message_again); // Process the next request in the queue
@@ -414,7 +414,7 @@
             newMessages.forEach(function(message) {
                 content = message.content
                 const role = message.role.charAt(0).toUpperCase() + message.role.slice(1);
-                if(message.role.toLowerCase() !== "system" && message.role.toLowerCase() !== "plan"){
+                if(message.role.toLowerCase() !== "system" && message.role.toLowerCase() !== "plan" && message.role.toLowerCase() !== "commands_result"){
                     content = typeof message.content === "string" ? JSON.parse(message.content) : message.content;
                 }
         
@@ -475,12 +475,16 @@
 
                 } else if (message.role.toLowerCase() === "commands_result") {
                     messageContent = message.content;
-                    jsonContent = JSON.parse(messageContent);                    
-                    const messageHtml = `
-                    <div class='message commands-result-message' style='display: ${showPlan ? 'block' : 'none'}'>\                        
-                        <pre><strong>Commands Result:</strong><br/><pre>${JSON.stringify(jsonContent, null, 4)}</pre>
-                    </div>`;
-                    messagesDiv.innerHTML += messageHtml;
+                    if(messageContent) {
+                        if(typeof messageContent === 'string'){
+                            messageContent = JSON.parse(messageContent);     
+                        }               
+                        const messageHtml = `
+                        <div class='message commands-result-message' style='display: ${showPlan ? 'block' : 'none'}'>\                        
+                            <pre><strong>Commands Result:</strong><br/><pre>${JSON.stringify(messageContent, null, 4)}</pre>
+                        </div>`;
+                        messagesDiv.innerHTML += messageHtml;
+                    }
 
                 } else if (message.role.toLowerCase() === "assistant") {
                     // old logic

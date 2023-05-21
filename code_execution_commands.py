@@ -28,7 +28,8 @@ def read_file(filename, start_line=0, num_lines=100):
             if i < start_line:
                 continue
             if len(lines) < num_lines:
-                lines.append(line)
+                # Add line number to line content
+                lines.append(f"{i+1}: {line}")
             else:
                 break
 
@@ -147,7 +148,8 @@ def read_file_in_app(file_path, start_line=0, num_lines=100):
                 if i < start_line:
                     continue
                 if len(lines) < num_lines:
-                    lines.append(line)
+                    # Add line number to line content
+                    lines.append(f"{i+1}: {line}")
                 else:
                     break
 
