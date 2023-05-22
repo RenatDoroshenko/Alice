@@ -83,24 +83,11 @@ def generate_response(messages,
                       experience_space,
                       memory_index,
                       metadata,
-                      context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT,
                       diagnostic=False):
 
-    # Calculate 2nd time to ensure? - first one in get_context_messages_with_manifest()
-    remaining_tokens, messages_with_format = remove_messages_longer_than_context(messages=messages,
-                                                                                 context_tokens_limit=context_tokens_limit)
-
-    openai.api_key = secure_information.OPEN_AI_API_KEY
-
     # Generate response using OpenAI API
-    response = openai.ChatCompletion.create(
-        model=settings.MODEL_ID,
-        messages=messages_with_format,
-        max_tokens=remaining_tokens,
-        n=1,
-        stop=None,
-        temperature=0.7,
-    )
+    response = get_model_response(messages=messages,
+                                  use_gpt_4=True)
 
     # Important: here problem when result not in json
     ai_id, ai_name, thoughts, to_user, commands = json_converter.parse_ai_message(
@@ -144,6 +131,47 @@ def generate_response(messages,
     return response, response_message
 
 
+def get_model_response(messages, use_gpt_4=True):
+    '''
+    Passes messages to model to get it's response.
+    '''
+
+    model_id, context_tokens_limit, max_tokens = get_model_parameters(
+        use_gpt_4)
+
+    # Calculate 2nd time to ensure? - first one in get_context_messages_with_manifest()
+    remaining_tokens, messages_with_format = remove_messages_longer_than_context(messages=messages,
+                                                                                 context_tokens_limit=context_tokens_limit,
+                                                                                 max_tokens=max_tokens)
+
+    openai.api_key = secure_information.OPEN_AI_API_KEY
+
+    # Generate response using OpenAI API
+    response = openai.ChatCompletion.create(
+        model=model_id,
+        messages=messages_with_format,
+        max_tokens=remaining_tokens,
+        n=1,
+        stop=None,
+        temperature=0.7,
+    )
+
+    return response
+
+
+def get_model_parameters(use_gpt_4=settings.DEFAULT_MODEL_GPT_4):
+    if use_gpt_4:
+        model_id = settings.GPT_4_MODEL_ID
+        context_tokens_limit = settings.GPT_4_CONTEXT_TOKENS_LIMIT
+        max_tokens = settings.GPT_4_MAX_TOKENS
+    else:
+        model_id = settings.GPT_3_5_MODEL_ID
+        context_tokens_limit = settings.GPT_3_5_CONTEXT_TOKENS_LIMIT
+        max_tokens = settings.GPT_3_5_MAX_TOKENS
+
+    return model_id, context_tokens_limit, max_tokens
+
+
 def save_user_message_with_related_memories_to_db(messages,
                                                   memory_index,
                                                   metadata,
@@ -177,7 +205,7 @@ def save_user_message_with_related_memories_to_db(messages,
 # Leaves messages that fall into model context
 
 
-def remove_messages_longer_than_context(messages, context_tokens_limit):
+def remove_messages_longer_than_context(messages, context_tokens_limit, max_tokens):
 
     messages_with_format = json_converter.convert_content_to_string(messages)
 
@@ -190,7 +218,7 @@ def remove_messages_longer_than_context(messages, context_tokens_limit):
     print("messages number in AI context: ", len(messages_with_format))
 
     # Calculate the remaining tokens for the response
-    remaining_tokens = settings.MAX_TOKENS - \
+    remaining_tokens = max_tokens - \
         num_tokens_from_messages(messages_with_format)
 
     return remaining_tokens, messages_with_format
@@ -375,15 +403,26 @@ def get_context_messages_with_manifest(ai_id,
     messages.extend(messages_from_db)
 
     if memories_only_for_context:
+        model_id, context_tokens_limit, max_tokens = get_model_parameters(
+            settings.DEFAULT_MODEL_GPT_4)
         remaining_tokens, messages_with_format = remove_messages_longer_than_context(messages=messages,
-                                                                                     context_tokens_limit=settings.CONTEXT_TOKENS_LIMIT)
+                                                                                     context_tokens_limit=context_tokens_limit,
+                                                                                     max_tokens=max_tokens)
 
     return messages, ai_id, ai_name
 
 
 # Create OpenAI format message
-def put_to_open_ai_format(message_type, content):
-    data = {"role": message_type, "content": content}
+def put_to_open_ai_format(role, content):
+    '''
+    Puts message to OpenAI message format.
+
+    Parameters: 
+    - role: 'system', 'assistant' or 'user'
+    - content: string
+    '''
+
+    data = {"role": role, "content": content}
     return data
 
 # Manifest message
