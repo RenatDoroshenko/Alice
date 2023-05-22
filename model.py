@@ -134,6 +134,10 @@ def generate_response(messages,
 def get_model_response(messages, use_gpt_4=True):
     '''
     Passes messages to model to get it's response.
+
+    Parameters:
+    - messages: messages in OpenAI format
+    - use_gpt_4: use gpt-4 model if 'True', otherwise gpt-3.5
     '''
 
     model_id, context_tokens_limit, max_tokens = get_model_parameters(
