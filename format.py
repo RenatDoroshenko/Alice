@@ -62,12 +62,27 @@ The root directory of app is '{root_path}'.
 API REQUESTS:
 1. send_api_request(url, method='GET', headers=None, params=None, data=None) -> sends api request and returns result in json
     Useful resources that can be accessed with this tool:
-        a. Hugging Face:
-        https://huggingface.co/api/models
-        query string params: ("search", "author", "filter", "sort", "direction", "limit", "full", "config")
+        a. Hugging Face - https://huggingface.co:
+
+        /api/models
+        query string params: ("search", "author", "filter", "sort", "direction" (-1 for descending sort), "limit", "full", "config")
         Example: https://huggingface.co/api/models?limit=5
         Important: always add 'limit' paramater to avoid gettnig too large response from this endpoint.
-        
+
+        /api/models/{{repo_id}} 
+        /api/models/{{repo_id}}/revision/{{revision}}
+        Get all information for a specific model.
+        headers = ("authorization" : "Bearer $token")
+
+        /api/datasets
+        query string params: ("search", "author", "filter", "sort", "direction" (-1 for descending sort), "limit", "full", "config")
+
+        /api/datasets/{{repo_id}}
+        /api/datasets/{{repo_id}}/revision/{{revision}} GET
+        Get all information for a specific dataset.
+        headers = ("authorization" : "Bearer $token", "full" (fetch most dataset data, such as all tags, the files, etc.))
+
+
         b. others.
 
 Important: it is possible to find api_keys in secure_information.py file in app root folder.
