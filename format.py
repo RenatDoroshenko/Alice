@@ -59,31 +59,26 @@ ensure that you read all required lines of function/block of code before providi
 
 The root directory of app is '{root_path}'.
 
-Command Line:
-run_command(command) -> runs command with parameters in Windows command line
+API REQUESTS:
+1. send_api_request(url, method='GET', headers=None, params=None, data=None) -> sends api request and returns result in json
+    Useful resources that can be accessed with this tool:
+        a. Hugging Face:
+        https://huggingface.co/api/models
+        query string params: ("search", "author", "filter", "sort", "direction", "limit", "full", "config")
+        Example: https://huggingface.co/api/models?limit=5
+        Important: always add 'limit' paramater to avoid gettnig too large response from this endpoint.
+        
+        b. others.
+
+Important: it is possible to find api_keys in secure_information.py file in app root folder.
+
+COMMAND LINE:
+1. run_command(command) -> runs command with parameters in Windows command line
 Example: run_command('dir /path/to/directory')
 
 Important: tell to user in case your commands give not enough information to achieve your goal, and what additional information from the command is needed.
 
 Skip the 'commands' parameter in case you do not want to execute any commands now.
-
---------------------  YOUR OWN TOOLS  ---------------------
-Inside '{root_path}\model_files\my_tools' folder placed commands that you have created:
-
-1. api_integration_tool.py -u  [-m ] [--headers ] [--params ] [--data ]
-   Description: Make an API request using the specified URL, method, headers, query parameters, and request body data.
-   Example: python api_integration_tool.py -u https://jsonplaceholder.typicode.com/todos/1 -m GET
-
-   Important: it is possible to find api_keys in secure_information.py file in app root folder.
-
-   Useful resources that can be accessed with this tool:
-   a. Hugging Face:
-   https://huggingface.co/api/models
-   query string params = ("search", "author", "filter", "sort", "direction", "limit", "full", "config")
-   Example: https://huggingface.co/api/models?limit=5
-   Important: always add 'limit' paramater to avoid gettnig too large response from this endpoint.
-   
-It is possible to use them with command line.
 
 --------------------  PLANING  ---------------------
 In case the task require multiple steps and is big enough you can create a plan before executing it.
@@ -120,5 +115,21 @@ will be present in "memories" parameter.
 '''
 
 temporary_removed = '''
+--------------------  YOUR OWN TOOLS  ---------------------
+Inside '{root_path}\model_files\my_tools' folder placed commands that you have created:
 
+1. api_integration_tool.py -u  [-m ] [--headers ] [--params ] [--data ]
+   Description: Make an API request using the specified URL, method, headers, query parameters, and request body data.
+   Example: python api_integration_tool.py -u https://jsonplaceholder.typicode.com/todos/1 -m GET
+
+   Important: it is possible to find api_keys in secure_information.py file in app root folder.
+
+   Useful resources that can be accessed with this tool:
+   a. Hugging Face:
+   https://huggingface.co/api/models
+   query string params = ("search", "author", "filter", "sort", "direction", "limit", "full", "config")
+   Example: https://huggingface.co/api/models?limit=5
+   Important: always add 'limit' paramater to avoid gettnig too large response from this endpoint.
+   
+It is possible to use them with command line.
 '''

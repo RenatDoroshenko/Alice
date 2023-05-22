@@ -1,5 +1,6 @@
 import json
 import code_execution_commands as code_cmd
+import api_commands as api_cmd
 import database
 
 # FORMAT:
@@ -69,7 +70,10 @@ registered_commands = {
     "remove_step": database.remove_step,
     "remove_substep": database.remove_substep,
     "append_step": database.append_step,
-    "append_substep": database.append_substep
+    "append_substep": database.append_substep,
+
+    # API Commands
+    "send_api_request": api_cmd.send_api_request
 }
 
 
