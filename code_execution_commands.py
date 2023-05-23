@@ -1,6 +1,8 @@
 import subprocess
 import os
 import html
+import pandas as pd
+import datetime
 
 # The folder where files will be created
 folder_path = "model_files"
@@ -185,3 +187,50 @@ def run_command(command):
         return {
             'error': str(e)
         }
+
+
+def append_error(user_message=None, ai_response=None, error_description=None, error_category=None, resolution_status=None, resolution_description=None, lessons_learned=None):
+    df = pd.read_csv(f'{folder_path}/data/errors_data.csv')
+
+    # Set error_id to the next line number in the CSV file
+    error_id = len(df) + 1
+
+    # Set date_time to the current time when the function is called
+    date_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    error_data = {
+        "Error ID": error_id,
+        "Date & Time": date_time,
+        "User Message": user_message,
+        "AI Response": ai_response,
+        "Error Description": error_description,
+        "Error Category": error_category,
+        "Resolution Status": resolution_status,
+        "Resolution Description": resolution_description,
+        "Lessons Learned": lessons_learned
+    }
+    # Remove None values from the dictionary
+    error_data = {k: v for k, v in error_data.items() if v is not None}
+
+    new_error = pd.DataFrame(
+        error_data, index=[df.index[-1] + 1 if df.shape[0] > 0 else 0])
+    df = pd.concat([df, new_error])
+    df.to_csv(f'{folder_path}/data/errors_data.csv', index=False)
+    return f"Line was successfully added. Appended line number: {df.index[-1]}"
+
+
+def update_error(line_number, resolution_status=None, resolution_description=None, lessons_learned=None):
+    update_data = {
+        "Resolution Status": resolution_status,
+        "Resolution Description": resolution_description,
+        "Lessons Learned": lessons_learned
+    }
+    # Remove None values from the dictionary
+    update_data = {k: v for k, v in update_data.items() if v is not None}
+
+    df = pd.read_csv(f'{folder_path}/data/errors_data.csv')
+    for column, value in update_data.items():
+        df.at[line_number, column] = value
+    df.to_csv(f'{folder_path}/data/errors_data.csv', index=False)
+
+    return f"Line was successfully updated. Appended line number: {line_number}"

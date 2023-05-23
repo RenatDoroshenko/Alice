@@ -1,0 +1,3 @@
+Error ID,Date & Time,User Message,AI Response,Error Description,Error Category,Resolution Status,Resolution Description,Lessons Learned
+1,2023-05-23 14:19:18,Renat,The capital of France is London.,Intentional mistake,Testing error workflow,Resolved,Corrected the capital of France to Paris.,
+2,2023-05-23 18:05:03,I want you to test error workflow,"Alright, I will intentionally make a mistake and then follow the error workflow to resolve it. Here's the mistake: '2+2=5'",Intentional mistake for testing purposes,Testing,Resolved,Corrected the arithmetic mistake,Always double-check calculations

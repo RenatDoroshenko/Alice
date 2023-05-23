@@ -73,7 +73,11 @@ registered_commands = {
     "append_substep": database.append_substep,
 
     # API Commands
-    "send_api_request": api_cmd.send_api_request
+    "send_api_request": api_cmd.send_api_request,
+
+    # Error Workflow
+    "append_error": code_cmd.append_error,
+    "update_error": code_cmd.update_error
 }
 
 
