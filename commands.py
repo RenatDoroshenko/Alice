@@ -48,6 +48,7 @@ registered_commands = {
 
     # File commands
     "read_file": code_cmd.read_file,
+    "read_command_description_file": code_cmd.read_command_description_file,
     "write_file": code_cmd.write_file,
     "delete_file": code_cmd.delete_file,
     "insert_lines": code_cmd.insert_lines,

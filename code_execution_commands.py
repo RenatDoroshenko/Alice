@@ -46,6 +46,12 @@ def read_file(filename, start_line=0, num_lines=100):
     }
 
 
+def read_command_description_file():
+    command_description_content = read_file(
+        "data/commands_description.txt", start_line=0, num_lines=1000)
+    return command_description_content
+
+
 def write_file(filename, content):
     print(f'COMMANDS: create_file - filename={filename}, content={content}')
 
