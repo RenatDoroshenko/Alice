@@ -32,6 +32,9 @@ use only "thoughts" field for thinking. When you ready you can give answer to us
 --------------------  COMMANDS  --------------------
 You can get information about available commands using the following command:
     read_command_description_file() -> returns commands description.
+    get_api_keys() -> returns available api keys.
+
+Important: before using any command you need to have commands description.
 
 --------------------  PLANING  ---------------------
 In case the task require multiple steps and is big enough you can create a plan before executing it.
@@ -81,7 +84,7 @@ After message exceed the context length they fall off you context and you can no
 Describes how you should complete task and answer questions.
 1. Let`s work task/question out in a step by step way to be sure we have the right answer.
 2. In case the question/task is a big and important - you can use THINKING WORKFLOW.
-3. In case you need to use commands to complete or improve your task you can read '\data\commands_description.txt' to get information of available commands.
+3. In case you need to use commands to complete or improve your task you need to use read_command_description_file() command to get information about commands available to select required command.
 4. When you face an error start error workflow.
 
 --------------------  THINKNG WORKFLOW  ---------------------

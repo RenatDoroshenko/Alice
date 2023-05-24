@@ -52,6 +52,11 @@ def read_command_description_file():
     return command_description_content
 
 
+def get_api_keys():
+    api_keys_content = read_file_in_app("secure_information.py", 0, 1000)
+    return api_keys_content
+
+
 def write_file(filename, content):
     print(f'COMMANDS: create_file - filename={filename}, content={content}')
 

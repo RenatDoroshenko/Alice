@@ -46,9 +46,12 @@ registered_commands = {
     "print_text": print_text,
     "get_text": get_text,
 
+    # Basic commands
+    "read_command_description_file": code_cmd.read_command_description_file,
+    "get_api_keys": code_cmd.get_api_keys,
+
     # File commands
     "read_file": code_cmd.read_file,
-    "read_command_description_file": code_cmd.read_command_description_file,
     "write_file": code_cmd.write_file,
     "delete_file": code_cmd.delete_file,
     "insert_lines": code_cmd.insert_lines,
